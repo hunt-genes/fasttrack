@@ -1,0 +1,5 @@
+*.tsv
+*\#
+/node_modules
+/venv
+/dist

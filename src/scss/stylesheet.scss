@@ -1,0 +1,29 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+//@import url(https://fonts.googleapis.com/css?family=Droid+Serif:300,400,500,700);
+
+@import 'variables';
+@import 'bootstrap';
+@import 'paper';
+@import 'font-awesome';
+
+// our bootstrap styles
+
+#footer {
+    margin-top: 50px;
+    padding-bottom: 80px;
+}
+
+#results {
+    a {
+        cursor: pointer;
+    }
+    ul {
+        padding-left: 20px;
+    }
+    .uninteresting {
+        color: $gray-light;
+        a {
+            color: lighten($link-color, 15%);
+        }
+    }
+}
