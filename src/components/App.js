@@ -35,6 +35,7 @@ class App extends React.Component {
 
     onSearch(e) {
         e.preventDefault();
+        this.props.history.pushState(null, `/search/${this.refs.query.getValue()}`)
         GwasActions.search(this.refs.query.getValue());
     }
 
