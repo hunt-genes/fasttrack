@@ -16,10 +16,11 @@ class App extends React.Component {
         return {results: GwasStore.getResults(), count: GwasStore.getCount()};
     }
 
-    componentDidMount() {
-        if (this.props.results.count() === 0) {
-            console.log("mounted", this.props.params.q);
-            //GwasActions.search(this.props.params.q);
+    componentDidUpdate(prevProps) {
+        let oldQ = prevProps.params.q;
+        let newQ = this.props.params.q;
+        if (newQ !== oldQ) {
+            GwasActions.search(this.props.params.q);
         }
     }
 
@@ -46,7 +47,6 @@ class App extends React.Component {
         return datestring.split("-").pop();
     }
     render() {
-        //console.log("render");
         let button = <Button bsStyle="primary" onClick={this.onSearch.bind(this)}>Search</Button>;
         let max = 100;
         if (this.props.count < 100) {
@@ -80,7 +80,7 @@ class App extends React.Component {
                         <tr key={result.get("_id")} className={this.rowclass(result.get("P-VALUE"))}>
                             <td>
                                 <div>
-                                    <Link to={`/search/${result.get("SNP_ID_CURRENT")}`} onClick={this.onLinkClick.bind(this, result.get("SNP_ID_CURRENT"))}>
+                                    <Link to={`/search/${result.get("SNP_ID_CURRENT")}`}>
                                         {result.get("SNP_ID_CURRENT")}
                                     </Link>
                                 </div>
@@ -99,7 +99,7 @@ class App extends React.Component {
                             </td>
                             <td>
                                 <div>
-                                    <Link to={`/search/${result.get("REGION")}`} onClick={this.onLinkClick.bind(this, result.get("REGION"))}>
+                                    <Link to={`/search/${result.get("REGION")}`}>
                                         {result.get("REGION")}
                                     </Link>
                                 </div>
@@ -114,7 +114,7 @@ class App extends React.Component {
                                 <ul>
                                 {result.get("MAPPED_TRAIT").split(", ").map(trait =>
                                     <li key={trait}>
-                                        <Link to={`/search/${trait}`} onClick={this.onLinkClick.bind(this, trait)}>
+                                        <Link to={`/search/${trait}`}>
                                             {trait}
                                         </Link>
                                     </li>
@@ -124,12 +124,12 @@ class App extends React.Component {
                             <td>{result.get("DISEASE/TRAIT")}</td>
                             <td>{this.getYear(result.get("DATE"))}</td>
                             <td>
-                                <Link to={`/search/${result.get("FIRST AUTHOR")}`} onClick={this.onLinkClick.bind(this, result.get("FIRST AUTHOR"))}>
+                                <Link to={`/search/${result.get("FIRST AUTHOR")}`}>
                                     {result.get("FIRST AUTHOR")}
                                 </Link>
                             </td>
                             <td>
-                                <Link to={`/search/${result.get("PUBMEDID")}`} onClick={this.onLinkClick.bind(this, result.get("PUBMEDID"))} params={{q: result.get("PUBMEDID")}}>
+                                <Link to={`/search/${result.get("PUBMEDID")}`}>
                                     {result.get("PUBMEDID")}
                                 </Link>
                             </td>
