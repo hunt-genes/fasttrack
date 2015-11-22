@@ -22,28 +22,31 @@ let app = express();
 app.db = mongoose.connect("mongodb://localhost/gwasc");
 
 app.get("/search/:q?", (req, res, next) => {
-    console.log("OST");
     let query = {};
     let fields = [];
     let q = req.params.q || req.query.q;
     if (q) {
-         // TODO: Should we fix the SNP field to be an integer?
+        // TODO: Should we fix the SNP field to be an integer? YES, it's not
+        // even working normally now, but that may be a different issue.
         if (!isNaN(q)) {
-            fields.push({PUBMEDID: +q})
-            fields.push({SNP_ID_CURRENT: q})
+            fields.push({PUBMEDID: +q});
+            fields.push({SNPS: "rs" + q});
         }
         else if (q.startsWith("rs")) {
+            /*
             q = q.replace("rs", "");
             if (!isNaN(q)) {
                 fields.push({SNP_ID_CURRENT: q});
             }
+            */
+            fields.push({SNPS: q});
         }
         else {
             var r = RegExp(q);
-            fields.push({REGION: {$regex: r}})
-            fields.push({"FIRST AUTHOR": {$regex: r}})
-            fields.push({MAPPED_TRAIT: {$regex: r}})
-            fields.push({"DISEASE/TRAIT": {$regex: r}})
+            fields.push({REGION: {$regex: r}});
+            fields.push({"FIRST AUTHOR": {$regex: r}});
+            fields.push({MAPPED_TRAIT: {$regex: r}});
+            fields.push({"DISEASE/TRAIT": {$regex: r}});
         }
     }
     if (fields.length) {
