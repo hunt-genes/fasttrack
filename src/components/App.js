@@ -8,6 +8,11 @@ import {Link, History} from "react-router";
 
 class App extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.onSearch = this.onSearch.bind(this);
+    }
+
     static getStores(props) {
         return [GwasStore];
     }
@@ -47,17 +52,19 @@ class App extends React.Component {
         return datestring.split("-").pop();
     }
     render() {
-        let button = <Button bsStyle="primary" onClick={this.onSearch.bind(this)}>Search</Button>;
+        //console.log("render", this.props.params.q);
+        let button = <Button type="submit" bsStyle="primary">Search</Button>;
         let max = 100;
         if (this.props.count < 100) {
             max = this.props.count;
         }
-        let resultheader = <h2 style={{textAlign: "center"}}>{this.props.count} results <small>showing 1 to {max}</small></h2>;
+        let range = this.props.count ? <small>showing 1 to {max}</small> : "";
+        let resultheader = <h2 style={{textAlign: "center"}}>{this.props.count} results {range}</h2>;
         return (
             <section id="main">
-                <form onSubmit={this.onSearch.bind(this)} style={{width: "500px", margin: "0 auto"}}>
+                <form onSubmit={this.onSearch} style={{width: "500px", margin: "0 auto"}}>
                     <h1 style={{textAlign: "center"}}>Search HUNT GWAS catalog</h1>
-                    <Input type="text" ref="query" placeholder="rs693" buttonAfter={button} defaultValue={this.props.query} />
+                    <Input type="text" ref="query" placeholder={this.props.params.q || "Search"} buttonAfter={button} />
                 </form>
                 {resultheader}
                 <Table striped condensed hover id="results">
