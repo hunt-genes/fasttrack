@@ -7,7 +7,7 @@ var Search = require("./components/Search");
 
 var routes = (
     <Route path="/search" component={App}>
-        <Route path=":q" />
+        <Route path=":q" ignoreScrollBehaviour />
     </Route>
 );
 
