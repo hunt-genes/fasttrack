@@ -123,7 +123,9 @@ class App extends React.Component {
                                     </Link>
                                 </div>
                                 <div>
-                                {result.get("CHR_ID") ? `chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}
+                                    <Link to={result.get("CHR_ID") ? `/search/chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}>
+                                        {result.get("CHR_ID") ? `chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}
+                                    </Link>
                                 </div>
                                 <div title={result.get("CONTEXT")} style={{maxWidth: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>
                                     {result.get("CONTEXT")}

@@ -34,6 +34,12 @@ app.get("/search/:q?", (req, res, next) => {
             fields.push({PUBMEDID: q});
             fields.push({SNPS: "rs" + q});
         }
+        else if (q.startsWith("chr")) {
+            var [chrid, chrpos] = q.split(":", 2);
+            chrid = chrid.replace("chr", "");
+            query.CHR_ID = chrid;
+            query.CHR_POS = chrpos;
+        }
         else if (q.startsWith("rs")) {
             /*
             q = q.replace("rs", "");
@@ -53,7 +59,7 @@ app.get("/search/:q?", (req, res, next) => {
         }
     }
     if (fields.length) {
-        query = {$or: fields}
+        query["$or"] = fields
     }
     if (true) {
         query["hunt"] = {$exists: 1};
