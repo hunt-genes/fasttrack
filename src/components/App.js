@@ -11,6 +11,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.onSearch = this.onSearch.bind(this);
+        this.onClear = this.onClear.bind(this);
     }
 
     static getStores(props) {
@@ -18,7 +19,7 @@ class App extends React.Component {
     }
 
     static getPropsFromStores(props) {
-        return {results: GwasStore.getResults(), count: GwasStore.getCount()};
+        return {results: GwasStore.getResults(), traits: GwasStore.getTraits(), count: GwasStore.getCount()};
     }
 
     componentDidUpdate(prevProps) {
@@ -39,6 +40,11 @@ class App extends React.Component {
         GwasActions.search(this.refs.query.getValue());
     }
 
+    onClear(e) {
+        this.props.history.pushState(null, `/search/`)
+        GwasActions.search('');
+    }
+
     rowclass(p) {
         if (p > 0.00000005) {
             return "uninteresting";
@@ -54,7 +60,20 @@ class App extends React.Component {
     }
     renderResults() {
         if (!this.props.params.q) {
-            return <p style={{width: "500px", margin: "0 auto"}}><em>Use the search field if you want to see some results</em></p>;
+            return (
+                <div>
+                    <p style={{width: "600px", margin: "0 auto", textAlign: "center"}}>
+                        <em>Use the search field or select from the traits below if you want to see some results</em>
+                    </p>
+                    <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3}}>
+                    {this.props.traits.map(trait =>
+                                           <li key={trait.get("_id")}>
+                                                <Link to={`/search/${trait.get("_id")}`}>{trait.get("_id")}</Link> <a href={trait.get("uri")}><i className="fa fa-external-link"></i></a>
+                                                </li>
+                                          )}
+                    </ul>
+                </div>
+            );
         }
         else if (this.props.params.q && this.props.params.q.length < 3) {
             return <Alert style={{width: "500px", margin: "0 auto"}} bsStyle="danger">We need at least three characters, or we will crash your browser</Alert>;
@@ -157,12 +176,12 @@ class App extends React.Component {
 
     render() {
         //console.log("render", this.props.params.q);
-        let button = <Button type="submit" bsStyle="primary">Search</Button>;
+        let button = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         let resultheader = <h2 style={{textAlign: "center"}}>{this.props.count} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         let examples = <p>Examples: <Link to="/search/diabetes">diabetes</Link>, <Link to="/search/rs3820706">rs3820706</Link>, <Link to="/search/Chung S">Chung S</Link>, <Link to="/search/2q23.3">2q23.3</Link>, <Link to="/search/CACNB4">CACNB4</Link></p>;
         return (
             <section id="main">
-                <form onSubmit={this.onSearch} style={{width: "500px", margin: "0 auto"}}>
+                <form onSubmit={this.onSearch} onReset={this.onClear} style={{width: "500px", margin: "0 auto"}}>
                     <h1 style={{textAlign: "center"}}>Search HUNT GWAS catalog</h1>
                     <Input
                         type="text"

@@ -13,7 +13,9 @@ def is_int(value):
         return False
 
 data = {}
+traits = {}
 db.drop_collection("gwas")
+db.drop_collection("traits")
 
 with open('freq-table-hunt.csv') as tsvfile:
     freqs = csv.reader(tsvfile, delimiter='\t')
@@ -36,18 +38,41 @@ with open('gwas_catalog_v1.0.1-downloaded_2015-11-18.tsv') as tsvfile:
         if header_line:
             headers = row
             pvalue_index = row.index("P-VALUE")
+            mapped_trait_index = row.index("MAPPED_TRAIT")
+            mapped_trait_uri_index = row.index("MAPPED_TRAIT_URI")
             header_line = False
 
         else:
+            __headers = list(headers)
+
+            # snp
             snp = row[23]
             if snp in data:
                 hunt = data[snp]
-                headers.append("hunt")
+                __headers.append("hunt")
                 row.append(hunt)
+
+            # parse pvalue
             try:
                 row[pvalue_index] = float(row[pvalue_index])
             except:
                 pass
-            row_data = dict(zip(headers, row))
+
+            # parse and split traits
+            trait_ids = [trait.strip().replace(".", "").lower() for trait in row[mapped_trait_index].split(",")]
+            if trait_ids:
+                __headers.append("traits")
+                row.append(trait_ids)
+                if snp in data and row[pvalue_index] < 0.00000005:
+                    trait_uris = [trait_uri.strip() for trait_uri in row[mapped_trait_uri_index].split(",")]
+                    traits_with_uris = zip(trait_ids, trait_uris)
+                    for trait, uri in traits_with_uris:
+                        traits[trait] = uri
+
+            row_data = dict(zip(__headers, row))
             db.gwas.insert(row_data)
-            #print(i, snp)
+            # print(i, snp)
+
+    for trait, uri in traits.items():
+        _id = trait.replace(".", "")
+        db.traits.insert({"_id": _id, "uri": uri})

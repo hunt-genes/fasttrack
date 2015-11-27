@@ -4,11 +4,10 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
-//import {RoutingContext, match} from "react-router";
 import Iso from "iso";
 import alt from "./alt";
-//import App from "./components/App";
 import Result from "./models/Result";
+import Trait from "./models/Trait";
 import favicon from "serve-favicon";
 var routes = require("./routes");
 var ReactRouter = require("react-router");
@@ -48,7 +47,7 @@ app.get("/search/:q?", (req, res, next) => {
             var r = RegExp(q, "i");
             fields.push({REGION: {$regex: r}});
             fields.push({"FIRST AUTHOR": {$regex: r}});
-            fields.push({MAPPED_TRAIT: {$regex: r}});
+            fields.push({traits: {$regex: r}});
             fields.push({"DISEASE/TRAIT": {$regex: r}});
             fields.push({"MAPPED_GENE": {$regex: r}});
         }
@@ -60,37 +59,40 @@ app.get("/search/:q?", (req, res, next) => {
         query["hunt"] = {$exists: 1};
         query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
     }
-    //console.log("q", q, query, typeof(q));
-    Result.count(query, (err, count) => {
+    console.log("q", q, query, typeof(q));
+    Trait.find().sort("_id").exec((err, traits) => {
         if (err) { return err; }
-        console.log(count);
+        Result.count(query, (err, count) => {
+            if (err) { return err; }
+            console.log(count);
 
-        if (q) {
-            Result.find(query).limit(1000).sort("CHR_ID CHR_POS").exec((err, results) => {
-                if (err) { return err; }
-                //console.log(results);
+            if (q) {
+                Result.find(query).limit(1000).sort("CHR_ID CHR_POS").exec((err, results) => {
+                    if (err) { return err; }
+                    //console.log(results);
+                    res.format({
+                        html: () => {
+                            res.locals.data = { GwasStore: {results: results, count: count, query: q, traits: traits}};
+                            next();
+                        },
+                        json: () => {
+                            res.json({results: results, count: count, query: q, traits: traits});
+                        }
+                    });
+                });
+            }
+            else {
                 res.format({
                     html: () => {
-                        res.locals.data = { GwasStore: {results: results, count: count, query: q}};
+                        res.locals.data = { GwasStore: {results: [], count: count, query: q, traits: traits}};
                         next();
                     },
                     json: () => {
-                        res.json({results: results, count: count, query: q});
+                        res.json({results: [], count: count, query: q, traits: traits});
                     }
                 });
-            });
-        }
-        else {
-            res.format({
-                html: () => {
-                    res.locals.data = { GwasStore: {results: [], count: count, query: q}};
-                    next();
-                },
-                json: () => {
-                    res.json({results: [], count: count, query: q});
-                }
-            });
-        }
+            }
+        });
     });
 });
 if (app.settings.env === 'production'){

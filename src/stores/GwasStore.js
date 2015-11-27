@@ -7,18 +7,23 @@ class GwasStore {
     constructor() {
         this.bindListeners({
             handleUpdateResults: GwasActions.updateResults,
+            handleUpdateTraits: GwasActions.updateTraits,
             handleUpdateCount: GwasActions.updateCount
         });
         this.state = Immutable.Map({
             results: Immutable.List(),
+            traits: Immutable.List(),
             count: 0,
             query: ""
         });
     }
 
     handleUpdateResults(results) {
-        console.log("res", results);
         this.setState(this.state.set("results", Immutable.fromJS(results)));
+    }
+
+    handleUpdateTraits(traits) {
+        this.setState(this.state.set("traits", Immutable.fromJS(traits)));
     }
 
     handleUpdateCount(count) {
@@ -27,6 +32,10 @@ class GwasStore {
 
     static getResults() {
         return this.getState().get("results");
+    }
+
+    static getTraits() {
+        return this.getState().get("traits");
     }
 
     static getCount() {
