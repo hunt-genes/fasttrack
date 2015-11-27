@@ -13,6 +13,8 @@ def is_int(value):
         return False
 
 data = {}
+db.drop_collection("gwas")
+
 with open('freq-table-hunt.csv') as tsvfile:
     freqs = csv.reader(tsvfile, delimiter='\t')
     for row in freqs:
@@ -23,11 +25,29 @@ with open('freq-table-hunt.csv') as tsvfile:
 with open('gwas_catalog_v1.0.1-downloaded_2015-11-18.tsv') as tsvfile:
     gwas = csv.reader(tsvfile, delimiter='\t')
     header_line = True
+    headers = None
+    pvalue_index = None
+    i = 0
     for row in gwas:
-        snp = row[23]
-        hunt = data[snp]
-            out = db.gwas.update_many({"SNP_ID_CURRENT": snp},
-                                      {"$set": {"hunt": row[3]}})
-            if (out.matched_count):
-                print(i, snp, out.acknowledged, out.matched_count, out.modified_count)
-        header_line = False
+        if False:
+            continue
+        i += 1
+
+        if header_line:
+            headers = row
+            pvalue_index = row.index("P-VALUE")
+            header_line = False
+
+        else:
+            snp = row[23]
+            if snp in data:
+                hunt = data[snp]
+                headers.append("hunt")
+                row.append(hunt)
+            try:
+                row[pvalue_index] = float(row[pvalue_index])
+            except:
+                pass
+            row_data = dict(zip(headers, row))
+            db.gwas.insert(row_data)
+            #print(i, snp)

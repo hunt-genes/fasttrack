@@ -29,7 +29,7 @@ app.get("/search/:q?", (req, res, next) => {
         // TODO: Should we fix the SNP field to be an integer? YES, it's not
         // even working normally now, but that may be a different issue.
         if (!isNaN(q)) {
-            fields.push({PUBMEDID: +q});
+            fields.push({PUBMEDID: q});
             fields.push({SNPS: "rs" + q});
         }
         else if (q.startsWith("rs")) {
@@ -55,7 +55,7 @@ app.get("/search/:q?", (req, res, next) => {
     if (true) {
         query["hunt"] = {"$exists": 1}
     }
-    console.log("q", q, query, typeof(q));
+    //console.log("q", q, query, typeof(q));
     Result.count(query, (err, count) => {
         if (err) { return err; }
         console.log(count);
