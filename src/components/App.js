@@ -76,7 +76,7 @@ class App extends React.Component {
             );
         }
         else if (this.props.params.q && this.props.params.q.length < 3) {
-            return <Alert style={{width: "500px", margin: "0 auto"}} bsStyle="danger">We need at least three characters, or we will crash your browser</Alert>;
+            return <Alert style={{width: "600px", margin: "0 auto"}} bsStyle="danger">We need at least three characters, or we will crash your browser</Alert>;
         }
         else {
             return (
@@ -181,7 +181,7 @@ class App extends React.Component {
         let examples = <p>Examples: <Link to="/search/diabetes">diabetes</Link>, <Link to="/search/rs3820706">rs3820706</Link>, <Link to="/search/Chung S">Chung S</Link>, <Link to="/search/2q23.3">2q23.3</Link>, <Link to="/search/CACNB4">CACNB4</Link></p>;
         return (
             <section id="main">
-                <form onSubmit={this.onSearch} onReset={this.onClear} style={{width: "500px", margin: "0 auto"}}>
+                <form onSubmit={this.onSearch} onReset={this.onClear} style={{width: "600px", margin: "0 auto"}}>
                     <h1 style={{textAlign: "center"}}>Search HUNT GWAS catalog</h1>
                     <Input
                         type="text"
