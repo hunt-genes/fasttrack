@@ -25,6 +25,9 @@ app.get("/search/:q?", (req, res, next) => {
     let query = {};
     let fields = [];
     let q = req.params.q || req.query.q;
+    if (q && q.length < 3) {
+        q = "";
+    }
     if (q) {
         // TODO: Should we fix the SNP field to be an integer? YES, it's not
         // even working normally now, but that may be a different issue.
@@ -42,37 +45,52 @@ app.get("/search/:q?", (req, res, next) => {
             fields.push({SNPS: q});
         }
         else {
-            var r = RegExp(q);
+            var r = RegExp(q, "i");
             fields.push({REGION: {$regex: r}});
             fields.push({"FIRST AUTHOR": {$regex: r}});
             fields.push({MAPPED_TRAIT: {$regex: r}});
             fields.push({"DISEASE/TRAIT": {$regex: r}});
+            fields.push({"MAPPED_GENE": {$regex: r}});
         }
     }
     if (fields.length) {
         query = {$or: fields}
     }
     if (true) {
-        query["hunt"] = {"$exists": 1}
+        query["hunt"] = {$exists: 1};
+        query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
     }
     console.log("q", q, query, typeof(q));
     Result.count(query, (err, count) => {
         if (err) { return err; }
         console.log(count);
 
-        Result.find(query).limit(100).exec((err, results) => {
-            if (err) { return err; }
-            //console.log(results);
+        if (q) {
+            Result.find(query).limit(1000).sort("CHR_ID CHR_POS").exec((err, results) => {
+                if (err) { return err; }
+                //console.log(results);
+                res.format({
+                    html: () => {
+                        res.locals.data = { GwasStore: {results: results, count: count, query: q}};
+                        next();
+                    },
+                    json: () => {
+                        res.json({results: results, count: count, query: q});
+                    }
+                });
+            });
+        }
+        else {
             res.format({
                 html: () => {
-                    res.locals.data = { GwasStore: {results: results, count: count, query: q}};
+                    res.locals.data = { GwasStore: {results: [], count: count, query: q}};
                     next();
                 },
                 json: () => {
-                    res.json({results: results, count: count, query: q});
+                    res.json({results: [], count: count, query: q});
                 }
             });
-        });
+        }
     });
 });
 if (app.settings.env === 'production'){
