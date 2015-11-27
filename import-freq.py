@@ -63,7 +63,7 @@ with open('gwas_catalog_v1.0.1-downloaded_2015-11-18.tsv') as tsvfile:
             if trait_ids:
                 __headers.append("traits")
                 row.append(trait_ids)
-                if snp in data and row[pvalue_index] < 0.00000005:
+                if snp in data and isinstance(row[pvalue_index], float) and row[pvalue_index] < 0.00000005:
                     trait_uris = [trait_uri.strip() for trait_uri in row[mapped_trait_uri_index].split(",")]
                     traits_with_uris = zip(trait_ids, trait_uris)
                     for trait, uri in traits_with_uris:
