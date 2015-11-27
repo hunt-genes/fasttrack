@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 let ResultSchema = new mongoose.Schema({
-    SNP_ID_CURRENT: {type: Number},
-    PUBMEDID: {type: Number},
+    SNP_ID_CURRENT: {type: String},
+    PUBMEDID: {type: String},
     MAPPED_TRAIT: {type: String},
     MAPPED_TRAIT_URI: {type: String},
     SNPS: {type: String},
