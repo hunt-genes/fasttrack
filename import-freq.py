@@ -37,9 +37,13 @@ with open('gwas_catalog_v1.0.1-downloaded_2015-11-18.tsv') as tsvfile:
 
         if header_line:
             headers = row
+
             pvalue_index = row.index("P-VALUE")
             mapped_trait_index = row.index("MAPPED_TRAIT")
             mapped_trait_uri_index = row.index("MAPPED_TRAIT_URI")
+            chr_id_index = row.index("CHR_ID")
+            chr_pos_index = row.index("CHR_POS")
+
             header_line = False
 
         else:
@@ -57,6 +61,20 @@ with open('gwas_catalog_v1.0.1-downloaded_2015-11-18.tsv') as tsvfile:
                 row[pvalue_index] = float(row[pvalue_index])
             except:
                 pass
+
+            # parse chr_id
+            if row[chr_id_index]:
+                try:
+                    row[chr_id_index] = int(row[chr_id_index])
+                except:
+                    print("ERROR: could not parse CHR_ID <", row[chr_id_index], "as int")
+
+            # parse chr_pos
+            if row[chr_pos_index]:
+                try:
+                    row[chr_pos_index] = int(row[chr_pos_index])
+                except:
+                    print("ERROR: could not parse CHR_POS <", row[chr_id_index], "as int")
 
             # parse and split traits
             trait_ids = [trait.strip().replace(".", "").lower() for trait in row[mapped_trait_index].split(",")]
