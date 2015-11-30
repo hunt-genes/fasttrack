@@ -37,8 +37,8 @@ app.get("/search/:q?", (req, res, next) => {
         else if (q.startsWith("chr")) {
             var [chrid, chrpos] = q.split(":", 2);
             chrid = chrid.replace("chr", "");
-            query.CHR_ID = chrid;
-            query.CHR_POS = chrpos;
+            query.CHR_ID = +chrid;
+            query.CHR_POS = +chrpos;
         }
         else if (q.startsWith("rs")) {
             /*
