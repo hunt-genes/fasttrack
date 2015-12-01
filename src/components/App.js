@@ -84,99 +84,103 @@ class App extends React.Component {
             return <Alert style={{width: "600px", margin: "0 auto"}} bsStyle="danger">We need at least three characters, or we will crash your browser</Alert>;
         }
         else {
+            let exportButton = <Button href={`/search/${this.props.params.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}>Download</Button>;
             return (
-                <Table striped condensed hover id="results">
-                    <thead>
-                        <tr>
-                            <th>SNP</th>
-                            <th>MAF</th>
-                            <th>P</th>
-                            <th>Position</th>
-                            <th>Mapped gene</th>
-                            <th>Mapped trait</th>
-                            <th>OR or Beta</th>
-                            <th>Year</th>
-                            <th>First author</th>
-                            <th>Pubmed</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.results.map(result =>
-                        <tr key={result.get("_id")} className={this.rowclass(result.get("P-VALUE"))}>
-                            <td>
-                                <div>
-                                    <Link to={`/search/${result.get("SNP_ID_CURRENT")}`}>
-                                        {result.get("SNPS")}
-                                    </Link>
-                                </div>
-                            </td>
-                            <td>
-                                {result.get("hunt")}
-                            </td>
-                            <td>
-                                <div>
-                                    {this.exp(result.get("P-VALUE")) || "0.0" }
-                                </div>
-                                <div>
-                                    {result.get("P-VALUE (TEXT)")}
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <Link to={`/search/${result.get("REGION")}`}>
-                                        {result.get("REGION")}
-                                    </Link>
-                                </div>
-                                <div>
-                                    <Link to={result.get("CHR_ID") ? `/search/chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}>
-                                        {result.get("CHR_ID") ? `chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}
-                                    </Link>
-                                </div>
-                                <div title={result.get("CONTEXT")} style={{maxWidth: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>
-                                    {result.get("CONTEXT")}
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <Link to={`/search/${result.get("MAPPED_GENE")}`}>
-                                        {result.get("MAPPED_GENE")}
-                                    </Link> <a href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${result.get("MAPPED_GENE")}`}><i className="fa fa-external-link"></i></a>
-                                </div>
-                            </td>
-                            <td>
-                                <ul>
-                                {result.get("MAPPED_TRAIT").split(", ").map(trait =>
-                                    <li key={trait}>
-                                        <Link to={`/search/${trait}`}>
-                                            {trait}
+                <div>
+                    {exportButton}
+                    <Table striped condensed hover id="results">
+                        <thead>
+                            <tr>
+                                <th>SNP</th>
+                                <th>MAF</th>
+                                <th>P</th>
+                                <th>Position</th>
+                                <th>Mapped gene</th>
+                                <th>Mapped trait</th>
+                                <th>OR or Beta</th>
+                                <th>Year</th>
+                                <th>First author</th>
+                                <th>Pubmed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.props.results.map(result =>
+                            <tr key={result.get("_id")} className={this.rowclass(result.get("P-VALUE"))}>
+                                <td>
+                                    <div>
+                                        <Link to={`/search/${result.get("SNP_ID_CURRENT")}`}>
+                                            {result.get("SNPS")}
                                         </Link>
-                                    </li>
-                                )}
-                                </ul>
-                            </td>
-                            <td>
-                                <div>{result.get("OR or BETA")}</div>
-                                <div>{result.get("95% CI (TEXT)")}</div>
-                            </td>
-                            <td>
-                                <div>{this.getYear(result.get("DATE"))}</div>
-                                <div className="uninteresting">{result.get("DATE ADDED TO CATALOG")}</div>
-                            </td>
-                            <td>
-                                <Link to={`/search/${result.get("FIRST AUTHOR")}`}>
-                                    {result.get("FIRST AUTHOR")}
-                                </Link>
-                            </td>
-                            <td>
-                                <Link to={`/search/${result.get("PUBMEDID")}`}>
-                                    {result.get("PUBMEDID")}
-                                </Link> <a href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.get("PUBMEDID")}`}><i className="fa fa-external-link"></i></a>
-                                <div>{result.get("JOURNAL")}</div>
-                            </td>
-                        </tr>
-                        )}
-                    </tbody>
-                </Table>
+                                    </div>
+                                </td>
+                                <td>
+                                    {result.get("hunt")}
+                                </td>
+                                <td>
+                                    <div>
+                                        {this.exp(result.get("P-VALUE")) || "0.0" }
+                                    </div>
+                                    <div>
+                                        {result.get("P-VALUE (TEXT)")}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <Link to={`/search/${result.get("REGION")}`}>
+                                            {result.get("REGION")}
+                                        </Link>
+                                    </div>
+                                    <div>
+                                        <Link to={result.get("CHR_ID") ? `/search/chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}>
+                                            {result.get("CHR_ID") ? `chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}
+                                        </Link>
+                                    </div>
+                                    <div title={result.get("CONTEXT")} style={{maxWidth: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>
+                                        {result.get("CONTEXT")}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <Link to={`/search/${result.get("MAPPED_GENE")}`}>
+                                            {result.get("MAPPED_GENE")}
+                                        </Link> <a href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${result.get("MAPPED_GENE")}`}><i className="fa fa-external-link"></i></a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <ul>
+                                    {result.get("MAPPED_TRAIT").split(", ").map(trait =>
+                                        <li key={trait}>
+                                            <Link to={`/search/${trait}`}>
+                                                {trait}
+                                            </Link>
+                                        </li>
+                                    )}
+                                    </ul>
+                                </td>
+                                <td>
+                                    <div>{result.get("OR or BETA")}</div>
+                                    <div>{result.get("95% CI (TEXT)")}</div>
+                                </td>
+                                <td>
+                                    <div>{this.getYear(result.get("DATE"))}</div>
+                                    <div className="uninteresting">{result.get("DATE ADDED TO CATALOG")}</div>
+                                </td>
+                                <td>
+                                    <Link to={`/search/${result.get("FIRST AUTHOR")}`}>
+                                        {result.get("FIRST AUTHOR")}
+                                    </Link>
+                                </td>
+                                <td>
+                                    <Link to={`/search/${result.get("PUBMEDID")}`}>
+                                        {result.get("PUBMEDID")}
+                                    </Link> <a href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.get("PUBMEDID")}`}><i className="fa fa-external-link"></i></a>
+                                    <div>{result.get("JOURNAL")}</div>
+                                </td>
+                            </tr>
+                            )}
+                        </tbody>
+                    </Table>
+                </div>
             );
         }
     }

@@ -2,6 +2,7 @@ import path from "path";
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
+import csv from "fast-csv";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import Iso from "iso";
@@ -21,6 +22,7 @@ let app = express();
 app.db = mongoose.connect("mongodb://localhost/gwasc");
 
 app.get("/search/:q?", (req, res, next) => {
+    let download = false;
     let query = {};
     let fields = [];
     let q = req.params.q || req.query.q;
@@ -28,6 +30,10 @@ app.get("/search/:q?", (req, res, next) => {
         q = "";
     }
     if (q) {
+        if (q.endsWith(".csv")) {
+            q = q.replace(/\.csv$/, "");
+            download = true;
+        }
         // TODO: Should we fix the SNP field to be an integer? YES, it's not
         // even working normally now, but that may be a different issue.
         if (!isNaN(q)) {
@@ -70,26 +76,36 @@ app.get("/search/:q?", (req, res, next) => {
         if (err) { return err; }
         Result.aggregate({$match: query}, {$group: {_id: "$SNP_ID_CURRENT", count: {$sum: 1}}}).exec((err, count) => {
             if (err) { return err; }
-            console.log(count.length);
 
             const different = count.length;
             const total = count.reduce((previous, current) => {
                 return previous + current.count;
             }, 0);
 
+            console.log(different, total);
+
             if (q) {
-                Result.find(query).limit(1000).sort("CHR_ID CHR_POS").exec((err, results) => {
+                Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
                     if (err) { return err; }
-                    //console.log(results);
-                    res.format({
-                        html: () => {
-                            res.locals.data = { GwasStore: {results: results, different: different, total: total, query: q, traits: traits}};
-                            next();
-                        },
-                        json: () => {
-                            res.json({results: results, different: different, total: total, query: q, traits: traits});
-                        }
-                    });
+                    if (download) {
+                        csv.writeToString(results, {headers: true, delimiter: "\t"}, (err, data) => {
+                            res.set("Content-Type", "text/tsv");
+                            res.set("Content-Disposition", `attachment; filename=export-${q}.tsv`);
+                            res.write(data);
+                            res.end();
+                        });
+                    }
+                    else {
+                        res.format({
+                            html: () => {
+                                res.locals.data = { GwasStore: {results: results, different: different, total: total, query: q, traits: traits}};
+                                next();
+                            },
+                            json: () => {
+                                res.json({results: results, different: different, total: total, query: q, traits: traits});
+                            }
+                        });
+                    }
                 });
             }
             else {
