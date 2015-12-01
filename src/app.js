@@ -68,9 +68,14 @@ app.get("/search/:q?", (req, res, next) => {
     console.log("q", q, query, typeof(q));
     Trait.find().sort("_id").exec((err, traits) => {
         if (err) { return err; }
-        Result.count(query, (err, count) => {
+        Result.aggregate({$match: query}, {$group: {_id: "$SNP_ID_CURRENT", count: {$sum: 1}}}).exec((err, count) => {
             if (err) { return err; }
-            console.log(count);
+            console.log(count.length);
+
+            const different = count.length;
+            const total = count.reduce((previous, current) => {
+                return previous + current.count;
+            }, 0);
 
             if (q) {
                 Result.find(query).limit(1000).sort("CHR_ID CHR_POS").exec((err, results) => {
@@ -78,11 +83,11 @@ app.get("/search/:q?", (req, res, next) => {
                     //console.log(results);
                     res.format({
                         html: () => {
-                            res.locals.data = { GwasStore: {results: results, count: count, query: q, traits: traits}};
+                            res.locals.data = { GwasStore: {results: results, different: different, total: total, query: q, traits: traits}};
                             next();
                         },
                         json: () => {
-                            res.json({results: results, count: count, query: q, traits: traits});
+                            res.json({results: results, different: different, total: total, query: q, traits: traits});
                         }
                     });
                 });
