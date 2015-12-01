@@ -135,7 +135,7 @@ class App extends React.Component {
                                 <div>
                                     <Link to={`/search/${result.get("MAPPED_GENE")}`}>
                                         {result.get("MAPPED_GENE")}
-                                    </Link>
+                                    </Link> <a href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${result.get("MAPPED_GENE")}`}><i className="fa fa-external-link"></i></a>
                                 </div>
                             </td>
                             <td>
