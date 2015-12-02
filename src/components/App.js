@@ -188,7 +188,7 @@ class App extends React.Component {
     render() {
         //console.log("render", this.props.params.q);
         let button = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
-        let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} rs numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
+        let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         let examples = <p>Examples: <Link to="/search/diabetes">diabetes</Link>, <Link to="/search/rs3820706">rs3820706</Link>, <Link to="/search/Chung S">Chung S</Link>, <Link to="/search/2q23.3">2q23.3</Link>, <Link to="/search/CACNB4">CACNB4</Link></p>;
         return (
             <section id="main">
