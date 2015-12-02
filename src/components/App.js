@@ -195,8 +195,8 @@ class App extends React.Component {
         let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         let examples = <p>Examples: <Link to="/search/diabetes">diabetes</Link>, <Link to="/search/rs3820706">rs3820706</Link>, <Link to="/search/Chung S">Chung S</Link>, <Link to="/search/2q23.3">2q23.3</Link>, <Link to="/search/CACNB4">CACNB4</Link></p>;
         return (
-            <section id="main">
-                <form onSubmit={this.onSearch} onReset={this.onClear} style={{width: "600px", margin: "0 auto"}}>
+            <section id="main" style={{backgroundImage: "url('/img/logo2_ntnu_u-slagord.jpg')", backgroundSize: 80, backgroundRepeat: "no-repeat", backgroundPosition: "top right", marginRight: 20}}>
+                <form onSubmit={this.onSearch} onReset={this.onClear} style={{width: "600px", margin: "0 auto", backgroundColor: "white"}}>
                     <h1 style={{textAlign: "center"}}>Search HUNT GWAS catalog</h1>
                     <Input
                         type="text"
@@ -212,7 +212,9 @@ class App extends React.Component {
                 <Grid>
                     <Row>
                         <Col xs={12}>
-                            <footer style={{fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50}}><a href="http://www.ntnu.no/ism/epicenter">Human genetic epidemiology group (HGE)</a>, <a href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</a>, <a href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</a></footer>
+                            <footer style={{fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50}}>
+                            Usual warnings about providing the service AS-IS, and no responsibility, yada, yada yo.<br />
+                            <a href="http://www.ntnu.no/ism/epicenter">Human genetic epidemiology group (HGE)</a>, <a href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</a>, <a href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</a></footer>
                         </Col>
                     </Row>
                 </Grid>
