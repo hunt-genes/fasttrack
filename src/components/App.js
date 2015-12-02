@@ -36,18 +36,19 @@ class App extends React.Component {
     }
 
     onLinkClick(value, e) {
-        GwasActions.search(value);
+        //GwasActions.search(value);
+        this.props.history.pushState(null, `/search/${value}`)
     }
 
     onSearch(e) {
         e.preventDefault();
         this.props.history.pushState(null, `/search/${this.refs.query.getValue()}`)
-        GwasActions.search(this.refs.query.getValue());
+        //GwasActions.search(this.refs.query.getValue());
     }
 
     onClear(e) {
         this.props.history.pushState(null, `/search/`)
-        GwasActions.search('');
+        //GwasActions.search('');
     }
 
     rowclass(p) {
@@ -190,6 +191,7 @@ class App extends React.Component {
     }
 
     render() {
+        console.log("refs", this.refs);
         //console.log("render", this.props.params.q);
         let button = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
