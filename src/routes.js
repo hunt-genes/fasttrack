@@ -4,7 +4,6 @@ var Route = ReactRouter.Route;
 var Redirect = ReactRouter.Redirect;
 var React = require("react");
 var App = require("./components/App");
-var Search = require("./components/Search");
 
 var routes = (
     <Route>
