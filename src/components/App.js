@@ -208,6 +208,14 @@ class App extends React.Component {
                 </form>
                 {resultheader}
                 {this.renderResults()}
+                <hr />
+                <Grid>
+                    <Row>
+                        <Col xs={12}>
+                            <footer style={{fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50}}><a href="http://www.ntnu.no/ism/epicenter">Human genetic epidemiology group (HGE)</a>, <a href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</a>, <a href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</a></footer>
+                        </Col>
+                    </Row>
+                </Grid>
             </section>
         );
     }
