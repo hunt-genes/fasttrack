@@ -197,7 +197,7 @@ class App extends React.Component {
         return (
             <section id="main" style={{backgroundImage: "url('/img/logo2_ntnu_u-slagord.jpg')", backgroundSize: 80, backgroundRepeat: "no-repeat", backgroundPosition: "top right", marginRight: 20}}>
                 <form onSubmit={this.onSearch} onReset={this.onClear} style={{width: "600px", margin: "0 auto", backgroundColor: "white"}}>
-                    <h1 style={{textAlign: "center"}}>Search HUNT GWAS catalog</h1>
+                    <h1 style={{textAlign: "center"}}>Search HUNT fast-track GWAS catalog</h1>
                     <Input
                         type="text"
                         ref="query"
