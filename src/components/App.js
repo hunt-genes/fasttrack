@@ -2,7 +2,7 @@ import React from "react";
 import connectToStores from "alt/utils/connectToStores";
 import GwasActions from "../actions/GwasActions";
 import GwasStore from "../stores/GwasStore";
-import {Input, Button, Table, Alert} from "react-bootstrap";
+import {Input, Button, Table, Alert, Grid, Row, Col} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
 import {Link, History} from "react-router";
 
@@ -66,18 +66,22 @@ class App extends React.Component {
     renderResults() {
         if (!this.props.params.q) {
             return (
-                <div>
-                    <p style={{width: "600px", margin: "0 auto", textAlign: "center"}}>
-                        <em>Use the search field or select from the traits below if you want to see some results</em>
-                    </p>
-                    <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3}}>
-                    {this.props.traits.map(trait =>
-                                           <li key={trait.get("_id")}>
-                                                <Link to={`/search/${trait.get("_id")}`}>{trait.get("_id")}</Link> <a href={trait.get("uri")}><i className="fa fa-external-link"></i></a>
-                                                </li>
-                                          )}
-                    </ul>
-                </div>
+                <Grid>
+                    <Row>
+                        <Col xs={12}>
+                            <p style={{width: "600px", margin: "0 auto", textAlign: "center"}}>
+                            <em>Use the search field or select from the traits below if you want to see some results</em>
+                                </p>
+                            <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0}}>
+                            {this.props.traits.map(trait =>
+                                                   <li key={trait.get("_id")}>
+                                                   <Link to={`/search/${trait.get("_id")}`}>{trait.get("_id")}</Link> <a href={trait.get("uri")}><i className="fa fa-external-link"></i></a>
+                                                   </li>
+                                                  )}
+                                                  </ul>
+                        </Col>
+                    </Row>
+                </Grid>
             );
         }
         else if (this.props.params.q && this.props.params.q.length < 3) {
