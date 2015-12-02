@@ -90,7 +90,7 @@ app.get("/search/:q?", (req, res, next) => {
                     if (download) {
                         csv.writeToString(results, {headers: true, delimiter: "\t"}, (err, data) => {
                             res.set("Content-Type", "text/tsv");
-                            res.set("Content-Disposition", `attachment; filename=export-${q}.tsv`);
+                            res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
                             res.write(data);
                             res.end();
                         });
