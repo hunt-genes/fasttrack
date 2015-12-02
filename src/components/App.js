@@ -213,7 +213,7 @@ class App extends React.Component {
                     <Row>
                         <Col xs={12}>
                             <footer style={{fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50}}>
-                            Usual warnings about providing the service AS-IS, and no responsibility, yada, yada yo.<br />
+                            The usual warnings about providing the service AS-IS applies.<br />
                             <a href="http://www.ntnu.no/ism/epicenter">Human genetic epidemiology group (HGE)</a>, <a href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</a>, <a href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</a></footer>
                         </Col>
                     </Row>
