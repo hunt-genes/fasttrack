@@ -111,11 +111,11 @@ app.get("/search/:q?", (req, res, next) => {
             else {
                 res.format({
                     html: () => {
-                        res.locals.data = { GwasStore: {results: [], count: count, query: q, traits: traits}};
+                        res.locals.data = { GwasStore: {results: [], different: different, total: total, query: q, traits: traits}};
                         next();
                     },
                     json: () => {
-                        res.json({results: [], count: count, query: q, traits: traits});
+                        res.json({results: [], different: different, total: total, query: q, traits: traits});
                     }
                 });
             }

@@ -4,7 +4,7 @@ var gulp  = require('gulp'),
     webpack = require("webpack");
 
 gulp.task('default', ['watch']);
-gulp.task("build", ["sass", "webpack"]);
+gulp.task("build", ["sass", "icons", "webpack"]);
 
 gulp.task('sass', function() {
     return gulp.src('src/scss/stylesheet.scss')
@@ -39,6 +39,11 @@ gulp.task("webpack", function(callback) {
         }));
         callback();
     });
+});
+
+gulp.task("icons", function () {
+    return gulp.src("./node_modules/font-awesome/fonts/*.*")
+        .pipe(gulp.dest("./dist/fonts"));
 });
 
 gulp.task('watch', function() {
