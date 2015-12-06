@@ -2,7 +2,7 @@ import React from "react";
 import connectToStores from "alt/utils/connectToStores";
 import GwasActions from "../actions/GwasActions";
 import GwasStore from "../stores/GwasStore";
-import {Input, Button, Table, Alert, Grid, Row, Col} from "react-bootstrap";
+import {Input, Button, Table, Alert, Grid, Row, Col, Image} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
 import {Link, History} from "react-router";
 
@@ -78,7 +78,7 @@ class App extends React.Component {
                 <Grid>
                     <Row>
                         <Col xs={12}>
-                            <p style={{width: "600px", margin: "0 auto", textAlign: "center"}}>
+                            <p style={{margin: "0 auto", textAlign: "center"}}>
                             <em>Use the search field or select from the traits below if you want to see some results</em>
                                 </p>
                             <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0}}>
@@ -211,17 +211,30 @@ class App extends React.Component {
         let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         let examples = <p>Examples: <Link to="/search/diabetes">diabetes</Link>, <Link to="/search/rs3820706">rs3820706</Link>, <Link to="/search/Chung S">Chung S</Link>, <Link to="/search/2q23.3">2q23.3</Link>, <Link to="/search/CACNB4">CACNB4</Link></p>;
         return (
-            <section id="main" style={{backgroundImage: "url('/img/logo2_ntnu_u-slagord.jpg')", backgroundSize: 80, backgroundRepeat: "no-repeat", backgroundPosition: "top right", marginRight: 20}}>
-                <form onSubmit={this.onSearch} onReset={this.onClear} style={{width: "600px", margin: "0 auto", backgroundColor: "white"}}>
-                    <h1 style={{textAlign: "center"}}>Search HUNT fast-track GWAS catalog</h1>
-                    <Input
-                        type="text"
-                        ref="query"
-                        placeholder={this.props.params.q || "Search"}
-                        help={examples}
-                        buttonAfter={button}
-                    />
-                </form>
+            <section id="main">
+                <Grid>
+                    <Row>
+                        <Col xs={12}>
+                            <form onSubmit={this.onSearch} onReset={this.onClear}>
+                                <Row>
+                                    <Col sm={1}>
+                                        <Image responsive src="/img/logo2_ntnu_u-slagord.jpg" className="hidden-xs" style={{marginTop: 28}}/>
+                                    </Col>
+                                    <Col sm={11}>
+                                        <h1>HUNT fast-track GWAS catalog search</h1>
+                                        <Input
+                                            type="text"
+                                            ref="query"
+                                            placeholder={this.props.params.q || "Search"}
+                                            help={examples}
+                                            buttonAfter={button}
+                                        />
+                                    </Col>
+                                </Row>
+                            </form>
+                        </Col>
+                    </Row>
+                </Grid>
                 {resultheader}
                 {this.renderResults()}
                 <hr />
