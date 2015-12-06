@@ -223,6 +223,7 @@ class App extends React.Component {
                         <Col xs={12}>
                             <footer style={{fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50}}>
                             The usual warnings about providing the service AS-IS applies.<br />
+                            GWAS data from <ExternalLink href="https://www.ebi.ac.uk/gwas/docs/downloads">NHGRI-EBI</ExternalLink><br />
                             <ExternalLink href="http://www.ntnu.no/ism/epicenter/home">Human genetic epidemiology group (HGE)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</ExternalLink></footer>
                         </Col>
                     </Row>
