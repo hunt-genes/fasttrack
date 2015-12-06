@@ -6,6 +6,15 @@ import {Input, Button, Table, Alert, Grid, Row, Col} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
 import {Link, History} from "react-router";
 
+const ExternalLink = (props => {
+    if (props.children) {
+        return <a href={props.href} target="_blank">{props.children}</a>;
+    }
+    else {
+        return <a href={props.href} target="_blank"><i className="fa fa-external-link"></i></a>;
+    }
+});
+
 class App extends React.Component {
 
     constructor(props) {
@@ -75,10 +84,10 @@ class App extends React.Component {
                             <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0}}>
                             {this.props.traits.map(trait =>
                                                    <li key={trait.get("_id")}>
-                                                   <Link to={`/search/${trait.get("_id")}`}>{trait.get("_id")}</Link> <a href={trait.get("uri")}><i className="fa fa-external-link"></i></a>
+                                                       <Link to={`/search/${trait.get("_id")}`}>{trait.get("_id")}</Link> <ExternalLink href={trait.get("uri")} />
                                                    </li>
-                                                  )}
-                                                  </ul>
+                                                   )}
+                                               </ul>
                         </Col>
                     </Row>
                 </Grid>
@@ -147,7 +156,7 @@ class App extends React.Component {
                                     <div>
                                         <Link to={`/search/${result.get("MAPPED_GENE")}`}>
                                             {result.get("MAPPED_GENE")}
-                                        </Link> <a href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${result.get("MAPPED_GENE")}`}><i className="fa fa-external-link"></i></a>
+                                        </Link> <ExternalLink href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${result.get("MAPPED_GENE")}`} />
                                     </div>
                                 </td>
                                 <td>
@@ -177,7 +186,7 @@ class App extends React.Component {
                                 <td>
                                     <Link to={`/search/${result.get("PUBMEDID")}`}>
                                         {result.get("PUBMEDID")}
-                                    </Link> <a href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.get("PUBMEDID")}`}><i className="fa fa-external-link"></i></a>
+                                    </Link> <ExternalLink href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.get("PUBMEDID")}`} />
                                     <div>{result.get("JOURNAL")}</div>
                                 </td>
                             </tr>
@@ -214,7 +223,7 @@ class App extends React.Component {
                         <Col xs={12}>
                             <footer style={{fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50}}>
                             The usual warnings about providing the service AS-IS applies.<br />
-                            <a href="http://www.ntnu.no/ism/epicenter">Human genetic epidemiology group (HGE)</a>, <a href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</a>, <a href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</a></footer>
+                            <ExternalLink href="http://www.ntnu.no/ism/epicenter/home">Human genetic epidemiology group (HGE)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</ExternalLink></footer>
                         </Col>
                     </Row>
                 </Grid>
