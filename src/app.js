@@ -3,23 +3,21 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import csv from "fast-csv";
+import favicon from "serve-favicon";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import Iso from "iso";
 import alt from "./alt";
 import Result from "./models/Result";
 import Trait from "./models/Trait";
-import favicon from "serve-favicon";
+import db from "./lib/db";
 var routes = require("./routes");
 var ReactRouter = require("react-router");
 var RoutingContext = ReactRouter.RoutingContext;
 var match = ReactRouter.match;
 
-// TODO: Move mongodb config into some sort of real config, with
-// test config
-
 let app = express();
-app.db = mongoose.connect("mongodb://localhost/gwasc");
+app.db = db;
 
 app.get("/search/:q?", (req, res, next) => {
     let download = false;
