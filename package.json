@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --require test/setup",
+    "test": "NODE_ENV=test mocha --require test/setup",
     "build": "gulp build",
     "watch": "gulp",
     "forever": "forever"

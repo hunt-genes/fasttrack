@@ -10,6 +10,7 @@ import Iso from "iso";
 import alt from "./alt";
 import Result from "./models/Result";
 import Trait from "./models/Trait";
+import Request from "./models/Request";
 import db from "./lib/db";
 var routes = require("./routes");
 var ReactRouter = require("react-router");
@@ -18,6 +19,32 @@ var match = ReactRouter.match;
 
 let app = express();
 app.db = db;
+
+function getIP(req) {
+    let ips = req.headers['x-forwarded-for'] || // from proxy
+        req.connection.remoteAddress || // different versions of node
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+    return ips.split(",").pop();
+}
+
+// request logging middleware, logs timestamp, ip and query if defined
+app.use((req, res, next) => {
+    let q = req.params.q || req.query.q;
+
+    if (q) {
+        let ip = getIP(req);
+        let request = new Request();
+        request.ip = ip;
+        request.query = q;
+        request.save((err) => {
+            if (err) { console.error(err) };
+        });
+    }
+
+    // do not wait for request logger
+    next();
+});
 
 app.get("/search/:q?", (req, res, next) => {
     let download = false;
