@@ -7,10 +7,13 @@ build:
 watch:
 	npm run watch
 
+test:
+	npm test
+
 install:
 	npm install
 
 run:
 	nodemon
 
-.PHONY: build watch install run
+.PHONY: build watch test install run
