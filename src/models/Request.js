@@ -20,13 +20,7 @@ RequestSchema
     return ip.toString(this.remote_address);
 })
 .set(function (value) {
-    try {
-        this.set("remote_address", ip.toBuffer(value));
-    }
-    catch (e) {
-        console.error(e);
-        throw new TypeError(`${value} is not parseable`);
-    }
+    this.set("remote_address", ip.toBuffer(value));
 });
 
 let Request = mongoose.model("requests", RequestSchema);
