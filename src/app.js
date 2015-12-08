@@ -30,7 +30,7 @@ function getIP(req) {
 
 // request logging middleware, logs timestamp, ip and query if defined
 app.use((req, res, next) => {
-    let q = req.params.q || req.query.q;
+    let q = req.query.q;
 
     if (q) {
         let ip = getIP(req);
@@ -46,11 +46,11 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/search/:q?", (req, res, next) => {
+app.get("/search/", (req, res, next) => {
     let download = false;
     let query = {};
     let fields = [];
-    let q = req.params.q || req.query.q;
+    let q = req.query.q;
     if (q && q.length < 3) {
         q = "";
     }
@@ -147,6 +147,7 @@ app.get("/search/:q?", (req, res, next) => {
         });
     });
 });
+
 if (app.settings.env === 'production'){
     app.use(favicon(__dirname + '/../dist/favicon.ico'));
 }

@@ -37,10 +37,12 @@ class App extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        let oldQ = prevProps.params.q;
-        let newQ = this.props.params.q;
-        if (newQ !== oldQ) {
-            GwasActions.search(this.props.params.q);
+        let location = this.props.location;
+        let oldLocation = prevProps.location;
+        let q = location.query.q;
+        let oldQ = oldLocation.query.q;
+        if (q !== oldQ) {
+            GwasActions.search(q);
         }
     }
 
@@ -50,7 +52,7 @@ class App extends React.Component {
 
     onSearch(e) {
         e.preventDefault();
-        this.props.history.pushState(null, `/search/${this.refs.query.getValue()}`)
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}`)
         GwasActions.search(this.refs.query.getValue());
     }
 
@@ -73,7 +75,7 @@ class App extends React.Component {
         return datestring.split("-").pop();
     }
     renderResults() {
-        if (!this.props.params.q) {
+        if (!this.props.location.query.q) {
             return (
                 <Grid>
                     <Row>
@@ -84,7 +86,7 @@ class App extends React.Component {
                             <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0}}>
                             {this.props.traits.map(trait =>
                                                    <li key={trait.get("_id")}>
-                                                       <Link to={`/search/${trait.get("_id")}`}>{trait.get("_id")}</Link> <ExternalLink href={trait.get("uri")} />
+                                                       <Link to={`/search/?q=${trait.get("_id")}`}>{trait.get("_id")}</Link> <ExternalLink href={trait.get("uri")} />
                                                    </li>
                                                    )}
                                                </ul>
@@ -93,11 +95,11 @@ class App extends React.Component {
                 </Grid>
             );
         }
-        else if (this.props.params.q && this.props.params.q.length < 3) {
+        else if (this.props.location.query.q && this.props.location.query.q.length < 3) {
             return <Alert style={{width: "600px", margin: "0 auto"}} bsStyle="danger">We need at least three characters, or we will crash your browser</Alert>;
         }
         else {
-            let exportButton = <Button href={`/search/${this.props.params.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}>Download</Button>;
+            let exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}>Download</Button>;
             return (
                 <div>
                     {exportButton}
@@ -121,7 +123,7 @@ class App extends React.Component {
                             <tr key={result.get("_id")} className={this.rowclass(result.get("P-VALUE"))}>
                                 <td>
                                     <div>
-                                        <Link to={`/search/${result.get("SNP_ID_CURRENT")}`}>
+                                        <Link to={`/search/?q=${result.get("SNP_ID_CURRENT")}`}>
                                             {result.get("SNPS")}
                                         </Link>
                                     </div>
@@ -139,12 +141,12 @@ class App extends React.Component {
                                 </td>
                                 <td>
                                     <div>
-                                        <Link to={`/search/${result.get("REGION")}`}>
+                                        <Link to={`/search/?q=${result.get("REGION")}`}>
                                             {result.get("REGION")}
                                         </Link>
                                     </div>
                                     <div>
-                                        <Link to={result.get("CHR_ID") ? `/search/chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}>
+                                        <Link to={result.get("CHR_ID") ? `/search/?q=chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}>
                                             {result.get("CHR_ID") ? `chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}
                                         </Link>
                                     </div>
@@ -157,7 +159,7 @@ class App extends React.Component {
                                         {result.get("MAPPED_GENE").split(" - ").map(gene => {
                                             return (
                                                 <li>
-                                                    <Link to={`/search/${gene}`}>
+                                                    <Link to={`/search/?q=${gene}`}>
                                                         {gene}
                                                     </Link> <ExternalLink href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene}`} />
                                                 </li>
@@ -170,7 +172,7 @@ class App extends React.Component {
                                     <ul>
                                     {result.get("MAPPED_TRAIT").split(", ").map(trait =>
                                         <li key={trait}>
-                                            <Link to={`/search/${trait}`}>
+                                            <Link to={`/search/?q=${trait}`}>
                                                 {trait}
                                             </Link>
                                         </li>
@@ -186,12 +188,12 @@ class App extends React.Component {
                                     <div className="uninteresting">{result.get("DATE ADDED TO CATALOG")}</div>
                                 </td>
                                 <td>
-                                    <Link to={`/search/${result.get("FIRST AUTHOR")}`}>
+                                    <Link to={`/search/?q=${result.get("FIRST AUTHOR")}`}>
                                         {result.get("FIRST AUTHOR")}
                                     </Link>
                                 </td>
                                 <td>
-                                    <Link to={`/search/${result.get("PUBMEDID")}`}>
+                                    <Link to={`/search/?q=${result.get("PUBMEDID")}`}>
                                         {result.get("PUBMEDID")}
                                     </Link> <ExternalLink href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.get("PUBMEDID")}`} />
                                     <div>{result.get("JOURNAL")}</div>
@@ -206,10 +208,9 @@ class App extends React.Component {
     }
 
     render() {
-        //console.log("render", this.props.params.q);
         let button = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
-        let examples = <p>Examples: <Link to="/search/diabetes">diabetes</Link>, <Link to="/search/rs3820706">rs3820706</Link>, <Link to="/search/Chung S">Chung S</Link>, <Link to="/search/2q23.3">2q23.3</Link>, <Link to="/search/CACNB4">CACNB4</Link></p>;
+        let examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
         return (
             <section id="main">
                 <Grid>
@@ -225,7 +226,7 @@ class App extends React.Component {
                                         <Input
                                             type="text"
                                             ref="query"
-                                            placeholder={this.props.params.q || "Search"}
+                                            placeholder={this.props.location.query.q || "Search"}
                                             help={examples}
                                             buttonAfter={button}
                                         />
