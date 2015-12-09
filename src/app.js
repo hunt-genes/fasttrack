@@ -134,14 +134,17 @@ app.get("/search/", (req, res, next) => {
                 });
             }
             else {
-                res.format({
-                    html: () => {
-                        res.locals.data = { GwasStore: {results: [], different: different, total: total, query: q, traits: traits}};
-                        next();
-                    },
-                    json: () => {
-                        res.json({results: [], different: different, total: total, query: q, traits: traits});
-                    }
+                Request.count().exec((err, totalRequests) => {
+                    if (err) { return err; }
+                    res.format({
+                        html: () => {
+                            res.locals.data = { GwasStore: {results: [], different: different, total: total, query: q, traits: traits, totalRequests: totalRequests}};
+                            next();
+                        },
+                        json: () => {
+                            res.json({results: [], different: different, total: total, query: q, traits: traits, totalRequests: totalRequests});
+                        }
+                    });
                 });
             }
         });
