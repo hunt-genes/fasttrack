@@ -7,6 +7,7 @@
     "test": "NODE_ENV=test mocha --require test/setup",
     "build": "gulp build",
     "watch": "gulp",
+    "lint": "gulp lint",
     "forever": "forever"
   },
   "author": "",
@@ -42,6 +43,7 @@
     "eslint-config-airbnb": "^2.0.0",
     "eslint-plugin-react": "^3.11.3",
     "gulp": "^3.9.0",
+    "gulp-eslint": "^1.1.1",
     "gulp-sass": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",

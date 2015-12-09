@@ -16,4 +16,7 @@ install:
 run:
 	nodemon
 
-.PHONY: build watch test install run
+lint:
+	npm run lint
+
+.PHONY: build watch test install run lint

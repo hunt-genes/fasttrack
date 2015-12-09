@@ -1,6 +1,7 @@
 var gulp = require("gulp");
 var gutil = require("gulp-util");
 var sass = require("gulp-sass");
+var eslint = require("gulp-eslint");
 var webpack = require("webpack");
 
 var webpackConfig = {
@@ -25,13 +26,18 @@ var webpackConfig = {
 
 
 gulp.task("default", ["build-dev"]);
-gulp.task("build", ["sass", "icons", "images", "webpack:build"]);
-gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images"], function () {
-    gulp.watch("src/**/*.js", ["webpack:build-dev"]);
+gulp.task("build", ["sass", "icons", "images", "webpack:build", "lint"]);
+gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "lint"], function () {
+    gulp.watch("src/**/*.js", ["webpack:build-dev", "lint"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
     gulp.watch("src/images/*.scss", ["images"]);
 });
 
+gulp.task("lint", function (callback) {
+    return gulp.src("src/**/*.js")
+    .pipe(eslint())
+    .pipe(eslint.format());
+});
 
 gulp.task("sass", function () {
     return gulp.src("src/scss/stylesheet.scss")
