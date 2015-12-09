@@ -165,7 +165,7 @@ class App extends React.Component {
                                     <ul>
                                         {result.get("MAPPED_GENE").split(" - ").map(gene => {
                                             return (
-                                                <li>
+                                                <li key={gene}>
                                                     <Link to={`/search/?q=${gene}`}>
                                                         {gene}
                                                     </Link> <ExternalLink href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene}`} />
