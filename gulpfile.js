@@ -3,15 +3,14 @@ var gutil = require("gulp-util");
 var sass = require("gulp-sass");
 var eslint = require("gulp-eslint");
 var webpack = require("webpack");
+var gwebpack = require("gulp-webpack");
 
-var webpackConfig = {
+var devConfig = {
     devtool: "cheap-module-source-map",
     context: __dirname + "/src",
-    entry: "./client.js",
     plugins: [],
     output: {
         filename: "client.js",
-        path: __dirname + "/dist",
     },
     module: {
         loaders: [
@@ -24,16 +23,28 @@ var webpackConfig = {
     }
 };
 
+var prodConfig = Object.create(devConfig);
+prodConfig.plugins = prodConfig.plugins.concat(
+    new webpack.DefinePlugin({
+        "process.env": {
+            // This has effect on the react lib size
+            "NODE_ENV": JSON.stringify("production")
+        }
+    }),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(true),
+    new webpack.optimize.UglifyJsPlugin()
+);
 
 gulp.task("default", ["build-dev"]);
-gulp.task("build", ["sass", "icons", "images", "webpack:build", "lint"]);
+gulp.task("build", ["sass", "icons", "images", "webpack:build"]);
 gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "lint"], function () {
     gulp.watch("src/**/*.js", ["webpack:build-dev", "lint"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
     gulp.watch("src/images/*.scss", ["images"]);
 });
 
-gulp.task("lint", function (callback) {
+gulp.task("lint", function () {
     return gulp.src("src/**/*.js")
     .pipe(eslint())
     .pipe(eslint.format());
@@ -45,35 +56,16 @@ gulp.task("sass", function () {
     .pipe(gulp.dest("dist"));
 });
 
-gulp.task("webpack:build-dev", function (callback) {
-    webpack(webpackConfig, function (err, stats) {
-        if (err) throw new gutil.PluginError("webpack:build-dev", err);
-        gutil.log("[webpack:build-dev]", stats.toString({
-            colors: true
-        }));
-        callback();
-    });
+gulp.task("webpack:build-dev", function () {
+    return gulp.src("src/components/App.js")
+    .pipe(gwebpack(devConfig))
+    .pipe(gulp.dest("dist"));
 });
 
 gulp.task("webpack:build", function (callback) {
-    var prodConfig = Object.create(webpackConfig);
-    prodConfig.plugins = prodConfig.plugins.concat(
-        new webpack.DefinePlugin({
-            "process.env": {
-                // This has effect on the react lib size
-                "NODE_ENV": JSON.stringify("production")
-            }
-        }),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin()
-    );
-    webpack(prodConfig, function (err, stats) {
-        if (err) throw new gutil.PluginError("webpack:build", err);
-        gutil.log("[webpack:build]", stats.toString({
-            colors: true
-        }));
-        callback();
-    });
+    return gulp.src("src/components/App.js")
+    .pipe(gwebpack(prodConfig))
+    .pipe(gulp.dest("dist"));
 });
 
 gulp.task("icons", function () {
