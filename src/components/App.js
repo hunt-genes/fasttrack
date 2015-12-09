@@ -216,14 +216,14 @@ class App extends React.Component {
     }
 
     render() {
-        let button = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
+        let buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         let examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
         return (
             <section id="main">
                 <Grid>
                     <Row>
-                        <Col xs={12}>
+                        <Col xs={12} md={10} mdOffset={1} lg={8} lgOffset={2}>
                             <form onSubmit={this.onSearch} onReset={this.onClear}>
                                 <Row>
                                     <Col sm={1}>
@@ -236,7 +236,7 @@ class App extends React.Component {
                                             ref="query"
                                             placeholder={this.props.location.query.q || "Search"}
                                             help={examples}
-                                            buttonAfter={button}
+                                            buttonAfter={buttons}
                                         />
                                     </Col>
                                 </Row>
