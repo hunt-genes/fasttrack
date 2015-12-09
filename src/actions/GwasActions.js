@@ -3,7 +3,7 @@ import axios from "axios";
 
 class GwasActions {
     constructor() {
-        this.generateActions('updateResults', 'updateTraits', 'updateDifferent', 'updateTotal', 'updateRequests');
+        this.generateActions('updateResults', 'updateTraits', 'updateRequests');
     }
 
     search(query) {
@@ -11,8 +11,6 @@ class GwasActions {
         .then((response) => {
             this.actions.updateResults(response.data.results);
             this.actions.updateTraits(response.data.traits);
-            this.actions.updateDifferent(response.data.different);
-            this.actions.updateTotal(response.data.total);
             if (response.data.requests) {
                 this.actions.updateRequests(response.data.requests);
             }

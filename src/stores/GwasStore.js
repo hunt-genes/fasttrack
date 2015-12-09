@@ -8,15 +8,15 @@ class GwasStore {
         this.bindListeners({
             handleUpdateResults: GwasActions.updateResults,
             handleUpdateTraits: GwasActions.updateTraits,
-            handleUpdateDifferent: GwasActions.updateDifferent,
-            handleUpdateTotal: GwasActions.updateTotal,
             handleUpdateRequests: GwasActions.updateRequests
         });
         this.state = Immutable.Map({
-            results: Immutable.List(),
+            results: Immutable.Map({
+                different: 0,
+                total: 0,
+                data: Immutable.List()
+            }),
             traits: Immutable.List(),
-            different: 0,
-            total: 0,
             requests: Immutable.Map({
                 total: 0,
                 local: 0
@@ -32,16 +32,8 @@ class GwasStore {
         this.setState(this.state.set("traits", Immutable.fromJS(traits)));
     }
 
-    handleUpdateDifferent(different) {
-        this.setState(this.state.set("different", different));
-    }
-
-    handleUpdateTotal(total) {
-        this.setState(this.state.set("total", total));
-    }
-
     handleUpdateRequests(requests) {
-        this.setState(this.state.set("requests", Immutable.Map(requests)));
+        this.setState(this.state.set("requests", Immutable.fromJS(requests)));
     }
 
     static getResults() {
@@ -50,14 +42,6 @@ class GwasStore {
 
     static getTraits() {
         return this.getState().get("traits");
-    }
-
-    static getDifferent() {
-        return this.getState().get("different");
-    }
-
-    static getTotal() {
-        return this.getState().get("total");
     }
 
     static getRequests() {

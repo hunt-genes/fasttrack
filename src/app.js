@@ -125,20 +125,22 @@ app.get("/search/", (req, res, next) => {
                         res.format({
                             html: () => {
                                 res.locals.data = { GwasStore: {
-                                    results: results,
-                                    different: different,
-                                    total: total,
-                                    query: q,
+                                    results: {
+                                        different: different,
+                                        total: total,
+                                        data: results
+                                    },
                                     traits: traits
                                 }};
                                 next();
                             },
                             json: () => {
                                 res.json({
-                                    results: results,
-                                    different: different,
-                                    total: total,
-                                    query: q,
+                                    results: {
+                                        different: different,
+                                        total: total,
+                                        data: results
+                                    },
                                     traits: traits
                                 });
                             }
@@ -165,10 +167,11 @@ app.get("/search/", (req, res, next) => {
                         res.format({
                             html: () => {
                                 res.locals.data = { GwasStore: {
-                                    results: [],
-                                    different: different,
-                                    total: total,
-                                    query: q,
+                                    results: {
+                                        different: different,
+                                        total: total,
+                                        data: []
+                                    },
                                     traits: traits,
                                     requests: requests
                                 }};
@@ -176,10 +179,11 @@ app.get("/search/", (req, res, next) => {
                             },
                             json: () => {
                                 res.json({
-                                    results: [],
-                                    different: different,
-                                    total: total,
-                                    query: q,
+                                    results: {
+                                        different: different,
+                                        total: total,
+                                        data: []
+                                    },
                                     traits: traits,
                                     requests: requests
                                 });

@@ -31,8 +31,6 @@ class App extends React.Component {
         return {
             results: GwasStore.getResults(),
             traits: GwasStore.getTraits(),
-            different: GwasStore.getDifferent(),
-            total: GwasStore.getTotal(),
             requests: GwasStore.getRequests()
         };
     }
@@ -128,7 +126,7 @@ class App extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.props.results.map(result =>
+                            {this.props.results.get("data").map(result =>
                             <tr key={result.get("_id")} className={this.rowclass(result.get("P-VALUE"))}>
                                 <td>
                                     <div>
@@ -218,7 +216,7 @@ class App extends React.Component {
 
     render() {
         let buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
-        let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
+        let resultheader = <h2 style={{textAlign: "center"}}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         let examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
         let statistics = this.props.requests ? <div>{this.props.requests.get("local")} / {this.props.requests.get("total")}</div> : "";
         return (
