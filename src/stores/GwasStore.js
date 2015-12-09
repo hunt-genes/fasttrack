@@ -17,7 +17,6 @@ class GwasStore {
             traits: Immutable.List(),
             different: 0,
             total: 0,
-            query: "",
             requests: Immutable.Map({
                 total: 0,
                 local: 0
