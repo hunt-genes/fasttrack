@@ -106,7 +106,7 @@ class App extends React.Component {
             );
         }
         else {
-            let exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}>Download</Button>;
+            let exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}><i className="fa fa-download"></i> <span className="hidden-xs">Download</span></Button>;
             return (
                 <div>
                     {exportButton}
