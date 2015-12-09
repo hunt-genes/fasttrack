@@ -3,7 +3,7 @@ import axios from "axios";
 
 class GwasActions {
     constructor() {
-        this.generateActions('updateResults', 'updateTraits', 'updateRequests');
+        this.generateActions("updateResults", "updateTraits", "updateRequests");
     }
 
     search(query) {

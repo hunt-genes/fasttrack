@@ -8,6 +8,6 @@ import App from "./components/App";
 import alt from "./alt";
 
 Iso.bootstrap(function (state, _, container) {
-    alt.bootstrap(state)
+    alt.bootstrap(state);
     ReactDOM.render(<Router history={createBrowserHistory()}>{routes}</Router>, container);
 });

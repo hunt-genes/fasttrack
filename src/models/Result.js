@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-let ResultSchema = new mongoose.Schema({
+const ResultSchema = new mongoose.Schema({
     SNP_ID_CURRENT: {type: String},
     PUBMEDID: {type: String},
     MAPPED_TRAIT: {type: String},
@@ -18,6 +18,6 @@ let ResultSchema = new mongoose.Schema({
     // hunt and p-value gives problems for mongoose
 });
 
-let Result = mongoose.model("gwas", ResultSchema);
+const Result = mongoose.model("gwas", ResultSchema);
 
 export default Result;

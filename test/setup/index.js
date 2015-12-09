@@ -1,2 +1,2 @@
-require('babel-core/register');
-require('./config');
+require("babel-core/register");
+require("./config");

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import ip from "ip";
 
-let RequestSchema = new mongoose.Schema({
+const RequestSchema = new mongoose.Schema({
     created_date: {type: Date, index: true, "default": Date.now},
     remote_address: {type: Buffer, required: true, index: true},
     query: {type: String}
@@ -23,6 +23,6 @@ RequestSchema
     this.set("remote_address", ip.toBuffer(value));
 });
 
-let Request = mongoose.model("requests", RequestSchema);
+const Request = mongoose.model("requests", RequestSchema);
 
 export default Request;

@@ -1,7 +1,5 @@
 import path from "path";
 import express from "express";
-import bodyParser from "body-parser";
-import mongoose from "mongoose";
 import csv from "fast-csv";
 import favicon from "serve-favicon";
 import ip from "ip";
@@ -13,16 +11,14 @@ import Result from "./models/Result";
 import Trait from "./models/Trait";
 import Request from "./models/Request";
 import db from "./lib/db";
-var routes = require("./routes");
-var ReactRouter = require("react-router");
-var RoutingContext = ReactRouter.RoutingContext;
-var match = ReactRouter.match;
+import routes from "./routes";
+import {RoutingContext, match} from "react-router";
 
-let app = express();
+const app = express();
 app.db = db;
 
 function getIP(req) {
-    let ips = req.headers['x-forwarded-for'] || // from proxy
+    const ips = req.headers["x-forwarded-for"] || // from proxy
         req.connection.remoteAddress || // different versions of node
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
@@ -31,15 +27,15 @@ function getIP(req) {
 
 // request logging middleware, logs timestamp, ip and query if defined
 app.use((req, res, next) => {
-    let q = req.query.q;
+    const q = req.query.q;
 
     if (q) {
-        let ip = getIP(req);
-        let request = new Request();
+        const ip = getIP(req);
+        const request = new Request();
         request.ip = ip;
         request.query = q;
         request.save((err) => {
-            if (err) { console.error(err) };
+            if (err) { console.error(err); }
         });
     }
 
@@ -49,8 +45,8 @@ app.use((req, res, next) => {
 
 app.get("/search/", (req, res, next) => {
     let download = false;
-    let query = {};
-    let fields = [];
+    const query = {};
+    const fields = [];
     let q = req.query.q;
     if (q && q.length < 3) {
         q = "";
@@ -67,7 +63,7 @@ app.get("/search/", (req, res, next) => {
             fields.push({SNPS: "rs" + q});
         }
         else if (q.startsWith("chr")) {
-            var [chrid, chrpos] = q.split(":", 2);
+            let [chrid, chrpos] = q.split(":", 2);
             chrid = chrid.replace("chr", "");
             query.CHR_ID = +chrid;
             query.CHR_POS = +chrpos;
@@ -82,7 +78,7 @@ app.get("/search/", (req, res, next) => {
             fields.push({SNPS: q});
         }
         else {
-            var r = RegExp(q, "i");
+            const r = RegExp(q, "i");
             fields.push({REGION: {$regex: r}});
             fields.push({"FIRST AUTHOR": {$regex: r}});
             fields.push({traits: {$regex: r}});
@@ -91,12 +87,11 @@ app.get("/search/", (req, res, next) => {
         }
     }
     if (fields.length) {
-        query["$or"] = fields
+        query.$or = fields;
     }
-    if (true) {
-        query["hunt"] = {$exists: 1};
-        query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
-    }
+    query.hunt = {$exists: 1};
+    query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
+
     console.log("q", q, query, typeof(q));
     Trait.find().sort("_id").exec((err, traits) => {
         if (err) { return err; }
@@ -196,17 +191,16 @@ app.get("/search/", (req, res, next) => {
     });
 });
 
-if (app.settings.env === 'production'){
-    app.use(favicon(__dirname + '/../dist/favicon.ico'));
+if (app.settings.env === "production") {
+    app.use(favicon(__dirname + "/../dist/favicon.ico"));
 }
 else {
-    //app.use(favicon(__dirname + '/../src/favicon.ico'));
+    app.use(favicon(__dirname + "/../src/favicon.ico"));
 }
-app.use(express.static(path.join(__dirname, '..', 'dist')))
+app.use(express.static(path.join(__dirname, "..", "dist")));
 
 app.use((req, res) => {
     alt.bootstrap(JSON.stringify(res.locals.data || {}));
-    //console.log(routes);
     match({routes: routes, location: req.url}, (err, redirectLocation, renderProps) => {
         if (err) {
             res.status(500).send(err.message);
@@ -215,16 +209,16 @@ app.use((req, res) => {
             res.redirect(302, redirectLocation.pathname + redirectLocation.search);
         }
         else if (renderProps) {
-            var iso = new Iso();
-            var content = ReactDOMServer.renderToString(<RoutingContext {...renderProps} />);
+            const iso = new Iso();
+            const content = ReactDOMServer.renderToString(<RoutingContext {...renderProps} />);
             iso.add(content, alt.flush());
 
-            var markup = `<!doctype html><html><head><meta charset="utf-8" /><title>GWASC</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link href="/stylesheet.css" rel="stylesheet" /></head><body>${iso.render(content)}<script src="/client.js"></script></body></html>`;
+            const markup = `<!doctype html><html><head><meta charset="utf-8" /><title>GWASC</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link href="/stylesheet.css" rel="stylesheet" /></head><body>${iso.render(content)}<script src="/client.js"></script></body></html>`;
             res.write(markup);
             res.end();
         }
         else {
-            res.status(404).send('Not found');
+            res.status(404).send("Not found");
         }
     });
 });

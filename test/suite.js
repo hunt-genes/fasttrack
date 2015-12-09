@@ -1,17 +1,19 @@
+/* eslint-env nodejs, mocha */
+
 import mongoose from "mongoose";
 
 // global before function
-before('global', function(done) {
+before("global", function (done) {
     // wait a bit to make sure db connections are done ...
-    setTimeout(function() {
+    setTimeout(function () {
         done();
     }, 100);
 });
 
 // global after function
-after('global', function(done) {
+after("global", function (done) {
     if (mongoose.connection.db) {
-        mongoose.connection.db.dropDatabase(function() {
+        mongoose.connection.db.dropDatabase(function () {
             done();
         });
     }

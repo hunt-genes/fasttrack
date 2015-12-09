@@ -1,3 +1,5 @@
+/* eslint vars-on-top: 0 */
+
 require("babel/register");
 
 var app = require("./src/app");
