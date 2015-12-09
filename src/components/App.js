@@ -96,7 +96,15 @@ class App extends React.Component {
             );
         }
         else if (this.props.location.query.q && this.props.location.query.q.length < 3) {
-            return <Alert style={{width: "600px", margin: "0 auto"}} bsStyle="danger">We need at least three characters, or we will crash your browser</Alert>;
+            return (
+                <Grid>
+                    <Row>
+                        <Col xs={12}>
+                            <Alert bsStyle="danger">We need at least three characters, or we will crash your browser</Alert>
+                        </Col>
+                    </Row>
+                </Grid>
+            );
         }
         else {
             let exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}>Download</Button>;
@@ -235,8 +243,12 @@ class App extends React.Component {
                             </form>
                         </Col>
                     </Row>
+                    <Row>
+                        <Col xs={12}>
+                            {resultheader}
+                        </Col>
+                    </Row>
                 </Grid>
-                {resultheader}
                 {this.renderResults()}
                 <hr />
                 <Grid>
