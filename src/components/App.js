@@ -21,6 +21,11 @@ class App extends React.Component {
         super(props);
         this.onSearch = this.onSearch.bind(this);
         this.onClear = this.onClear.bind(this);
+        this.onQueryChange = this.onQueryChange.bind(this);
+
+        this.state = {
+            query: this.props.location.query.q || ""
+        }
     }
 
     static getStores(props) {
@@ -41,23 +46,22 @@ class App extends React.Component {
         let q = location.query.q;
         let oldQ = oldLocation.query.q;
         if (q !== oldQ) {
+            this.setState({query: q || ""});
             GwasActions.search(q);
         }
     }
 
-    onLinkClick(value, e) {
-        GwasActions.search(value);
+    onQueryChange(e) {
+        this.setState({query: e.target.value});
     }
 
     onSearch(e) {
         e.preventDefault();
         this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}`)
-        GwasActions.search(this.refs.query.getValue());
     }
 
     onClear(e) {
         this.props.history.pushState(null, `/search/`)
-        GwasActions.search('');
     }
 
     rowclass(p) {
@@ -234,7 +238,9 @@ class App extends React.Component {
                                         <Input
                                             type="text"
                                             ref="query"
-                                            placeholder={this.props.location.query.q || "Search"}
+                                            placeholder="Search"
+                                            value={this.state.query}
+                                            onChange={this.onQueryChange}
                                             help={examples}
                                             buttonAfter={buttons}
                                         />
