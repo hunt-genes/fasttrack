@@ -10,14 +10,18 @@ class GwasStore {
             handleUpdateTraits: GwasActions.updateTraits,
             handleUpdateDifferent: GwasActions.updateDifferent,
             handleUpdateTotal: GwasActions.updateTotal,
-            handleUpdateTotalRequests: GwasActions.updateTotalRequests
+            handleUpdateRequests: GwasActions.updateRequests
         });
         this.state = Immutable.Map({
             results: Immutable.List(),
             traits: Immutable.List(),
             different: 0,
             total: 0,
-            query: ""
+            query: "",
+            requests: Immutable.Map({
+                total: 0,
+                local: 0
+            })
         });
     }
 
@@ -37,8 +41,8 @@ class GwasStore {
         this.setState(this.state.set("total", total));
     }
 
-    handleUpdateTotalRequests(requests) {
-        this.setState(this.state.set("totalRequests", totalRequests));
+    handleUpdateRequests(requests) {
+        this.setState(this.state.set("requests", Immutable.Map(requests)));
     }
 
     static getResults() {
@@ -57,8 +61,8 @@ class GwasStore {
         return this.getState().get("total");
     }
 
-    static getTotalRequests() {
-        return this.getState().get("totalRequests");
+    static getRequests() {
+        return this.getState().get("requests");
     }
 }
 

@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import csv from "fast-csv";
 import favicon from "serve-favicon";
+import ip from "ip";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import Iso from "iso";
@@ -123,11 +124,23 @@ app.get("/search/", (req, res, next) => {
                     else {
                         res.format({
                             html: () => {
-                                res.locals.data = { GwasStore: {results: results, different: different, total: total, query: q, traits: traits}};
+                                res.locals.data = { GwasStore: {
+                                    results: results,
+                                    different: different,
+                                    total: total,
+                                    query: q,
+                                    traits: traits
+                                }};
                                 next();
                             },
                             json: () => {
-                                res.json({results: results, different: different, total: total, query: q, traits: traits});
+                                res.json({
+                                    results: results,
+                                    different: different,
+                                    total: total,
+                                    query: q,
+                                    traits: traits
+                                });
                             }
                         });
                     }
@@ -136,14 +149,42 @@ app.get("/search/", (req, res, next) => {
             else {
                 Request.count().exec((err, totalRequests) => {
                     if (err) { return err; }
-                    res.format({
-                        html: () => {
-                            res.locals.data = { GwasStore: {results: [], different: different, total: total, query: q, traits: traits, totalRequests: totalRequests}};
-                            next();
-                        },
-                        json: () => {
-                            res.json({results: [], different: different, total: total, query: q, traits: traits, totalRequests: totalRequests});
-                        }
+                    const localStart = ip.toBuffer("129.241.0.0");
+                    const localEnd = ip.toBuffer("129.241.255.255");
+                    Request.count({
+                        $and: [
+                            {remote_address: {$gte: localStart}},
+                            {remote_address: {$lte: localEnd}}
+                        ]
+                    }).exec((err, localRequests) => {
+                        const requests = {
+                            total: totalRequests,
+                            local: localRequests
+                        };
+                        if (err) { return err; }
+                        res.format({
+                            html: () => {
+                                res.locals.data = { GwasStore: {
+                                    results: [],
+                                    different: different,
+                                    total: total,
+                                    query: q,
+                                    traits: traits,
+                                    requests: requests
+                                }};
+                                next();
+                            },
+                            json: () => {
+                                res.json({
+                                    results: [],
+                                    different: different,
+                                    total: total,
+                                    query: q,
+                                    traits: traits,
+                                    requests: requests
+                                });
+                            }
+                        });
                     });
                 });
             }

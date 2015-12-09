@@ -33,7 +33,7 @@ class App extends React.Component {
             traits: GwasStore.getTraits(),
             different: GwasStore.getDifferent(),
             total: GwasStore.getTotal(),
-            totalRequests: GwasStore.getTotalRequests()
+            requests: GwasStore.getRequests()
         };
     }
 
@@ -220,6 +220,7 @@ class App extends React.Component {
         let buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         let resultheader = <h2 style={{textAlign: "center"}}>{this.props.different} unique RS numbers in {this.props.total} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         let examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
+        let statistics = this.props.requests ? <div>{this.props.requests.get("local")} / {this.props.requests.get("total")}</div> : "";
         return (
             <section id="main">
                 <Grid>
@@ -260,7 +261,7 @@ class App extends React.Component {
                                 The usual warnings about providing the service AS-IS applies.<br />
                                 <ExternalLink href="http://www.ntnu.no/ism/epicenter/home">Human genetic epidemiology group (HGE)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</ExternalLink>
                                 <br />
-                                {this.props.totalRequests}
+                                {statistics}
                             </footer>
                         </Col>
                     </Row>
