@@ -16,10 +16,10 @@ const RequestSchema = new mongoose.Schema({
 
 RequestSchema
 .virtual("ip")
-.get(function () {
+.get(function get() {
     return ip.toString(this.remote_address);
 })
-.set(function (value) {
+.set(function set(value) {
     this.set("remote_address", ip.toBuffer(value));
 });
 

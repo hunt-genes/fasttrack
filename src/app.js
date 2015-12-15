@@ -35,7 +35,7 @@ app.use((req, res, next) => {
         request.ip = ip;
         request.query = q;
         request.save((err) => {
-            if (err) { console.error(err); }
+            if (err) { return next(err); }
         });
     }
 

@@ -3,7 +3,7 @@ import connectToStores from "alt/utils/connectToStores";
 import GwasActions from "../actions/GwasActions";
 import GwasStore from "../stores/GwasStore";
 import {Input, Button, Table, Alert, Grid, Row, Col, Image} from "react-bootstrap";
-import {Link, History} from "react-router";
+import {Link} from "react-router";
 import ExternalLink from "./ExternalLink";
 
 class App extends React.Component {
