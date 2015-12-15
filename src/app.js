@@ -44,6 +44,15 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get("/traits", (req, res, next) => {
+    Trait.find().sort("_id").exec((err, traits) => {
+        if (err) { return next(err); }
+        res.json({
+            traits: traits
+        });
+    });
+});
+
 app.get("/search/", (req, res, next) => {
     let download = false;
     const query = {};
@@ -94,106 +103,99 @@ app.get("/search/", (req, res, next) => {
     query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
 
     console.log("q", q, query, typeof(q));
-    Trait.find().sort("_id").exec((err, traits) => {
-        if (err) { return err; }
-        Result.aggregate({$match: query}, {$group: {_id: "$SNP_ID_CURRENT", count: {$sum: 1}}}).exec((err, count) => {
-            if (err) { return err; }
+    Result.aggregate({$match: query}, {$group: {_id: "$SNP_ID_CURRENT", count: {$sum: 1}}}).exec((err, count) => {
+        if (err) { return next(err); }
 
-            const different = count.length;
-            const total = count.reduce((previous, current) => {
-                return previous + current.count;
-            }, 0);
+        const different = count.length;
+        const total = count.reduce((previous, current) => {
+            return previous + current.count;
+        }, 0);
 
-            console.log(different, total);
+        console.log(different, total);
 
-            if (q) {
-                Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
-                    if (err) { return err; }
-                    if (download) {
-                        results = map(results, function(result) {
-                            result["SNP_ID_CURRENT"] = `rs${result["SNP_ID_CURRENT"]}`;
-                            result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
-                            return result;
-                        })
-                        csv.writeToString(results, {headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t"}, (err, data) => {
-                            res.set("Content-Type", "text/tsv");
-                            res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
-                            res.write(data);
-                            res.end();
-                        });
-                    }
-                    else {
-                        res.format({
-                            html: () => {
-                                res.locals.data = { GwasStore: {
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: results
-                                    },
-                                    traits: traits
-                                }};
-                                next();
-                            },
-                            json: () => {
-                                res.json({
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: results
-                                    },
-                                    traits: traits
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-            else {
-                Request.count().exec((err, totalRequests) => {
-                    if (err) { return err; }
-                    const localStart = ip.toBuffer("129.241.0.0");
-                    const localEnd = ip.toBuffer("129.241.255.255");
-                    Request.count({
-                        $and: [
-                            {remote_address: {$gte: localStart}},
-                            {remote_address: {$lte: localEnd}}
-                        ]
-                    }).exec((err, localRequests) => {
-                        const requests = {
-                            total: totalRequests,
-                            local: localRequests
-                        };
-                        if (err) { return err; }
-                        res.format({
-                            html: () => {
-                                res.locals.data = { GwasStore: {
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: []
-                                    },
-                                    traits: traits,
-                                    requests: requests
-                                }};
-                                next();
-                            },
-                            json: () => {
-                                res.json({
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: []
-                                    },
-                                    traits: traits,
-                                    requests: requests
-                                });
-                            }
-                        });
+        if (q) {
+            Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
+                if (err) { return next(err); }
+                if (download) {
+                    results = map(results, function(result) {
+                        result["SNP_ID_CURRENT"] = `rs${result["SNP_ID_CURRENT"]}`;
+                        result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
+                        return result;
+                    })
+                    csv.writeToString(results, {headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t"}, (err, data) => {
+                        res.set("Content-Type", "text/tsv");
+                        res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
+                        res.write(data);
+                        res.end();
+                    });
+                }
+                else {
+                    res.format({
+                        html: () => {
+                            res.locals.data = { GwasStore: {
+                                results: {
+                                    different: different,
+                                    total: total,
+                                    data: results
+                                },
+                            }};
+                            next();
+                        },
+                        json: () => {
+                            res.json({
+                                results: {
+                                    different: different,
+                                    total: total,
+                                    data: results
+                                },
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            Request.count().exec((err, totalRequests) => {
+                if (err) { return next(err); }
+                const localStart = ip.toBuffer("129.241.0.0");
+                const localEnd = ip.toBuffer("129.241.255.255");
+                Request.count({
+                    $and: [
+                        {remote_address: {$gte: localStart}},
+                        {remote_address: {$lte: localEnd}}
+                    ]
+                }).exec((err, localRequests) => {
+                    const requests = {
+                        total: totalRequests,
+                        local: localRequests
+                    };
+                    if (err) { return next(err); }
+                    res.format({
+                        html: () => {
+                            res.locals.data = { GwasStore: {
+                                results: {
+                                    different: different,
+                                    total: total,
+                                    data: []
+                                },
+                                requests: requests
+                            }};
+                            next();
+                        },
+                        json: () => {
+                            res.json({
+                                results: {
+                                    different: different,
+                                    total: total,
+                                    data: []
+                                },
+                                requests: requests
+                            });
+                        }
                     });
                 });
-            }
-        });
+            });
+        }
     });
 });
 

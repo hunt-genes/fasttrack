@@ -31,7 +31,7 @@ class App extends React.Component {
         };
     }
 
-    componentDidUpdate(prevProps) {
+    shouldComponentUpdate(nextProps) {
         const location = this.props.location;
         const oldLocation = prevProps.location;
         const q = location.query.q;
@@ -40,6 +40,10 @@ class App extends React.Component {
             this.setState({query: q || ""});
             GwasActions.search(q);
         }
+    }
+
+    componentDidUpdate(prevProps) {
+        console.log(this.props.traits);
     }
 
     onQueryChange(e) {
@@ -78,11 +82,11 @@ class App extends React.Component {
                             <em>Use the search field or select from the traits below if you want to see some results</em>
                                 </p>
                             <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0}}>
-                            {this.props.traits.map(trait =>
+                            {this.props.traits ? this.props.traits.map(trait =>
                                                    <li key={trait.get("_id")}>
                                                        <Link to={`/search/?q=${trait.get("_id")}`}>{trait.get("_id")}</Link> <ExternalLink href={trait.get("uri")} />
                                                    </li>
-                                                   )}
+                                                   ) : ""}
                                                </ul>
                         </Col>
                     </Row>

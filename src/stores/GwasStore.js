@@ -22,6 +22,7 @@ class GwasStore {
                 local: 0
             })
         });
+        GwasActions.fetchTraits();
     }
 
     handleUpdateResults(results) {
