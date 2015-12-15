@@ -109,7 +109,7 @@ app.get("/search/", (req, res, next) => {
                 Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
                     if (err) { return err; }
                     if (download) {
-                        csv.writeToString(results, {headers: true, delimiter: "\t"}, (err, data) => {
+                        csv.writeToString(results, {headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t"}, (err, data) => {
                             res.set("Content-Type", "text/tsv");
                             res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
                             res.write(data);
