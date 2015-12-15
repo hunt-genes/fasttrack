@@ -13,6 +13,7 @@ import Request from "./models/Request";
 import db from "./lib/db";
 import routes from "./routes";
 import {RoutingContext, match} from "react-router";
+import {map} from "lodash";
 
 const app = express();
 app.db = db;
@@ -109,6 +110,10 @@ app.get("/search/", (req, res, next) => {
                 Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
                     if (err) { return err; }
                     if (download) {
+                        results = map(results, function(result) {
+                            result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
+                            return result;
+                        })
                         csv.writeToString(results, {headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t"}, (err, data) => {
                             res.set("Content-Type", "text/tsv");
                             res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
