@@ -111,6 +111,7 @@ app.get("/search/", (req, res, next) => {
                     if (err) { return err; }
                     if (download) {
                         results = map(results, function(result) {
+                            result["SNP_ID_CURRENT"] = `rs${result["SNP_ID_CURRENT"]}`;
                             result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
                             return result;
                         })
