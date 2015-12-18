@@ -1,11 +1,8 @@
-var ReactRouter = require("react-router");
-// import {Route, IndexRoute} from "react-router";
-var Route = ReactRouter.Route;
-var Redirect = ReactRouter.Redirect;
-var React = require("react");
-var App = require("./components/App");
+import React from "react";
+import { Route, Redirect } from "react-router";
+import App from "./components/App";
 
-var routes = (
+const routes = (
     <Route>
         <Route path="/search" component={App}>
             <Route path=":q" ignoreScrollBehaviour />
