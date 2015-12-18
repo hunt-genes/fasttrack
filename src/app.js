@@ -47,9 +47,7 @@ app.use((req, res, next) => {
 app.get("/traits", (req, res, next) => {
     Trait.find().sort("_id").exec((err, traits) => {
         if (err) { return next(err); }
-        res.json({
-            traits: traits
-        });
+        res.json({traits});
     });
 });
 
@@ -102,7 +100,6 @@ app.get("/search/", (req, res, next) => {
     query.hunt = {$exists: 1};
     query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
 
-    console.log("q", q, query, typeof(q));
     Result.aggregate({$match: query}, {$group: {_id: "$SNP_ID_CURRENT", count: {$sum: 1}}}).exec((err, count) => {
         if (err) { return next(err); }
 
@@ -111,17 +108,15 @@ app.get("/search/", (req, res, next) => {
             return previous + current.count;
         }, 0);
 
-        console.log(different, total);
-
         if (q) {
             Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
                 if (err) { return next(err); }
                 if (download) {
-                    results = map(results, function(result) {
-                        result["SNP_ID_CURRENT"] = `rs${result["SNP_ID_CURRENT"]}`;
+                    results = map(results, (result) => {
+                        result.SNP_ID_CURRENT = `rs${result.SNP_ID_CURRENT}`;
                         result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
                         return result;
-                    })
+                    });
                     csv.writeToString(results, {headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t"}, (err, data) => {
                         res.set("Content-Type", "text/tsv");
                         res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
@@ -133,21 +128,13 @@ app.get("/search/", (req, res, next) => {
                     res.format({
                         html: () => {
                             res.locals.data = { GwasStore: {
-                                results: {
-                                    different: different,
-                                    total: total,
-                                    data: results
-                                },
+                                results: {different, total, data: results},
                             }};
                             next();
                         },
                         json: () => {
                             res.json({
-                                results: {
-                                    different: different,
-                                    total: total,
-                                    data: results
-                                },
+                                results: {different, total, data: results },
                             });
                         }
                     });
@@ -173,23 +160,15 @@ app.get("/search/", (req, res, next) => {
                     res.format({
                         html: () => {
                             res.locals.data = { GwasStore: {
-                                results: {
-                                    different: different,
-                                    total: total,
-                                    data: []
-                                },
-                                requests: requests
+                                results: {different, total, data: []},
+                                requests
                             }};
                             next();
                         },
                         json: () => {
                             res.json({
-                                results: {
-                                    different: different,
-                                    total: total,
-                                    data: []
-                                },
-                                requests: requests
+                                results: {different, total, data: []},
+                                requests
                             });
                         }
                     });
@@ -209,7 +188,7 @@ app.use(express.static(path.join(__dirname, "..", "dist")));
 
 app.use((req, res) => {
     alt.bootstrap(JSON.stringify(res.locals.data || {}));
-    match({routes: routes, location: req.url}, (err, redirectLocation, renderProps) => {
+    match({routes, location: req.url}, (err, redirectLocation, renderProps) => {
         if (err) {
             res.status(500).send(err.message);
         }

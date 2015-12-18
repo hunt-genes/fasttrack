@@ -15,7 +15,7 @@ class TraitList extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        if (this.props.traits != nextProps.traits) {
+        if (this.props.traits !== nextProps.traits) {
             return true;
         }
         return false;
@@ -32,7 +32,6 @@ class TraitList extends React.Component {
     }
 
     render() {
-        console.log("tr", this.props.traits);
         return (
             <Grid>
                 <Row>
