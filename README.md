@@ -27,4 +27,4 @@ python import-freq.py
 License
 -------
 
-[AGPL3](/hunt-genes/gwasc/LICENSE)
+[AGPL3](/LICENSE)
