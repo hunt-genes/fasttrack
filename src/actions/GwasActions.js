@@ -10,9 +10,6 @@ class GwasActions {
         axios.get("/search/", { params: { q: query } })
         .then((response) => {
             this.actions.updateResults(response.data.results);
-            if (response.data.requests) {
-                this.actions.updateRequests(response.data.requests);
-            }
         })
         .catch((response) => {
             console.error(response);
@@ -23,6 +20,13 @@ class GwasActions {
         axios.get("/traits")
         .then((response) => {
             this.actions.updateTraits(response.data.traits);
+        });
+    }
+
+    fetchRequests() {
+        axios.get("/requests")
+        .then((response) => {
+            this.actions.updateRequests(response.data.requests);
         });
     }
 }

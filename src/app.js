@@ -51,6 +51,39 @@ app.get("/traits", (req, res, next) => {
     });
 });
 
+app.get("/requests", (req, res, next) => {
+    Request.count().exec((err, totalRequests) => {
+        if (err) { return next(err); }
+        const localStart = ip.toBuffer("129.241.0.0");
+        const localEnd = ip.toBuffer("129.241.255.255");
+        Request.count({
+            $and: [
+                { remote_address: { $gte: localStart } },
+                { remote_address: { $lte: localEnd } },
+            ],
+        }).exec((err, localRequests) => {
+            const requests = {
+                total: totalRequests,
+                local: localRequests,
+            };
+            if (err) { return next(err); }
+            res.format({
+                html: () => {
+                    res.locals.data = { GwasStore: {
+                        requests,
+                    } };
+                    next();
+                },
+                json: () => {
+                    res.json({
+                        requests,
+                    });
+                },
+            });
+        });
+    });
+});
+
 app.get("/search/", (req, res, next) => {
     let download = false;
     const query = {};
@@ -142,37 +175,18 @@ app.get("/search/", (req, res, next) => {
             });
         }
         else {
-            Request.count().exec((err, totalRequests) => {
-                if (err) { return next(err); }
-                const localStart = ip.toBuffer("129.241.0.0");
-                const localEnd = ip.toBuffer("129.241.255.255");
-                Request.count({
-                    $and: [
-                        { remote_address: { $gte: localStart } },
-                        { remote_address: { $lte: localEnd } },
-                    ],
-                }).exec((err, localRequests) => {
-                    const requests = {
-                        total: totalRequests,
-                        local: localRequests,
-                    };
-                    if (err) { return next(err); }
-                    res.format({
-                        html: () => {
-                            res.locals.data = { GwasStore: {
-                                results: { different, total, data: [] },
-                                requests,
-                            } };
-                            next();
-                        },
-                        json: () => {
-                            res.json({
-                                results: { different, total, data: [] },
-                                requests,
-                            });
-                        },
+            res.format({
+                html: () => {
+                    res.locals.data = { GwasStore: {
+                        results: { different, total, data: [] },
+                    } };
+                    next();
+                },
+                json: () => {
+                    res.json({
+                        results: { different, total, data: [] },
                     });
-                });
+                },
             });
         }
     });

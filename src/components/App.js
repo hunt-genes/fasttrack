@@ -5,6 +5,7 @@ import GwasStore from "../stores/GwasStore";
 import { Input, Button, Table, Alert, Grid, Row, Col, Image } from "react-bootstrap";
 import { Link } from "react-router";
 import ExternalLink from "./ExternalLink";
+import Footer from "./Footer";
 import TraitList from "./TraitList";
 
 class App extends React.Component {
@@ -16,7 +17,6 @@ class App extends React.Component {
     static getPropsFromStores() {
         return {
             results: GwasStore.getResults(),
-            requests: GwasStore.getRequests(),
         };
     }
 
@@ -196,7 +196,6 @@ class App extends React.Component {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
-        const statistics = this.props.requests ? <div>{this.props.requests.get("local")} / {this.props.requests.get("total")}</div> : "";
         return (
             <section id="main">
                 <Grid>
@@ -230,20 +229,7 @@ class App extends React.Component {
                     </Row>
                 </Grid>
                 {this.renderResults()}
-                <hr />
-                <Grid>
-                    <Row>
-                        <Col xs={12}>
-                            <footer style={{ fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50 }}>
-                                GWAS data from <ExternalLink href="https://www.ebi.ac.uk/gwas/docs/downloads">NHGRI-EBI</ExternalLink><br />
-                                The usual warnings about providing the service AS-IS applies.<br />
-                                <ExternalLink href="http://www.ntnu.no/ism/epicenter/home">Human genetic epidemiology group (HGE)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</ExternalLink>
-                                <br />
-                                {statistics}
-                            </footer>
-                        </Col>
-                    </Row>
-                </Grid>
+                <Footer />
             </section>
         );
     }
