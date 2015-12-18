@@ -37,7 +37,7 @@ describe("Request", () => {
             });
         });
         it("should be found by query property", (done) => {
-            Request.findOne({query: "ost"}).exec((err) => {
+            Request.findOne({ query: "ost" }).exec((err) => {
                 expect(err).to.be.null;
                 done();
             });

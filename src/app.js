@@ -12,8 +12,8 @@ import Trait from "./models/Trait";
 import Request from "./models/Request";
 import db from "./lib/db";
 import routes from "./routes";
-import {RoutingContext, match} from "react-router";
-import {map} from "lodash";
+import { RoutingContext, match } from "react-router";
+import { map } from "lodash";
 
 const app = express();
 app.db = db;
@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 app.get("/traits", (req, res, next) => {
     Trait.find().sort("_id").exec((err, traits) => {
         if (err) { return next(err); }
-        res.json({traits});
+        res.json({ traits });
     });
 });
 
@@ -67,8 +67,8 @@ app.get("/search/", (req, res, next) => {
         // TODO: Should we fix the SNP field to be an integer? YES, it's not
         // even working normally now, but that may be a different issue.
         if (!isNaN(q)) {
-            fields.push({PUBMEDID: q});
-            fields.push({SNPS: "rs" + q});
+            fields.push({ PUBMEDID: q });
+            fields.push({ SNPS: "rs" + q });
         }
         else if (q.startsWith("chr")) {
             let [chrid, chrpos] = q.split(":", 2);
@@ -83,24 +83,24 @@ app.get("/search/", (req, res, next) => {
                 fields.push({SNP_ID_CURRENT: q});
             }
             */
-            fields.push({SNPS: q});
+            fields.push({ SNPS: q });
         }
         else {
             const r = RegExp(q, "i");
-            fields.push({REGION: {$regex: r}});
-            fields.push({"FIRST AUTHOR": {$regex: r}});
-            fields.push({traits: {$regex: r}});
-            fields.push({"DISEASE/TRAIT": {$regex: r}});
-            fields.push({"MAPPED_GENE": {$regex: r}});
+            fields.push({ REGION: { $regex: r } });
+            fields.push({ "FIRST AUTHOR": { $regex: r } });
+            fields.push({ traits: { $regex: r } });
+            fields.push({ "DISEASE/TRAIT": { $regex: r } });
+            fields.push({ "MAPPED_GENE": { $regex: r } });
         }
     }
     if (fields.length) {
         query.$or = fields;
     }
-    query.hunt = {$exists: 1};
-    query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
+    query.hunt = { $exists: 1 };
+    query["P-VALUE"] = { $lt: 0.00000005, $exists: 1, $ne: null };
 
-    Result.aggregate({$match: query}, {$group: {_id: "$SNP_ID_CURRENT", count: {$sum: 1}}}).exec((err, count) => {
+    Result.aggregate({ $match: query }, { $group: { _id: "$SNP_ID_CURRENT", count: { $sum: 1 } } }).exec((err, count) => {
         if (err) { return next(err); }
 
         const different = count.length;
@@ -117,7 +117,7 @@ app.get("/search/", (req, res, next) => {
                         result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
                         return result;
                     });
-                    csv.writeToString(results, {headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t"}, (err, data) => {
+                    csv.writeToString(results, { headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t" }, (err, data) => {
                         res.set("Content-Type", "text/tsv");
                         res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
                         res.write(data);
@@ -128,13 +128,13 @@ app.get("/search/", (req, res, next) => {
                     res.format({
                         html: () => {
                             res.locals.data = { GwasStore: {
-                                results: {different, total, data: results},
-                            }};
+                                results: { different, total, data: results },
+                            } };
                             next();
                         },
                         json: () => {
                             res.json({
-                                results: {different, total, data: results },
+                                results: { different, total, data: results },
                             });
                         }
                     });
@@ -148,8 +148,8 @@ app.get("/search/", (req, res, next) => {
                 const localEnd = ip.toBuffer("129.241.255.255");
                 Request.count({
                     $and: [
-                        {remote_address: {$gte: localStart}},
-                        {remote_address: {$lte: localEnd}}
+                        { remote_address: { $gte: localStart } },
+                        { remote_address: { $lte: localEnd } }
                     ]
                 }).exec((err, localRequests) => {
                     const requests = {
@@ -160,14 +160,14 @@ app.get("/search/", (req, res, next) => {
                     res.format({
                         html: () => {
                             res.locals.data = { GwasStore: {
-                                results: {different, total, data: []},
+                                results: { different, total, data: [] },
                                 requests
-                            }};
+                            } };
                             next();
                         },
                         json: () => {
                             res.json({
-                                results: {different, total, data: []},
+                                results: { different, total, data: [] },
                                 requests
                             });
                         }
@@ -188,7 +188,7 @@ app.use(express.static(path.join(__dirname, "..", "dist")));
 
 app.use((req, res) => {
     alt.bootstrap(JSON.stringify(res.locals.data || {}));
-    match({routes, location: req.url}, (err, redirectLocation, renderProps) => {
+    match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
         if (err) {
             res.status(500).send(err.message);
         }

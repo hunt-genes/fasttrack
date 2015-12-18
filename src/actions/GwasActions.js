@@ -7,7 +7,7 @@ class GwasActions {
     }
 
     search(query) {
-        axios.get("/search/", {params: {q: query}})
+        axios.get("/search/", { params: { q: query } })
         .then((response) => {
             this.actions.updateResults(response.data.results);
             if (response.data.requests) {
