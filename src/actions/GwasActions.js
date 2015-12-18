@@ -10,7 +10,6 @@ class GwasActions {
         axios.get("/search/", {params: {q: query}})
         .then((response) => {
             this.actions.updateResults(response.data.results);
-            //this.actions.updateTraits(response.data.traits);
             if (response.data.requests) {
                 this.actions.updateRequests(response.data.requests);
             }

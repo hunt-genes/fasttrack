@@ -5,6 +5,7 @@ import GwasStore from "../stores/GwasStore";
 import {Input, Button, Table, Alert, Grid, Row, Col, Image} from "react-bootstrap";
 import {Link} from "react-router";
 import ExternalLink from "./ExternalLink";
+import TraitList from "./TraitList";
 
 class App extends React.Component {
 
@@ -15,7 +16,6 @@ class App extends React.Component {
     static getPropsFromStores() {
         return {
             results: GwasStore.getResults(),
-            traits: GwasStore.getTraits(),
             requests: GwasStore.getRequests()
         };
     }
@@ -31,19 +31,15 @@ class App extends React.Component {
         };
     }
 
-    shouldComponentUpdate(nextProps) {
+    componentWillReceiveProps(nextProps) {
         const location = this.props.location;
-        const oldLocation = prevProps.location;
+        const newLocation = nextProps.location;
         const q = location.query.q;
-        const oldQ = oldLocation.query.q;
-        if (q !== oldQ) {
-            this.setState({query: q || ""});
-            GwasActions.search(q);
+        const newQ = newLocation.query.q;
+        if (q !== newQ) {
+            this.setState({query: newQ || ""});
+            GwasActions.search(newQ);
         }
-    }
-
-    componentDidUpdate(prevProps) {
-        console.log(this.props.traits);
     }
 
     onQueryChange(e) {
@@ -75,22 +71,7 @@ class App extends React.Component {
     renderResults() {
         if (!this.props.location.query.q) {
             return (
-                <Grid>
-                    <Row>
-                        <Col xs={12}>
-                            <p style={{margin: "0 auto", textAlign: "center"}}>
-                            <em>Use the search field or select from the traits below if you want to see some results</em>
-                                </p>
-                            <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0}}>
-                            {this.props.traits ? this.props.traits.map(trait =>
-                                                   <li key={trait.get("_id")}>
-                                                       <Link to={`/search/?q=${trait.get("_id")}`}>{trait.get("_id")}</Link> <ExternalLink href={trait.get("uri")} />
-                                                   </li>
-                                                   ) : ""}
-                                               </ul>
-                        </Col>
-                    </Row>
-                </Grid>
+                <TraitList />
             );
         }
         else if (this.props.location.query.q && this.props.location.query.q.length < 3) {
@@ -104,7 +85,7 @@ class App extends React.Component {
                 </Grid>
             );
         }
-        const exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}><i className="fa fa-download"></i> <span className="hidden-xs">Export</span></Button>;
+        const exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}} download><i className="fa fa-download"></i> <span className="hidden-xs">Export</span></Button>;
         return (
             <div>
                 {exportButton}
@@ -273,7 +254,6 @@ App.propTypes = {
     requests: React.PropTypes.object,
     location: React.PropTypes.object,
     history: React.PropTypes.object,
-    traits: React.PropTypes.object,
 };
 
 export default connectToStores(App);
