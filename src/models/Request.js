@@ -4,7 +4,7 @@ import ip from "ip";
 const RequestSchema = new mongoose.Schema({
     created_date: { type: Date, index: true, "default": Date.now },
     remote_address: { type: Buffer, required: true, index: true },
-    query: { type: String }
+    query: { type: String },
 }, {
     toObject: {
         virtuals: true,

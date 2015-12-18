@@ -136,7 +136,7 @@ app.get("/search/", (req, res, next) => {
                             res.json({
                                 results: { different, total, data: results },
                             });
-                        }
+                        },
                     });
                 }
             });
@@ -149,28 +149,28 @@ app.get("/search/", (req, res, next) => {
                 Request.count({
                     $and: [
                         { remote_address: { $gte: localStart } },
-                        { remote_address: { $lte: localEnd } }
-                    ]
+                        { remote_address: { $lte: localEnd } },
+                    ],
                 }).exec((err, localRequests) => {
                     const requests = {
                         total: totalRequests,
-                        local: localRequests
+                        local: localRequests,
                     };
                     if (err) { return next(err); }
                     res.format({
                         html: () => {
                             res.locals.data = { GwasStore: {
                                 results: { different, total, data: [] },
-                                requests
+                                requests,
                             } };
                             next();
                         },
                         json: () => {
                             res.json({
                                 results: { different, total, data: [] },
-                                requests
+                                requests,
                             });
-                        }
+                        },
                     });
                 });
             });

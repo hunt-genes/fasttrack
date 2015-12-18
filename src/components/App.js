@@ -16,7 +16,7 @@ class App extends React.Component {
     static getPropsFromStores() {
         return {
             results: GwasStore.getResults(),
-            requests: GwasStore.getRequests()
+            requests: GwasStore.getRequests(),
         };
     }
 
@@ -27,7 +27,7 @@ class App extends React.Component {
         this.onQueryChange = this.onQueryChange.bind(this);
 
         this.state = {
-            query: this.props.location.query.q || ""
+            query: this.props.location.query.q || "",
         };
     }
 
