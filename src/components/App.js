@@ -2,10 +2,11 @@ import React from "react";
 import connectToStores from "alt/utils/connectToStores";
 import GwasActions from "../actions/GwasActions";
 import GwasStore from "../stores/GwasStore";
-import {Input, Button, Table, Alert, Grid, Row, Col, Image} from "react-bootstrap";
-import {LinkContainer} from "react-router-bootstrap";
-import {Link, History} from "react-router";
+import { Input, Button, Table, Alert, Grid, Row, Col, Image } from "react-bootstrap";
+import { Link } from "react-router";
 import ExternalLink from "./ExternalLink";
+import Footer from "./Footer";
+import TraitList from "./TraitList";
 
 class App extends React.Component {
 
@@ -16,8 +17,6 @@ class App extends React.Component {
     static getPropsFromStores() {
         return {
             results: GwasStore.getResults(),
-            traits: GwasStore.getTraits(),
-            requests: GwasStore.getRequests()
         };
     }
 
@@ -28,23 +27,23 @@ class App extends React.Component {
         this.onQueryChange = this.onQueryChange.bind(this);
 
         this.state = {
-            query: this.props.location.query.q || ""
+            query: this.props.location.query.q || "",
         };
     }
 
-    componentDidUpdate(prevProps) {
+    componentWillReceiveProps(nextProps) {
         const location = this.props.location;
-        const oldLocation = prevProps.location;
+        const newLocation = nextProps.location;
         const q = location.query.q;
-        const oldQ = oldLocation.query.q;
-        if (q !== oldQ) {
-            this.setState({query: q || ""});
-            GwasActions.search(q);
+        const newQ = newLocation.query.q;
+        if (q !== newQ) {
+            this.setState({ query: newQ || "" });
+            GwasActions.search(newQ);
         }
     }
 
     onQueryChange(e) {
-        this.setState({query: e.target.value});
+        this.setState({ query: e.target.value });
     }
 
     onSearch(e) {
@@ -72,22 +71,7 @@ class App extends React.Component {
     renderResults() {
         if (!this.props.location.query.q) {
             return (
-                <Grid>
-                    <Row>
-                        <Col xs={12}>
-                            <p style={{margin: "0 auto", textAlign: "center"}}>
-                            <em>Use the search field or select from the traits below if you want to see some results</em>
-                                </p>
-                            <ul style={{WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0}}>
-                            {this.props.traits.map(trait =>
-                                                   <li key={trait.get("_id")}>
-                                                       <Link to={`/search/?q=${trait.get("_id")}`}>{trait.get("_id")}</Link> <ExternalLink href={trait.get("uri")} />
-                                                   </li>
-                                                   )}
-                                               </ul>
-                        </Col>
-                    </Row>
-                </Grid>
+                <TraitList />
             );
         }
         else if (this.props.location.query.q && this.props.location.query.q.length < 3) {
@@ -101,7 +85,7 @@ class App extends React.Component {
                 </Grid>
             );
         }
-        const exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{float: "right", marginTop: -37, marginRight: 5}}><i className="fa fa-download"></i> <span className="hidden-xs">Download</span></Button>;
+        const exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{ float: "right", marginTop: -37, marginRight: 5 }} download><i className="fa fa-download"></i> <span className="hidden-xs">Export</span></Button>;
         return (
             <div>
                 {exportButton}
@@ -152,7 +136,7 @@ class App extends React.Component {
                                         {result.get("CHR_ID") ? `chr${result.get("CHR_ID")}:${result.get("CHR_POS")}` : ""}
                                     </Link>
                                 </div>
-                                <div title={result.get("CONTEXT")} style={{maxWidth: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>
+                                <div title={result.get("CONTEXT")} style={{ maxWidth: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {result.get("CONTEXT")}
                                 </div>
                             </td>
@@ -210,9 +194,8 @@ class App extends React.Component {
 
     render() {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
-        const resultheader = <h2 style={{textAlign: "center"}}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
+        const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
-        const statistics = this.props.requests ? <div>{this.props.requests.get("local")} / {this.props.requests.get("total")}</div> : "";
         return (
             <section id="main">
                 <Grid>
@@ -221,7 +204,7 @@ class App extends React.Component {
                             <form onSubmit={this.onSearch} onReset={this.onClear}>
                                 <Row>
                                     <Col sm={1}>
-                                        <Image responsive src="/img/logo2_ntnu_u-slagord.jpg" className="hidden-xs" style={{marginTop: 28}}/>
+                                        <Image responsive src="/img/logo2_ntnu_u-slagord.jpg" className="hidden-xs" style={{ marginTop: 28 }}/>
                                     </Col>
                                     <Col sm={11}>
                                         <h1>HUNT fast-track GWAS catalog search</h1>
@@ -246,20 +229,7 @@ class App extends React.Component {
                     </Row>
                 </Grid>
                 {this.renderResults()}
-                <hr />
-                <Grid>
-                    <Row>
-                        <Col xs={12}>
-                            <footer style={{fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50}}>
-                                GWAS data from <ExternalLink href="https://www.ebi.ac.uk/gwas/docs/downloads">NHGRI-EBI</ExternalLink><br />
-                                The usual warnings about providing the service AS-IS applies.<br />
-                                <ExternalLink href="http://www.ntnu.no/ism/epicenter/home">Human genetic epidemiology group (HGE)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</ExternalLink>
-                                <br />
-                                {statistics}
-                            </footer>
-                        </Col>
-                    </Row>
-                </Grid>
+                <Footer />
             </section>
         );
     }
@@ -270,7 +240,6 @@ App.propTypes = {
     requests: React.PropTypes.object,
     location: React.PropTypes.object,
     history: React.PropTypes.object,
-    traits: React.PropTypes.object,
 };
 
 export default connectToStores(App);

@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 import ip from "ip";
 
 const RequestSchema = new mongoose.Schema({
-    created_date: {type: Date, index: true, "default": Date.now},
-    remote_address: {type: Buffer, required: true, index: true},
-    query: {type: String}
+    created_date: { type: Date, index: true, "default": Date.now },
+    remote_address: { type: Buffer, required: true, index: true },
+    query: { type: String },
 }, {
     toObject: {
         virtuals: true,
@@ -16,10 +16,10 @@ const RequestSchema = new mongoose.Schema({
 
 RequestSchema
 .virtual("ip")
-.get(function () {
+.get(function get() {
     return ip.toString(this.remote_address);
 })
-.set(function (value) {
+.set(function set(value) {
     this.set("remote_address", ip.toBuffer(value));
 });
 

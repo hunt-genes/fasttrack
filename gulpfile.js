@@ -2,8 +2,7 @@ var gulp = require("gulp");
 var gutil = require("gulp-util");
 var sass = require("gulp-sass");
 var eslint = require("gulp-eslint");
-var webpack = require("webpack");
-var gwebpack = require("gulp-webpack");
+var webpack = require("webpack-stream");
 
 var devConfig = {
     devtool: "cheap-module-source-map",
@@ -23,17 +22,17 @@ var devConfig = {
     }
 };
 
-var prodConfig = Object.create(devConfig);
+var prodConfig = Object.assign({}, devConfig);
 prodConfig.plugins = prodConfig.plugins.concat(
-    new webpack.DefinePlugin({
+    new webpack.webpack.DefinePlugin({
         "process.env": {
             // This has effect on the react lib size
             "NODE_ENV": JSON.stringify("production")
         }
     }),
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(true),
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.webpack.optimize.DedupePlugin(),
+    new webpack.webpack.optimize.OccurenceOrderPlugin(true),
+    new webpack.webpack.optimize.UglifyJsPlugin()
 );
 
 gulp.task("default", ["build-dev"]);
@@ -52,19 +51,19 @@ gulp.task("lint", function () {
 
 gulp.task("sass", function () {
     return gulp.src("src/scss/stylesheet.scss")
-    .pipe(sass({includePaths: ["node_modules/bootstrap-sass/assets/stylesheets", "node_modules/font-awesome/scss"]}))
+    .pipe(sass({ includePaths: ["node_modules/bootstrap-sass/assets/stylesheets", "node_modules/font-awesome/scss"] }))
     .pipe(gulp.dest("dist"));
 });
 
 gulp.task("webpack:build-dev", function () {
-    return gulp.src("src/components/App.js")
-    .pipe(gwebpack(devConfig))
+    return gulp.src("src/client.js")
+    .pipe(webpack(devConfig))
     .pipe(gulp.dest("dist"));
 });
 
 gulp.task("webpack:build", function (callback) {
-    return gulp.src("src/components/App.js")
-    .pipe(gwebpack(prodConfig))
+    return gulp.src("src/client.js")
+    .pipe(webpack(prodConfig))
     .pipe(gulp.dest("dist"));
 });
 

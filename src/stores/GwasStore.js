@@ -8,19 +8,19 @@ class GwasStore {
         this.bindListeners({
             handleUpdateResults: GwasActions.updateResults,
             handleUpdateTraits: GwasActions.updateTraits,
-            handleUpdateRequests: GwasActions.updateRequests
+            handleUpdateRequests: GwasActions.updateRequests,
         });
         this.state = Immutable.Map({
             results: Immutable.Map({
                 different: 0,
                 total: 0,
-                data: Immutable.List()
+                data: Immutable.List(),
             }),
             traits: Immutable.List(),
             requests: Immutable.Map({
                 total: 0,
-                local: 0
-            })
+                local: 0,
+            }),
         });
     }
 

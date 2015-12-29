@@ -12,7 +12,8 @@ import Trait from "./models/Trait";
 import Request from "./models/Request";
 import db from "./lib/db";
 import routes from "./routes";
-import {RoutingContext, match} from "react-router";
+import { RoutingContext, match } from "react-router";
+import { map } from "lodash";
 
 const app = express();
 app.db = db;
@@ -35,12 +36,52 @@ app.use((req, res, next) => {
         request.ip = ip;
         request.query = q;
         request.save((err) => {
-            if (err) { console.error(err); }
+            if (err) { return next(err); }
         });
     }
 
     // do not wait for request logger
     next();
+});
+
+app.get("/traits", (req, res, next) => {
+    Trait.find().sort("_id").exec((err, traits) => {
+        if (err) { return next(err); }
+        res.json({ traits });
+    });
+});
+
+app.get("/requests", (req, res, next) => {
+    Request.count().exec((err, totalRequests) => {
+        if (err) { return next(err); }
+        const localStart = ip.toBuffer("129.241.0.0");
+        const localEnd = ip.toBuffer("129.241.255.255");
+        Request.count({
+            $and: [
+                { remote_address: { $gte: localStart } },
+                { remote_address: { $lte: localEnd } },
+            ],
+        }).exec((err, localRequests) => {
+            const requests = {
+                total: totalRequests,
+                local: localRequests,
+            };
+            if (err) { return next(err); }
+            res.format({
+                html: () => {
+                    res.locals.data = { GwasStore: {
+                        requests,
+                    } };
+                    next();
+                },
+                json: () => {
+                    res.json({
+                        requests,
+                    });
+                },
+            });
+        });
+    });
 });
 
 app.get("/search/", (req, res, next) => {
@@ -59,8 +100,8 @@ app.get("/search/", (req, res, next) => {
         // TODO: Should we fix the SNP field to be an integer? YES, it's not
         // even working normally now, but that may be a different issue.
         if (!isNaN(q)) {
-            fields.push({PUBMEDID: q});
-            fields.push({SNPS: "rs" + q});
+            fields.push({ PUBMEDID: q });
+            fields.push({ SNPS: "rs" + q });
         }
         else if (q.startsWith("chr")) {
             let [chrid, chrpos] = q.split(":", 2);
@@ -75,119 +116,79 @@ app.get("/search/", (req, res, next) => {
                 fields.push({SNP_ID_CURRENT: q});
             }
             */
-            fields.push({SNPS: q});
+            fields.push({ SNPS: q });
         }
         else {
             const r = RegExp(q, "i");
-            fields.push({REGION: {$regex: r}});
-            fields.push({"FIRST AUTHOR": {$regex: r}});
-            fields.push({traits: {$regex: r}});
-            fields.push({"DISEASE/TRAIT": {$regex: r}});
-            fields.push({"MAPPED_GENE": {$regex: r}});
+            fields.push({ REGION: { $regex: r } });
+            fields.push({ "FIRST AUTHOR": { $regex: r } });
+            fields.push({ traits: { $regex: r } });
+            fields.push({ "DISEASE/TRAIT": { $regex: r } });
+            fields.push({ "MAPPED_GENE": { $regex: r } });
         }
     }
     if (fields.length) {
         query.$or = fields;
     }
-    query.hunt = {$exists: 1};
-    query["P-VALUE"] = {$lt: 0.00000005, $exists: 1, $ne: null};
+    query.hunt = { $exists: 1 };
+    query["P-VALUE"] = { $lt: 0.00000005, $exists: 1, $ne: null };
 
-    console.log("q", q, query, typeof(q));
-    Trait.find().sort("_id").exec((err, traits) => {
-        if (err) { return err; }
-        Result.aggregate({$match: query}, {$group: {_id: "$SNP_ID_CURRENT", count: {$sum: 1}}}).exec((err, count) => {
-            if (err) { return err; }
+    Result.aggregate({ $match: query }, { $group: { _id: "$SNP_ID_CURRENT", count: { $sum: 1 } } }).exec((err, count) => {
+        if (err) { return next(err); }
 
-            const different = count.length;
-            const total = count.reduce((previous, current) => {
-                return previous + current.count;
-            }, 0);
+        const different = count.length;
+        const total = count.reduce((previous, current) => {
+            return previous + current.count;
+        }, 0);
 
-            console.log(different, total);
-
-            if (q) {
-                Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
-                    if (err) { return err; }
-                    if (download) {
-                        csv.writeToString(results, {headers: true, delimiter: "\t"}, (err, data) => {
-                            res.set("Content-Type", "text/tsv");
-                            res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
-                            res.write(data);
-                            res.end();
-                        });
-                    }
-                    else {
-                        res.format({
-                            html: () => {
-                                res.locals.data = { GwasStore: {
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: results
-                                    },
-                                    traits: traits
-                                }};
-                                next();
-                            },
-                            json: () => {
-                                res.json({
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: results
-                                    },
-                                    traits: traits
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-            else {
-                Request.count().exec((err, totalRequests) => {
-                    if (err) { return err; }
-                    const localStart = ip.toBuffer("129.241.0.0");
-                    const localEnd = ip.toBuffer("129.241.255.255");
-                    Request.count({
-                        $and: [
-                            {remote_address: {$gte: localStart}},
-                            {remote_address: {$lte: localEnd}}
-                        ]
-                    }).exec((err, localRequests) => {
-                        const requests = {
-                            total: totalRequests,
-                            local: localRequests
-                        };
-                        if (err) { return err; }
-                        res.format({
-                            html: () => {
-                                res.locals.data = { GwasStore: {
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: []
-                                    },
-                                    traits: traits,
-                                    requests: requests
-                                }};
-                                next();
-                            },
-                            json: () => {
-                                res.json({
-                                    results: {
-                                        different: different,
-                                        total: total,
-                                        data: []
-                                    },
-                                    traits: traits,
-                                    requests: requests
-                                });
-                            }
-                        });
+        if (q) {
+            Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
+                if (err) { return next(err); }
+                if (download) {
+                    results = map(results, (result) => {
+                        result.SNP_ID_CURRENT = `rs${result.SNP_ID_CURRENT}`;
+                        result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
+                        return result;
                     });
-                });
-            }
-        });
+                    csv.writeToString(results, { headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t" }, (err, data) => {
+                        res.set("Content-Type", "text/tsv");
+                        res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
+                        res.write(data);
+                        res.end();
+                    });
+                }
+                else {
+                    res.format({
+                        html: () => {
+                            res.locals.data = { GwasStore: {
+                                results: { different, total, data: results },
+                            } };
+                            next();
+                        },
+                        json: () => {
+                            res.json({
+                                results: { different, total, data: results },
+                            });
+                        },
+                    });
+                }
+            });
+        }
+        else {
+            res.format({
+                html: () => {
+                    res.locals.data = { GwasStore: {
+                        results: { different, total, data: [] },
+                    } };
+                    next();
+                },
+                json: () => {
+                    res.json({
+                        results: { different, total, data: [] },
+                    });
+                },
+            });
+        }
     });
 });
 
@@ -201,7 +202,7 @@ app.use(express.static(path.join(__dirname, "..", "dist")));
 
 app.use((req, res) => {
     alt.bootstrap(JSON.stringify(res.locals.data || {}));
-    match({routes: routes, location: req.url}, (err, redirectLocation, renderProps) => {
+    match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
         if (err) {
             res.status(500).send(err.message);
         }
