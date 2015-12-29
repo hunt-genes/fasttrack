@@ -22,7 +22,7 @@ var devConfig = {
     }
 };
 
-var prodConfig = Object.create(devConfig);
+var prodConfig = Object.assign({}, devConfig);
 prodConfig.plugins = prodConfig.plugins.concat(
     new webpack.webpack.DefinePlugin({
         "process.env": {
