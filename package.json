@@ -10,8 +10,12 @@
         "lint": "gulp lint",
         "forever": "forever"
     },
-    "author": "",
-    "license": "AGPL",
+    "author": "Sigurd Gartmann",
+    "license": "AGPL-3.0",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/hunt-genes/gwasc.git"
+    },
     "dependencies": {
         "alt": "^0.16.10",
         "axios": "^0.7.0",
