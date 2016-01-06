@@ -3,6 +3,7 @@ var gutil = require("gulp-util");
 var sass = require("gulp-sass");
 var eslint = require("gulp-eslint");
 var webpack = require("webpack-stream");
+var assign = require("lodash").assign;
 
 var devConfig = {
     devtool: "cheap-module-source-map",
@@ -22,7 +23,7 @@ var devConfig = {
     }
 };
 
-var prodConfig = Object.assign({}, devConfig);
+var prodConfig = assign({}, devConfig);
 prodConfig.plugins = prodConfig.plugins.concat(
     new webpack.webpack.DefinePlugin({
         "process.env": {
