@@ -13,7 +13,7 @@ import Request from "./models/Request";
 import db from "./lib/db";
 import routes from "./routes";
 import { RoutingContext, match } from "react-router";
-import { map } from "lodash";
+import { map, startsWith, endsWith } from "lodash";
 
 const app = express();
 app.db = db;
@@ -93,7 +93,7 @@ app.get("/search/", (req, res, next) => {
         q = "";
     }
     if (q) {
-        if (q.endsWith(".csv")) {
+        if (endsWith(q, ".csv")) {
             q = q.replace(/\.csv$/, "");
             download = true;
         }
@@ -103,13 +103,13 @@ app.get("/search/", (req, res, next) => {
             fields.push({ PUBMEDID: q });
             fields.push({ SNPS: "rs" + q });
         }
-        else if (q.startsWith("chr")) {
+        else if (startsWith(q, "chr")) {
             let [chrid, chrpos] = q.split(":", 2);
             chrid = chrid.replace("chr", "");
             query.CHR_ID = +chrid;
             query.CHR_POS = +chrpos;
         }
-        else if (q.startsWith("rs")) {
+        else if (startsWith(q, "rs")) {
             /*
             q = q.replace("rs", "");
             if (!isNaN(q)) {
