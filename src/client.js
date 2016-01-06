@@ -5,6 +5,7 @@ import { Router } from "react-router";
 import createBrowserHistory from "history/lib/createBrowserHistory";
 import routes from "./routes";
 import alt from "./alt";
+import "es6-promise";
 
 Iso.bootstrap((state, _, container) => {
     alt.bootstrap(state);
