@@ -37,8 +37,8 @@ prodConfig.plugins = prodConfig.plugins.concat(
 );
 
 gulp.task("default", ["build-dev"]);
-gulp.task("build", ["sass", "icons", "images", "webpack:build"]);
-gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "lint"], function () {
+gulp.task("build", ["webpack:build", "sass", "icons", "images", "assets"]);
+gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "assets", "lint"], function () {
     gulp.watch("src/**/*.js", ["webpack:build-dev", "lint"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
     gulp.watch("src/images/*.scss", ["images"]);
@@ -76,4 +76,9 @@ gulp.task("icons", function () {
 gulp.task("images", function () {
     return gulp.src("./src/images/**/*.*")
         .pipe(gulp.dest("./dist/img"));
+});
+
+gulp.task("assets", function () {
+    return gulp.src("./src/assets/**/*.*")
+        .pipe(gulp.dest("./dist"));
 });
