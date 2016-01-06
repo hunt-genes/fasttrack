@@ -1,8 +1,5 @@
-/* eslint vars-on-top: 0 */
+import app from "./src/app";
 
-require("babel/register");
-
-var app = require("./src/app");
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 app.listen(port);
