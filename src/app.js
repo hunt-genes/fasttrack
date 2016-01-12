@@ -130,7 +130,7 @@ app.get("/search/", (req, res, next) => {
     if (fields.length) {
         query.$or = fields;
     }
-    query.hunt = { $exists: 1 };
+    // query.hunt = { $exists: 1 };
     query["P-VALUE"] = { $lt: 0.00000005, $exists: 1, $ne: null };
 
     Result.aggregate({ $match: query }, { $group: { _id: "$SNP_ID_CURRENT", count: { $sum: 1 } } }).exec((err, count) => {
