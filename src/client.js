@@ -7,7 +7,7 @@ import routes from "./routes";
 import alt from "./alt";
 import "es6-promise";
 
-Iso.bootstrap((state, _, container) => {
+Iso.bootstrap((state, container) => {
     alt.bootstrap(state);
     ReactDOM.render(<Router history={createBrowserHistory()}>{routes}</Router>, container);
 });

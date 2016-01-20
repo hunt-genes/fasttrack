@@ -88,6 +88,12 @@ app.get("/search/", (req, res, next) => {
     let download = false;
     const query = {};
     const fields = [];
+
+    // query param handling
+
+    // filter on values known in hunt
+    let hunt = JSON.parse(req.query.hunt || "false");
+
     let q = req.query.q;
     if (q && q.length < 3) {
         q = "";
@@ -130,7 +136,9 @@ app.get("/search/", (req, res, next) => {
     if (fields.length) {
         query.$or = fields;
     }
-    query.hunt = { $exists: 1 };
+    if (hunt) {
+        query.hunt = { $exists: 1 };
+    }
     query["P-VALUE"] = { $lt: 0.00000005, $exists: 1, $ne: null };
 
     Result.aggregate({ $match: query }, { $group: { _id: "$SNP_ID_CURRENT", count: { $sum: 1 } } }).exec((err, count) => {

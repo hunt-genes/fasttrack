@@ -25,9 +25,11 @@ class App extends React.Component {
         this.onSearch = this.onSearch.bind(this);
         this.onClear = this.onClear.bind(this);
         this.onQueryChange = this.onQueryChange.bind(this);
+        this.onCheckboxChange = this.onCheckboxChange.bind(this);
 
         this.state = {
             query: this.props.location.query.q || "",
+            hunt: this.props.location.query.hunt || false,
         };
     }
 
@@ -36,9 +38,11 @@ class App extends React.Component {
         const newLocation = nextProps.location;
         const q = location.query.q;
         const newQ = newLocation.query.q;
-        if (q !== newQ) {
-            this.setState({ query: newQ || "" });
-            GwasActions.search(newQ);
+        const hunt = location.query.hunt;
+        const newHunt = newLocation.query.hunt;
+        if (q !== newQ || hunt !== newHunt) {
+            this.setState({ query: newQ || "", hunt: newHunt || false });
+            GwasActions.search(newQ, newHunt);
         }
     }
 
@@ -46,13 +50,17 @@ class App extends React.Component {
         this.setState({ query: e.target.value });
     }
 
+    onCheckboxChange(e) {
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&hunt=${this.refs.hunt.getChecked()}`);
+    }
+
     onSearch(e) {
         e.preventDefault();
-        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}`);
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&hunt=${this.refs.hunt.getChecked()}`);
     }
 
     onClear() {
-        this.props.history.pushState(null, `/search/`);
+        this.props.history.pushState(null, `/search/?hunt=${this.refs.hunt.getChecked()}`);
     }
 
     rowclass(p) {
@@ -196,6 +204,16 @@ class App extends React.Component {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
+        const help = (
+            <Row>
+                <Col xs={9}>
+                    {examples}
+                </Col>
+                <Col xs={3} className="compact">
+                    <Input type="checkbox" label="HUNT" ref="hunt" onChange={this.onCheckboxChange}/>
+                </Col>
+            </Row>
+        );
         return (
             <section id="main">
                 <Grid>
@@ -214,7 +232,7 @@ class App extends React.Component {
                                             placeholder="Search"
                                             value={this.state.query}
                                             onChange={this.onQueryChange}
-                                            help={examples}
+                                            help={help}
                                             buttonAfter={buttons}
                                         />
                                     </Col>
