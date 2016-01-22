@@ -105,13 +105,13 @@ app.get("/search/", (req, res, next) => {
         }
         // TODO: Should we fix the SNP field to be an integer? YES, it's not
         // even working normally now, but that may be a different issue.
+        const chrSearch = q.match(/^chr(\w+):(\d+)$/);
         if (!isNaN(q)) {
             fields.push({ PUBMEDID: q });
             fields.push({ SNPS: "rs" + q });
         }
-        else if (startsWith(q, "chr")) {
-            let [chrid, chrpos] = q.split(":", 2);
-            chrid = chrid.replace("chr", "");
+        else if (chrSearch) {
+            const [_, chrid, chrpos] = chrSearch;
             query.CHR_ID = +chrid;
             query.CHR_POS = +chrpos;
         }
