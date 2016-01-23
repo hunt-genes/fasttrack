@@ -102,7 +102,7 @@ class App extends React.Component {
                         <tr>
                             <th>SNP</th>
                             <th>MAF</th>
-                            <th>P</th>
+                            <th><i>P</i></th>
                             <th>Position</th>
                             <th>Mapped gene</th>
                             <th>Mapped trait</th>
@@ -202,7 +202,7 @@ class App extends React.Component {
 
     render() {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
-        const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for P &lt; 5x10<sup>-8</sup></small></h2>;
+        const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for <i>P</i> &lt; 5x10<sup>-8</sup></small></h2>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
         const help = (
             <Row>
