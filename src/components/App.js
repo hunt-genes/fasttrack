@@ -7,6 +7,7 @@ import { Link } from "react-router";
 import ExternalLink from "./ExternalLink";
 import Footer from "./Footer";
 import TraitList from "./TraitList";
+import ImputationResults from "./ImputationResults";
 
 class App extends React.Component {
 
@@ -124,6 +125,7 @@ class App extends React.Component {
                             </td>
                             <td>
                                 {result.get("hunt")}
+                                <ImputationResults imputed={result.get('imputed')} />
                             </td>
                             <td>
                                 <div>
