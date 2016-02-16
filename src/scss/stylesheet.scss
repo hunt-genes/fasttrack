@@ -13,6 +13,12 @@
     padding-bottom: 80px;
 }
 
+#about {
+    .cite-names {
+        font-style: italic;
+    }
+}
+
 #results {
     a {
         cursor: pointer;

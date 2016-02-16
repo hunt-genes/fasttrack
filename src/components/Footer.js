@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid, Row, Col } from "react-bootstrap";
+import { Link } from "react-router";
 import connectToStores from "alt/utils/connectToStores";
 import GwasActions from "../actions/GwasActions";
 import GwasStore from "../stores/GwasStore";
@@ -39,7 +40,8 @@ class Footer extends React.Component {
                     <Row>
                         <Col xs={12}>
                             <footer style={{ fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50 }}>
-                                GWAS data from <ExternalLink href="https://www.ebi.ac.uk/gwas/docs/downloads">NHGRI-EBI</ExternalLink><br />
+                                <Link to="/about">About</Link> this service.<br />
+                                GWAS data from <ExternalLink href="https://www.ebi.ac.uk/gwas/docs/downloads">NHGRI-EBI</ExternalLink>, downloaded 2015-11-18.<br />
                                 The usual warnings about providing the service AS-IS applies.<br />
                                 <ExternalLink href="https://www.ntnu.edu/huntgenes">K.G. Jebsen Center for Genetic Epidemiology</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/ism">Department of public health and general practice (ISM)</ExternalLink>, <ExternalLink href="http://www.ntnu.edu/">Norwegian university of science and technology (NTNU)</ExternalLink>
                                 <br />
