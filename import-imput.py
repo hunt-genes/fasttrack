@@ -73,7 +73,7 @@ with open(args.filename) as tsvfile:
                 # if line[14] != "-":
                     # _imputed["Dose1"] = float(line[14])
                 db.gwas.update_many({"CHR_ID": chr_id, "CHR_POS": chr_pos},
-                        {"$set": {"imputed": {biobank_identifier: _imputed}}})
+                        {"$set": {"imputed": {args.biobank_identifier: _imputed}}})
         except:
             pass
 
