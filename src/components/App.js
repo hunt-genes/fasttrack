@@ -38,7 +38,7 @@ class App extends React.Component {
         const q = location.query.q;
         const newQ = newLocation.query.q;
         const hunt = location.query.hunt;
-        const newHunt = newLocation.query.hunt;
+        const newHunt = newLocation.query.hunt === "true";
         if (q !== newQ || hunt !== newHunt) {
             this.setState({ query: newQ || "", hunt: newHunt || false });
             GwasActions.search(newQ, newHunt);
