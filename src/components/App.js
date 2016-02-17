@@ -37,7 +37,7 @@ class App extends React.Component {
         const newLocation = nextProps.location;
         const q = location.query.q;
         const newQ = newLocation.query.q;
-        const tromso = location.query.tromso;
+        const tromso = location.query.tromso === "true";
         const newTromso = newLocation.query.tromso === "true";
         if (q !== newQ || tromso !== newTromso) {
             this.setState({ query: newQ || "", tromso: newTromso || false });
