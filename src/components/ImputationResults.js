@@ -12,9 +12,6 @@ class ImputationResults extends React.Component {
                 {this.props.imputed.get("hunt").get("REF")}
                 {" "}
                 {this.props.imputed.get("hunt").get("ALT")}
-                <div className={this.props.imputed.get("hunt").get("Genotyped") ? "genotyped" : "imputed"}>
-                    {this.props.imputed.get("hunt").get("AvgCall").toFixed(5)}
-                </div>
             </div>
         );
     }

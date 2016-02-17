@@ -118,7 +118,7 @@ class App extends React.Component {
                     {examples}
                 </Col>
                 <Col xs={3} className="compact">
-                    <Input type="checkbox" label="HUNT" ref="hunt" onChange={this.onCheckboxChange}/>
+                    <Input type="checkbox" label="HUNT" ref="hunt" checked={this.state.hunt} onChange={this.onCheckboxChange}/>
                 </Col>
             </Row>
         );

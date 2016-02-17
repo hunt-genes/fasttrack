@@ -21,18 +21,24 @@ class Result extends React.Component {
 
     render() {
         const result = this.props.data;
+        const imputed = this.props.data.get("imputed");
+        const genotyped = imputed && imputed.get("hunt").get("Genotyped");
         return (
-            <tr key={result.get("_id")} className={this.rowclass(result.get("P-VALUE"))}>
+            <tr className={this.rowclass(result.get("P-VALUE"))}>
                 <td>
                     <div>
                         <Link to={`/search/?q=${result.get("SNP_ID_CURRENT")}`}>
                             {result.get("SNPS")}
                         </Link>
+                        <div>{ genotyped ? "Genotyped" : imputed ? "Imputed" : "" }</div>
                     </div>
                 </td>
                 <td>
-                    {result.get("hunt")}
-                    <ImputationResults imputed={result.get("imputed")} />
+                    {imputed ?
+                        <ImputationResults imputed={result.get("imputed")} />
+                        :
+                        result.get("hunt")
+                    }
                 </td>
                 <td>
                     <div>

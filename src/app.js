@@ -137,7 +137,7 @@ app.get("/search/", (req, res, next) => {
         query.$or = fields;
     }
     if (hunt) {
-        query.hunt = { $exists: 1 };
+        query.imputed = { $exists: 1 };
     }
     query["P-VALUE"] = { $lt: 0.00000005, $exists: 1, $ne: null };
 
