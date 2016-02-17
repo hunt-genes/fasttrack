@@ -25,6 +25,7 @@ def categorize_float(value):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", help="Filename to tsv file")
+parser.add_argument("biobank_identifier", help="Identifier to distinguish data in database")
 args = parser.parse_args()
 
 mongo_client = MongoClient()
@@ -39,7 +40,6 @@ for position in all_positions:
 print(len(positions))
 
 counter = 0
-huntcounter = 0
 with open(args.filename) as tsvfile:
     data = csv.reader(tsvfile, delimiter=' ')
     for line in data:
@@ -50,12 +50,8 @@ with open(args.filename) as tsvfile:
             _id = line[0] + ":" + line[1]
             if _id in positions:
                 counter += 1
-                if "hunt" in positions[_id]:
-                    print("hunt", _id)
-                    huntcounter += 1
 
-
-                hunt_imputed = {
+                _imputed = {
                         "REF": line[3],
                         "ALT": line[4],
                         # "ALT_Frq": categorize_float(float(line[5])),
@@ -67,19 +63,18 @@ with open(args.filename) as tsvfile:
                 if line[9] == "Genotyped":
                     print("Genotyped", _id)
                 # if line[10] != "-":
-                    # hunt_imputed["LooRsq"] = float(line[10])
+                    # _imputed["LooRsq"] = float(line[10])
                 # if line[11] != "-":
-                    # hunt_imputed["EmpR"] = float(line[11])
+                    # _imputed["EmpR"] = float(line[11])
                 # if line[12] != "-":
-                    # hunt_imputed["EmpRsq"] = float(line[12])
+                    # _imputed["EmpRsq"] = float(line[12])
                 # if line[13] != "-":
-                    # hunt_imputed["Dose0"] = float(line[13])
+                    # _imputed["Dose0"] = float(line[13])
                 # if line[14] != "-":
-                    # hunt_imputed["Dose1"] = float(line[14])
+                    # _imputed["Dose1"] = float(line[14])
                 db.gwas.update_many({"CHR_ID": chr_id, "CHR_POS": chr_pos},
-                        {"$set": {"imputed": {"hunt": hunt_imputed}}})
+                        {"$set": {"imputed": {biobank_identifier: _imputed}}})
         except:
             pass
 
 print(counter)
-print(huntcounter)

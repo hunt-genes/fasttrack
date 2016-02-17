@@ -91,8 +91,8 @@ app.get("/search/", (req, res, next) => {
 
     // query param handling
 
-    // filter on values known in hunt
-    let hunt = JSON.parse(req.query.hunt || "false");
+    // filter on values known in tromso
+    let tromso = JSON.parse(req.query.tromso || "false");
 
     let q = req.query.q;
     if (q && q.length < 3) {
@@ -136,7 +136,7 @@ app.get("/search/", (req, res, next) => {
     if (fields.length) {
         query.$or = fields;
     }
-    if (hunt) {
+    if (tromso) {
         query.imputed = { $exists: 1 };
     }
     query["P-VALUE"] = { $lt: 0.00000005, $exists: 1, $ne: null };

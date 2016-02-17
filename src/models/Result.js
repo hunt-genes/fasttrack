@@ -15,7 +15,6 @@ const ResultSchema = new mongoose.Schema({
     MAPPED_GENE: { type: String },
     "OR or BETA": { type: String },
     "95% CI (TEXT)": { type: String },
-    // hunt and p-value gives problems for mongoose
 });
 
 const Result = mongoose.model("gwas", ResultSchema);

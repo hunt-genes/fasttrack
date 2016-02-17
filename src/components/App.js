@@ -28,7 +28,7 @@ class App extends React.Component {
 
         this.state = {
             query: this.props.location.query.q || "",
-            hunt: this.props.location.query.hunt || false,
+            tromso: this.props.location.query.tromso || false,
         };
     }
 
@@ -37,11 +37,11 @@ class App extends React.Component {
         const newLocation = nextProps.location;
         const q = location.query.q;
         const newQ = newLocation.query.q;
-        const hunt = location.query.hunt;
-        const newHunt = newLocation.query.hunt === "true";
-        if (q !== newQ || hunt !== newHunt) {
-            this.setState({ query: newQ || "", hunt: newHunt || false });
-            GwasActions.search(newQ, newHunt);
+        const tromso = location.query.tromso;
+        const newTromso = newLocation.query.tromso === "true";
+        if (q !== newQ || tromso !== newTromso) {
+            this.setState({ query: newQ || "", tromso: newTromso || false });
+            GwasActions.search(newQ, newTromso);
         }
     }
 
@@ -50,16 +50,16 @@ class App extends React.Component {
     }
 
     onCheckboxChange(e) {
-        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&hunt=${this.refs.hunt.getChecked()}`);
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&tromso=${this.refs.tromso.getChecked()}`);
     }
 
     onSearch(e) {
         e.preventDefault();
-        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&hunt=${this.refs.hunt.getChecked()}`);
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&tromso=${this.refs.tromso.getChecked()}`);
     }
 
     onClear() {
-        this.props.history.pushState(null, `/search/?hunt=${this.refs.hunt.getChecked()}`);
+        this.props.history.pushState(null, `/search/?tromso=${this.refs.tromso.getChecked()}`);
     }
 
     renderResults() {
@@ -118,7 +118,7 @@ class App extends React.Component {
                     {examples}
                 </Col>
                 <Col xs={3} className="compact">
-                    <Input type="checkbox" label="HUNT" ref="hunt" checked={this.state.hunt} onChange={this.onCheckboxChange}/>
+                    <Input type="checkbox" label="Tromsø" ref="tromso" checked={this.state.tromso} onChange={this.onCheckboxChange}/>
                 </Col>
             </Row>
         );
