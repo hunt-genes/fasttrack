@@ -160,7 +160,7 @@ app.get("/search/", (req, res, next) => {
                     });
                     csv.writeToString(results, { headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t" }, (err, data) => {
                         res.set("Content-Type", "text/csv");
-                        res.set("Content-Disposition", `attachment; filename=export-${q}.csv`);
+                        res.set("Content-Disposition", `attachment; filename=export-${q.replace(/[^a-zA-Z0-9]/, "-")}.csv`);
                         res.write(data);
                         res.end();
                     });
