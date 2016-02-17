@@ -22,7 +22,7 @@ class Result extends React.Component {
     render() {
         const result = this.props.data;
         const imputed = this.props.data.get("imputed");
-        const genotyped = imputed && imputed.get("hunt").get("Genotyped");
+        const genotyped = imputed && imputed.get("tromso").get("Genotyped");
         return (
             <tr className={this.rowclass(result.get("P-VALUE"))}>
                 <td>
@@ -34,11 +34,7 @@ class Result extends React.Component {
                     </div>
                 </td>
                 <td>
-                    {imputed ?
-                        <ImputationResults imputed={result.get("imputed")} />
-                        :
-                        result.get("hunt")
-                    }
+                    {imputed ?  <ImputationResults imputed={result.get("imputed")} /> : "" }
                 </td>
                 <td>
                     <div>

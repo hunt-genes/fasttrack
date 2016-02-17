@@ -24,7 +24,7 @@ db.drop_collection("traits")
         # if is_int(snp):
             # data[snp] = row[3]
 
-with open('gwas_catalog_v1.0.1-downloaded_2015-11-18.tsv') as tsvfile:
+with open('gwas_catalog_v1.0.1-downloaded_2016-02-17.tsv') as tsvfile:
     gwas = csv.reader(tsvfile, delimiter='\t')
     header_line = True
     headers = None

@@ -7,11 +7,11 @@ class ImputationResults extends React.Component {
         }
         return (
             <div>
-                {this.props.imputed.get("hunt").get("MAF")}
+                {this.props.imputed.get("tromso").get("MAF")}
                 <br />
-                {this.props.imputed.get("hunt").get("REF")}
+                {this.props.imputed.get("tromso").get("REF")}
                 {" "}
-                {this.props.imputed.get("hunt").get("ALT")}
+                {this.props.imputed.get("tromso").get("ALT")}
             </div>
         );
     }
