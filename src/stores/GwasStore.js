@@ -21,11 +21,16 @@ class GwasStore {
                 total: 0,
                 local: 0,
             }),
+            rsids: Immutable.OrderedMap(),
         });
     }
 
     handleUpdateResults(results) {
-        this.setState(this.state.set("results", Immutable.fromJS(results)));
+        this.setState(this.state.withMutations(map => map
+                                               .set("results", Immutable.fromJS(results))
+                                               .set("rsids", Immutable.fromJS(results.data).map(
+                                                   result => result.get("SNPS")
+                                               ).groupBy((rsid) => rsid).map(() => true))));
     }
 
     handleUpdateTraits(traits) {
@@ -46,6 +51,10 @@ class GwasStore {
 
     static getRequests() {
         return this.getState().get("requests");
+    }
+
+    static getRsids() {
+        return this.getState().get("rsids");
     }
 }
 

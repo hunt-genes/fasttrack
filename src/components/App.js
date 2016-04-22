@@ -65,7 +65,16 @@ class App extends React.Component {
     renderResults() {
         if (!this.props.location.query.q) {
             return (
-                <TraitList />
+                <Grid>
+                    <Row>
+                        <Col xs={12}>
+                            <TraitList
+                                introduction="Use the search field or select from the traits below if you want to see some results"
+                                linkPrefix="/search/?q="
+                            />
+                        </Col>
+                    </Row>
+                </Grid>
             );
         }
         else if (this.props.location.query.q && this.props.location.query.q.length < 3) {
