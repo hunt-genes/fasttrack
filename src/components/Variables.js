@@ -2,6 +2,7 @@ import React from "react";
 import connectToStores from "alt/utils/connectToStores";
 import { Input, Button, Table, Alert, Grid, Row, Col, Image, PageHeader } from "react-bootstrap";
 import TraitList from "./TraitList";
+import Footer from "./Footer";
 import GwasStore from "../stores/GwasStore";
 import GwasActions from "../actions/GwasActions";
 
@@ -32,6 +33,7 @@ class Variables extends React.Component {
                         </Col>
                     </Row>
                 </Grid>
+                <Footer />
             </section>
         );
     }

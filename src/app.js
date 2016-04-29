@@ -13,7 +13,8 @@ import Request from "./models/Request";
 import db from "./lib/db";
 import routes from "./routes";
 import { RoutingContext, match } from "react-router";
-import { map, startsWith, endsWith } from "lodash";
+import { map, startsWith, endsWith, filter } from "lodash";
+import bodyParser from "body-parser";
 
 const app = express();
 app.db = db;
@@ -26,6 +27,7 @@ function getIP(req) {
     return ips.split(",").pop();
 }
 
+app.use(bodyParser.urlencoded({ extended: true }));
 // request logging middleware, logs timestamp, ip and query if defined
 app.use((req, res, next) => {
     const q = req.query.q;
@@ -49,6 +51,25 @@ app.get("/traits", (req, res, next) => {
         if (err) { return next(err); }
         res.json({ traits });
     });
+});
+
+app.post("/variables/:trait", (req, res, next) => {
+    let rsids;
+    if (Array.isArray(req.body.rsids)) {
+        rsids = req.body.rsids;
+    }
+    else if (req.body.rsids) {
+        rsids = [req.body.rsids];
+    }
+    else {
+        rsids = [];
+    }
+    const data = rsids.join("\r\n") + "\r\n";
+    res.set("Content-Type", "text/csv");
+    res.set("Content-Disposition",
+            `attachment; filename=export-${req.params.trait.replace(/[^a-zA-Z0-9]+/g, "-")}.csv`);
+    res.write(data);
+    res.end();
 });
 
 app.get("/requests", (req, res, next) => {
@@ -160,7 +181,7 @@ app.get("/search/", (req, res, next) => {
                     });
                     csv.writeToString(results, { headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t" }, (err, data) => {
                         res.set("Content-Type", "text/csv");
-                        res.set("Content-Disposition", `attachment; filename=export-${q.replace(/[^a-zA-Z0-9]/, "-")}.csv`);
+                        res.set("Content-Disposition", `attachment; filename=export-${q.replace(/[^a-zA-Z0-9]/g, "-")}.csv`);
                         res.write(data);
                         res.end();
                     });
