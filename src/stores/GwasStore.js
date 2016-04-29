@@ -30,7 +30,7 @@ class GwasStore {
                                                .set("results", Immutable.fromJS(results))
                                                .set("rsids", Immutable.fromJS(results.data).map(
                                                    result => result.get("SNPS")
-                                               ).groupBy((rsid) => rsid).map(() => false))));
+                                               ).groupBy((rsid) => rsid).sort().map(() => false))));
     }
 
     handleUpdateTraits(traits) {
