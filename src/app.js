@@ -179,7 +179,7 @@ app.get("/search/", (req, res, next) => {
                         result["STRONGEST SNP-RISK ALLELE"] = result["STRONGEST SNP-RISK ALLELE"].split("-").pop();
                         return result;
                     });
-                    csv.writeToString(results, { headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)"], delimiter: "\t" }, (err, data) => {
+                    csv.writeToString(results, { headers: ["SNP_ID_CURRENT", "CHR_ID", "CHR_POS", "STRONGEST SNP-RISK ALLELE", "P-VALUE", "OR or BETA", "95% CI (TEXT)", "RISK ALLELE FREQUENCY", "DATE", "INITIAL SAMPLE DESCRIPTION", "REPLICATION SAMPLE DESCRIPTION"], delimiter: "\t" }, (err, data) => {
                         res.set("Content-Type", "text/csv");
                         res.set("Content-Disposition", `attachment; filename=export-${q.replace(/[^a-zA-Z0-9]/g, "-")}.csv`);
                         res.write(data);
