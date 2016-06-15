@@ -16,7 +16,6 @@ for r in db.gwas.find():
         if lifted:
             new_chrid = lifted[0][0].split('chr')[1]
             new_chrpos = lifted[0][1]
-            print(new_chrid, new_chrpos)
             matched += 1
             db.gwas.update_many({'CHR_ID': chrid, 'CHR_POS': chrpos}, {'$set': {'hg19chr': new_chrid, 'hg19pos': new_chrpos}})
         else:
