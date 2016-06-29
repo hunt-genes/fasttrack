@@ -196,8 +196,10 @@ app.get("/search/", (req, res, next) => {
                                 return;
                             }
 
-                            if (newP > oldP) {
-                                return;
+                            if (newDate.isSame(oldDate)) {
+                                if (newP > oldP) {
+                                    return;
+                                }
                             }
                         }
                         rsids[rsid] = result;
