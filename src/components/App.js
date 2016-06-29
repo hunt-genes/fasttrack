@@ -2,7 +2,7 @@ import React from "react";
 import connectToStores from "alt/utils/connectToStores";
 import GwasActions from "../actions/GwasActions";
 import GwasStore from "../stores/GwasStore";
-import { Input, Button, Table, Alert, Grid, Row, Col, Image } from "react-bootstrap";
+import { InputGroup, FormControl, HelpBlock, Checkbox, Button, Table, Alert, Grid, Row, Col, Image } from "react-bootstrap";
 import { Link } from "react-router";
 import Footer from "./Footer";
 import TraitList from "./TraitList";
@@ -25,10 +25,12 @@ class App extends React.Component {
         this.onClear = this.onClear.bind(this);
         this.onQueryChange = this.onQueryChange.bind(this);
         this.onCheckboxChange = this.onCheckboxChange.bind(this);
+        this.onUniqueChange = this.onUniqueChange.bind(this);
 
         this.state = {
             query: this.props.location.query.q || "",
             tromso: this.props.location.query.tromso || false,
+            unique: this.props.location.query.unique || false,
         };
     }
 
@@ -39,9 +41,15 @@ class App extends React.Component {
         const newQ = newLocation.query.q;
         const tromso = location.query.tromso === "true";
         const newTromso = newLocation.query.tromso === "true";
-        if (q !== newQ || tromso !== newTromso) {
-            this.setState({ query: newQ || "", tromso: newTromso || false });
-            GwasActions.search(newQ, newTromso);
+        const unique = location.query.unique === "true";
+        const newUnique = newLocation.query.unique === "true";
+        if (q !== newQ || tromso !== newTromso || unique !== newUnique) {
+            this.setState({
+                query: newQ || "",
+                tromso: newTromso || false,
+                unique: newUnique || false,
+            });
+            GwasActions.search(newQ, newTromso, newUnique);
         }
     }
 
@@ -50,16 +58,20 @@ class App extends React.Component {
     }
 
     onCheckboxChange(e) {
-        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&tromso=${this.refs.tromso.getChecked()}`);
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&tromso=${this.refs.tromso.getChecked()}&unique=${this.refs.unique.getChecked()}`);
+    }
+
+    onUniqueChange(e) {
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&tromso=${this.refs.tromso.getChecked()}&unique=${this.refs.unique.getChecked()}`);
     }
 
     onSearch(e) {
         e.preventDefault();
-        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&tromso=${this.refs.tromso.getChecked()}`);
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}&tromso=${this.refs.tromso.getChecked()}&unique=${this.refs.unique.getChecked()}`);
     }
 
     onClear() {
-        this.props.history.pushState(null, `/search/?tromso=${this.refs.tromso.getChecked()}`);
+        this.props.history.pushState(null, `/search/?tromso=${this.refs.tromso.getChecked()}&unique=${this.refs.unique.getChecked()}`);
     }
 
     renderResults() {
@@ -120,17 +132,6 @@ class App extends React.Component {
     render() {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for <i>P</i> &lt; 5x10<sup>-8</sup></small></h2>;
-        const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
-        const help = (
-            <Row>
-                <Col xs={9}>
-                    {examples}
-                </Col>
-                <Col xs={3} className="compact">
-                    <Input type="checkbox" label="Tromsø" ref="tromso" checked={this.state.tromso} onChange={this.onCheckboxChange}/>
-                </Col>
-            </Row>
-        );
         return (
             <section id="main">
                 <Grid>
@@ -143,15 +144,24 @@ class App extends React.Component {
                                     </Col>
                                     <Col sm={11}>
                                         <h1>HUNT fast-track GWAS catalog search</h1>
-                                        <Input
-                                            type="text"
-                                            ref="query"
-                                            placeholder="Search"
-                                            value={this.state.query}
-                                            onChange={this.onQueryChange}
-                                            help={help}
-                                            buttonAfter={buttons}
-                                        />
+                                        <InputGroup>
+                                            <FormControl
+                                                type="text"
+                                                ref="query"
+                                                placeholder="Search"
+                                                value={this.state.query}
+                                                onChange={this.onQueryChange}
+                                                buttonAfter={buttons}
+                                            />
+                                            <InputGroup.Button>{buttons}</InputGroup.Button>
+                                        </InputGroup>
+                                        <HelpBlock>
+                                            <div className="pull-right">
+                                                <Checkbox ref="tromso" checked={this.state.tromso} onChange={this.onCheckboxChange} inline className="pullRight">Tromsø</Checkbox>
+                                                <Checkbox ref="unique" checked={this.state.unique} onChange={this.onUniqueChange} inline className="pullRight">Unique RS</Checkbox>
+                                            </div>
+                                            Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link>
+                                        </HelpBlock>
                                     </Col>
                                 </Row>
                             </form>

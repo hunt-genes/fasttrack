@@ -13,8 +13,9 @@ import Request from "./models/Request";
 import db from "./lib/db";
 import routes from "./routes";
 import { RoutingContext, match } from "react-router";
-import { map, startsWith, endsWith, filter } from "lodash";
+import { map, startsWith, endsWith, each, values } from "lodash";
 import bodyParser from "body-parser";
+import moment from "moment";
 
 const app = express();
 app.db = db;
@@ -113,7 +114,8 @@ app.get("/search/", (req, res, next) => {
     // query param handling
 
     // filter on values known in tromso
-    let tromso = JSON.parse(req.query.tromso || "false");
+    const tromso = JSON.parse(req.query.tromso || "false");
+    const unique = JSON.parse(req.query.unique || "false");
 
     let q = req.query.q;
     if (q && q.length < 3) {
@@ -173,6 +175,36 @@ app.get("/search/", (req, res, next) => {
         if (q) {
             Result.find(query).limit(1000).sort("CHR_ID CHR_POS").lean().exec((err, results) => {
                 if (err) { return next(err); }
+                if (unique) {
+                    const rsids = {};
+                    each(results, result => {
+                        const rsid = result.SNP_ID_CURRENT;
+                        if (rsids[rsid]) {
+                            const oldres = rsids[rsid];
+
+                            const oldP = oldres["P-VALUE"];
+                            const newP = result["P-VALUE"];
+
+                            if (!newP) {
+                                return;
+                            }
+
+                            const oldDate = moment(oldres.DATE, "DD-MMM-YYYY");
+                            const newDate = moment(result.DATE, "DD-MMM-YYYY");
+
+                            if (newDate < oldDate) {
+                                return;
+                            }
+
+                            if (newP > oldP) {
+                                return;
+                            }
+                        }
+                        rsids[rsid] = result;
+                    });
+
+                    results = values(rsids); // eslint-disable-line no-param-reassign
+                }
                 if (download) {
                     results = map(results, (result) => {
                         result.SNP_ID_CURRENT = `rs${result.SNP_ID_CURRENT}`;

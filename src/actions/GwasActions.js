@@ -6,8 +6,8 @@ class GwasActions {
         this.generateActions("updateResults", "updateTraits", "updateRequests");
     }
 
-    search(query, tromso=0) {
-        axios.get("/search/", { params: { q: query, tromso: tromso } })
+    search(query, tromso = 0, unique = 0) {
+        axios.get("/search/", { params: { q: query, tromso, unique } })
         .then((response) => {
             this.actions.updateResults(response.data.results);
         })
