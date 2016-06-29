@@ -192,7 +192,7 @@ app.get("/search/", (req, res, next) => {
                             const oldDate = moment(oldres.DATE, "DD-MMM-YYYY");
                             const newDate = moment(result.DATE, "DD-MMM-YYYY");
 
-                            if (newDate < oldDate) {
+                            if (newDate.isBefore(oldDate)) {
                                 return;
                             }
 
