@@ -2,7 +2,7 @@ import React from "react";
 import connectToStores from "alt/utils/connectToStores";
 import GwasActions from "../actions/GwasActions";
 import GwasStore from "../stores/GwasStore";
-import { InputGroup, FormControl, HelpBlock, Checkbox, Button, Table, Alert, Grid, Row, Col, Image } from "react-bootstrap";
+import { Input, Button, Table, Alert, Grid, Row, Col, Image } from "react-bootstrap";
 import { Link } from "react-router";
 import Footer from "./Footer";
 import TraitList from "./TraitList";
@@ -132,6 +132,18 @@ class App extends React.Component {
     render() {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for <i>P</i> &lt; 5x10<sup>-8</sup></small></h2>;
+        const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
+        const help = (
+            <Row>
+                <Col xs={9}>
+                    {examples}
+                </Col>
+                <Col xs={3} className="compact">
+                    <Input type="checkbox" label="Tromsø" ref="tromso" checked={this.state.tromso} onChange={this.onCheckboxChange}/>
+                    <Input type="checkbox" label="Unique RS" ref="unique" checked={this.state.unique} onChange={this.onUniqueChange}/>
+                </Col>
+            </Row>
+        );
         return (
             <section id="main">
                 <Grid>
@@ -144,24 +156,15 @@ class App extends React.Component {
                                     </Col>
                                     <Col sm={11}>
                                         <h1>HUNT fast-track GWAS catalog search</h1>
-                                        <InputGroup>
-                                            <FormControl
-                                                type="text"
-                                                ref="query"
-                                                placeholder="Search"
-                                                value={this.state.query}
-                                                onChange={this.onQueryChange}
-                                                buttonAfter={buttons}
-                                            />
-                                            <InputGroup.Button>{buttons}</InputGroup.Button>
-                                        </InputGroup>
-                                        <HelpBlock>
-                                            <div className="pull-right">
-                                                <Checkbox ref="tromso" checked={this.state.tromso} onChange={this.onCheckboxChange} inline className="pullRight">Tromsø</Checkbox>
-                                                <Checkbox ref="unique" checked={this.state.unique} onChange={this.onUniqueChange} inline className="pullRight">Unique RS</Checkbox>
-                                            </div>
-                                            Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link>
-                                        </HelpBlock>
+                                        <Input
+                                            type="text"
+                                            ref="query"
+                                            placeholder="Search"
+                                            value={this.state.query}
+                                            onChange={this.onQueryChange}
+                                            help={help}
+                                            buttonAfter={buttons}
+                                        />
                                     </Col>
                                 </Row>
                             </form>
