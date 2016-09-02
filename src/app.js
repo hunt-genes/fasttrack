@@ -68,7 +68,7 @@ app.post("/variables/:trait", (req, res, next) => {
     const data = rsids.join("\r\n") + "\r\n";
     res.set("Content-Type", "text/csv");
     res.set("Content-Disposition",
-            `attachment; filename=export-${req.params.trait.replace(/[^a-zA-Z0-9]+/g, "-")}.csv`);
+            `attachment; filename=trait-${req.params.trait.replace(/[^a-zA-Z0-9]+/g, "-")}.csv`);
     res.write(data);
     res.end();
 });

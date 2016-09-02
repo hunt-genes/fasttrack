@@ -5,7 +5,7 @@ class VariableList extends React.Component {
     render() {
         return (
             <div>
-                <p>Select the trait you want variables for from the list below</p>
+                <p>Choose trait to select variables for from the list below</p>
                 <TraitList linkPrefix="/variables/" />
             </div>
         );
