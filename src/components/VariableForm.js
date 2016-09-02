@@ -86,6 +86,7 @@ class VariableForm extends React.Component {
                                     onChange={this.selectAll}
                                 />
                             </th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,6 +101,7 @@ class VariableForm extends React.Component {
                                         onChange={this.onItemChange}
                                     />
                                 </td>
+                                <td>Mer</td>
                             </tr>)
                         }
                     </tbody>

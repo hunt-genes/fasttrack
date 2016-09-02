@@ -7,6 +7,9 @@ build:
 watch:
 	npm run watch
 
+schema:
+	npm run build:schema
+
 test:
 	npm test
 

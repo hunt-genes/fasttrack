@@ -5,3 +5,5 @@
 /node_modules
 /venv
 /dist
+/src/schema.json
+/src/schema.graphql

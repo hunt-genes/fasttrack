@@ -3,19 +3,21 @@ import express from 'express';
 import csv from 'fast-csv';
 import favicon from 'serve-favicon';
 import ip from 'ip';
-import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import Iso from 'iso';
-import alt from './alt';
 import Result from './models/Result';
 import Trait from './models/Trait';
 import Request from './models/Request';
 import db from './lib/db';
 import routes from './routes';
-import { RoutingContext, match } from 'react-router';
 import { map, startsWith, endsWith, each, values } from 'lodash';
 import bodyParser from 'body-parser';
 import moment from 'moment';
+import Router from 'isomorphic-relay-router';
+import RelayLocalSchema from 'relay-local-schema';
+// import Helmet from 'react-helmet';
+import { match } from 'react-router';
+import graphqlHTTP from 'express-graphql';
+import schema from './schema';
 
 const app = express();
 app.db = db;
@@ -263,6 +265,7 @@ else {
 }
 app.use(express.static(path.join(__dirname, '..', 'dist')));
 
+/*
 app.use((req, res) => {
     alt.bootstrap(JSON.stringify(res.locals.data || {}));
     match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
@@ -284,6 +287,78 @@ app.use((req, res) => {
         else {
             res.status(404).send('Not found');
         }
+    });
+});
+*/
+
+app.use('/graphql', graphqlHTTP(req => ({
+    schema,
+    rootValue: { query: null },
+    pretty: process.env.NODE_ENV !== 'production',
+    graphiql: process.env.NODE_ENV !== 'production',
+})));
+
+function renderFullPage(renderedContent, initialState, head = {
+    title: '<title>Fast-track</title>',
+    meta: '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+    link: '<link rel="stylesheet" href="/stylesheet.css"/>',
+}) {
+    return `
+    <!doctype html>
+    <html>
+    <head>
+        <meta charset="utf-8" />
+        ${head.title}
+        ${head.meta}
+        ${head.link}
+    </head>
+    <body>
+        <div id="app">${renderedContent}</div>
+        <script>
+            window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
+        </script>
+        <script src="/client.js"></script>
+    </body>
+    </html>
+    `;
+}
+
+/** Universal app endpoint **/
+app.get('*', (req, res, next) => {
+    match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
+        if (err) {
+            return next(err);
+            // res.status(500).send(err.message);
+        }
+        else if (redirectLocation) {
+            return res.redirect(302, redirectLocation.pathname + redirectLocation.search);
+        }
+        else if (renderProps) {
+            const rootValue = {};
+            if (req.query.q) {
+                rootValue.query = req.query.q;
+            }
+
+            const networkLayer = new RelayLocalSchema.NetworkLayer({
+                schema,
+                rootValue,
+                onError: (errors, request) => next(new Error(errors)),
+            });
+            return Router.prepareData(renderProps, networkLayer).then(({ data, props }) => {
+                try {
+                    global.navigator = { userAgent: req.headers['user-agent'] };
+                    const renderedContent = ReactDOMServer.renderToString(Router.render(props));
+                    // const helmet = Helmet.rewind();
+
+                    const renderedPage = renderFullPage(renderedContent, data);
+                    return res.send(renderedPage);
+                }
+                catch (err) {
+                    return next(err);
+                }
+            }, next);
+        }
+        return next();
     });
 });
 
