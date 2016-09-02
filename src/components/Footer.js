@@ -1,10 +1,10 @@
-import React from "react";
-import { Grid, Row, Col } from "react-bootstrap";
-import { Link } from "react-router";
-import connectToStores from "alt/utils/connectToStores";
-import GwasActions from "../actions/GwasActions";
-import GwasStore from "../stores/GwasStore";
-import ExternalLink from "./ExternalLink";
+import React from 'react';
+import { Grid, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router';
+import connectToStores from 'alt/utils/connectToStores';
+import GwasActions from '../actions/GwasActions';
+import GwasStore from '../stores/GwasStore';
+import ExternalLink from './ExternalLink';
 
 class Footer extends React.Component {
 
@@ -32,14 +32,14 @@ class Footer extends React.Component {
     }
 
     render() {
-        const statistics = this.props.requests ? <div>{this.props.requests.get("local")} / {this.props.requests.get("total")}</div> : "";
+        const statistics = this.props.requests ? <div>{this.props.requests.get('local')} / {this.props.requests.get('total')}</div> : '';
         return (
             <div>
                 <hr />
                 <Grid>
                     <Row>
                         <Col xs={12}>
-                            <footer style={{ fontSize: 11, color: "#aaa", textAlign: "center", paddingBottom: 50 }}>
+                            <footer style={{ fontSize: 11, color: '#aaa', textAlign: 'center', paddingBottom: 50 }}>
                                 <Link to="/about">About</Link> this service.<br />
                                 GWAS data from <ExternalLink href="https://www.ebi.ac.uk/gwas/docs/downloads">NHGRI-EBI</ExternalLink>, downloaded 2016-02-17.<br />
                                 The usual warnings about providing the service AS-IS applies.<br />

@@ -1,9 +1,9 @@
-import React from "react";
-import Immutable from "immutable";
-import connectToStores from "alt/utils/connectToStores";
-import { Input, Button, Table } from "react-bootstrap";
-import GwasStore from "../stores/GwasStore";
-import GwasActions from "../actions/GwasActions";
+import React from 'react';
+import Immutable from 'immutable';
+import connectToStores from 'alt/utils/connectToStores';
+import { Input, Button, Table } from 'react-bootstrap';
+import GwasStore from '../stores/GwasStore';
+import GwasActions from '../actions/GwasActions';
 
 class RsInput extends React.Component {
     constructor(props) {
@@ -69,7 +69,7 @@ class VariableForm extends React.Component {
     }
 
     render() {
-        const csv = this.state.rsids.filter((v) => v).map((v, k) => k).join("\r\n") + "\r\n";
+        const csv = this.state.rsids.filter((v) => v).map((v, k) => k).join('\r\n') + '\r\n';
         const nonempty = this.state.rsids.filter((v) => v).count();
         return (
             <form action={`/variables/${this.state.trait}`} method="post">

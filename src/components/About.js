@@ -1,6 +1,6 @@
-import React from "react";
-import { Grid, Row, Col } from "react-bootstrap";
-import ExternalLink from "./ExternalLink";
+import React from 'react';
+import { Grid, Row, Col } from 'react-bootstrap';
+import ExternalLink from './ExternalLink';
 
 class Footer extends React.Component {
     render() {

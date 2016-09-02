@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const ResultSchema = new mongoose.Schema({
     SNP_ID_CURRENT: { type: String },
@@ -8,15 +8,15 @@ const ResultSchema = new mongoose.Schema({
     SNPS: { type: String },
     CHR_ID: { type: Number },
     CHR_POS: { type: Number },
-    "DISEASE/TRAIT": { type: String },
+    'DISEASE/TRAIT': { type: String },
     STUDY: { type: String },
     JOURNAL: { type: String },
-    "FIRST AUTHOR": { type: String },
+    'FIRST AUTHOR': { type: String },
     MAPPED_GENE: { type: String },
-    "OR or BETA": { type: String },
-    "95% CI (TEXT)": { type: String },
+    'OR or BETA': { type: String },
+    '95% CI (TEXT)': { type: String },
 });
 
-const Result = mongoose.model("gwas", ResultSchema);
+const Result = mongoose.model('gwas', ResultSchema);
 
 export default Result;

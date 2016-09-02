@@ -1,13 +1,13 @@
-import alt from "../alt";
-import axios from "axios";
+import alt from '../alt';
+import axios from 'axios';
 
 class GwasActions {
     constructor() {
-        this.generateActions("updateResults", "updateTraits", "updateRequests");
+        this.generateActions('updateResults', 'updateTraits', 'updateRequests');
     }
 
     search(query, tromso = 0, unique = 0) {
-        axios.get("/search/", { params: { q: query, tromso, unique } })
+        axios.get('/search/', { params: { q: query, tromso, unique } })
         .then((response) => {
             this.actions.updateResults(response.data.results);
         })
@@ -17,14 +17,14 @@ class GwasActions {
     }
 
     fetchTraits() {
-        axios.get("/traits")
+        axios.get('/traits')
         .then((response) => {
             this.actions.updateTraits(response.data.traits);
         });
     }
 
     fetchRequests() {
-        axios.get("/requests")
+        axios.get('/requests')
         .then((response) => {
             this.actions.updateRequests(response.data.requests);
         });

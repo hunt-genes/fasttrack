@@ -1,5 +1,5 @@
-import React from "react";
-import TraitList from "./TraitList";
+import React from 'react';
+import TraitList from './TraitList';
 
 class VariableList extends React.Component {
     render() {

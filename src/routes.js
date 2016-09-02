@@ -1,10 +1,10 @@
-import React from "react";
-import { Route, Redirect, IndexRoute } from "react-router";
-import App from "./components/App";
-import Variables from "./components/Variables";
-import VariableList from "./components/VariableList";
-import VariableForm from "./components/VariableForm";
-import About from "./components/About";
+import React from 'react';
+import { Route, Redirect, IndexRoute } from 'react-router';
+import App from './components/App';
+import Variables from './components/Variables';
+import VariableList from './components/VariableList';
+import VariableForm from './components/VariableForm';
+import About from './components/About';
 
 const routes = (
     <Route>

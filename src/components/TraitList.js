@@ -1,9 +1,9 @@
-import React from "react";
-import connectToStores from "alt/utils/connectToStores";
-import GwasStore from "../stores/GwasStore";
-import GwasActions from "../actions/GwasActions";
-import { Link } from "react-router";
-import ExternalLink from "./ExternalLink";
+import React from 'react';
+import connectToStores from 'alt/utils/connectToStores';
+import GwasStore from '../stores/GwasStore';
+import GwasActions from '../actions/GwasActions';
+import { Link } from 'react-router';
+import ExternalLink from './ExternalLink';
 
 class TraitList extends React.Component {
 
@@ -31,21 +31,21 @@ class TraitList extends React.Component {
     }
 
     render() {
-        const linkPrefix = this.props.linkPrefix || "/search/?q=";
+        const linkPrefix = this.props.linkPrefix || '/search/?q=';
         return (
             <div>
                 {this.props.introduction ?
-                    <p style={{ margin: "0 auto", textAlign: "center" }}>
+                    <p style={{ margin: '0 auto', textAlign: 'center' }}>
                         <em>{this.props.introduction}</em>
                     </p>
                     : null
                 }
-                <ul style={{ WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: "none", paddingLeft: 0 }}>
+                <ul style={{ WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: 'none', paddingLeft: 0 }}>
                     {this.props.traits ?
                         this.props.traits.map(
-                            trait => <li key={trait.get("_id")}>
-                                <Link to={`${linkPrefix}${trait.get("_id")}`}>{trait.get("_id")}</Link> <ExternalLink href={trait.get("uri")} />
-                            </li>) : ""
+                            trait => <li key={trait.get('_id')}>
+                                <Link to={`${linkPrefix}${trait.get('_id')}`}>{trait.get('_id')}</Link> <ExternalLink href={trait.get('uri')} />
+                            </li>) : ''
                     }
                 </ul>
             </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 class ImputationResults extends React.Component {
     render() {
@@ -7,11 +7,11 @@ class ImputationResults extends React.Component {
         }
         return (
             <div>
-                {this.props.imputed.get("tromso").get("MAF")}
+                {this.props.imputed.get('tromso').get('MAF')}
                 <br />
-                {this.props.imputed.get("tromso").get("REF")}
+                {this.props.imputed.get('tromso').get('REF')}
                 {" "}
-                {this.props.imputed.get("tromso").get("ALT")}
+                {this.props.imputed.get('tromso').get('ALT')}
             </div>
         );
     }

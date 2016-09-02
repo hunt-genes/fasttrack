@@ -1,12 +1,12 @@
-import React from "react";
-import connectToStores from "alt/utils/connectToStores";
-import GwasActions from "../actions/GwasActions";
-import GwasStore from "../stores/GwasStore";
-import { Input, Button, Table, Alert, Grid, Row, Col, Image } from "react-bootstrap";
-import { Link } from "react-router";
-import Footer from "./Footer";
-import TraitList from "./TraitList";
-import Result from "./Result";
+import React from 'react';
+import connectToStores from 'alt/utils/connectToStores';
+import GwasActions from '../actions/GwasActions';
+import GwasStore from '../stores/GwasStore';
+import { Input, Button, Table, Alert, Grid, Row, Col, Image } from 'react-bootstrap';
+import { Link } from 'react-router';
+import Footer from './Footer';
+import TraitList from './TraitList';
+import Result from './Result';
 
 class App extends React.Component {
     static getStores() {
@@ -28,7 +28,7 @@ class App extends React.Component {
         this.onUniqueChange = this.onUniqueChange.bind(this);
 
         this.state = {
-            query: this.props.location.query.q || "",
+            query: this.props.location.query.q || '',
             tromso: this.props.location.query.tromso || false,
             unique: this.props.location.query.unique || false,
         };
@@ -39,13 +39,13 @@ class App extends React.Component {
         const newLocation = nextProps.location;
         const q = location.query.q;
         const newQ = newLocation.query.q;
-        const tromso = location.query.tromso === "true";
-        const newTromso = newLocation.query.tromso === "true";
-        const unique = location.query.unique === "true";
-        const newUnique = newLocation.query.unique === "true";
+        const tromso = location.query.tromso === 'true';
+        const newTromso = newLocation.query.tromso === 'true';
+        const unique = location.query.unique === 'true';
+        const newUnique = newLocation.query.unique === 'true';
         if (q !== newQ || tromso !== newTromso || unique !== newUnique) {
             this.setState({
-                query: newQ || "",
+                query: newQ || '',
                 tromso: newTromso || false,
                 unique: newUnique || false,
             });
@@ -100,7 +100,7 @@ class App extends React.Component {
                 </Grid>
             );
         }
-        const exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{ float: "right", marginTop: -37, marginRight: 5 }} download><i className="fa fa-download"></i> <span className="hidden-xs">Export</span></Button>;
+        const exportButton = <Button href={`/search/?q=${this.props.location.query.q}.csv`} style={{ float: 'right', marginTop: -37, marginRight: 5 }} download><i className="fa fa-download"></i> <span className="hidden-xs">Export</span></Button>;
         return (
             <div>
                 {exportButton}
@@ -120,8 +120,8 @@ class App extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.results.get("data").map(result =>
-                            <Result key={result.get("_id")} data={result} />
+                        {this.props.results.get('data').map(result =>
+                            <Result key={result.get('_id')} data={result} />
                         )}
                     </tbody>
                 </Table>
@@ -131,7 +131,7 @@ class App extends React.Component {
 
     render() {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
-        const resultheader = <h2 style={{ textAlign: "center" }}>{this.props.results.get("different")} unique RS numbers in {this.props.results.get("total")} results <small>for <i>P</i> &lt; 5x10<sup>-8</sup></small></h2>;
+        const resultheader = <h2 style={{ textAlign: 'center' }}>{this.props.results.get('different')} unique RS numbers in {this.props.results.get('total')} results <small>for <i>P</i> &lt; 5x10<sup>-8</sup></small></h2>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
         const help = (
             <Row>
