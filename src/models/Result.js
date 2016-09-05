@@ -17,6 +17,22 @@ const ResultSchema = new mongoose.Schema({
     '95% CI (TEXT)': { type: String },
 });
 
+ResultSchema.set('toJSON', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
+ResultSchema.set('toObject', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
 const Result = mongoose.model('gwas', ResultSchema);
 
 export default Result;

@@ -23,6 +23,22 @@ RequestSchema
     this.set('remote_address', ip.toBuffer(value));
 });
 
+RequestSchema.set('toJSON', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
+RequestSchema.set('toObject', {
+    versionKey: false,
+    transform: (document, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    },
+});
+
 const Request = mongoose.model('requests', RequestSchema);
 
 export default Request;

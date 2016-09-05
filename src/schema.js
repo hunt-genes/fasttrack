@@ -19,6 +19,62 @@ import {
 
 import Result from './models/Result';
 
+import { startsWith, endsWith, each, values } from 'lodash';
+
+function prepareQuery(_query, options = {}) {
+    const query = {};
+    const fields = [];
+
+    const tromso = options.tromso || false;
+    const unique = options.unique || false;
+
+    let q = _query;
+    // query param handling
+    if (q && q.length < 3) {
+        q = '';
+    }
+    if (q) {
+        // TODO: Should we fix the SNP field to be an integer? YES, it's not
+        // even working normally now, but that may be a different issue.
+        const chrSearch = q.match(/^chr(\w+):(\d+)$/);
+        if (!isNaN(q)) {
+            fields.push({ PUBMEDID: q });
+            fields.push({ SNPS: 'rs' + q });
+        }
+        else if (chrSearch) {
+            const [_, chrid, chrpos] = chrSearch;
+            query.CHR_ID = +chrid;
+            query.CHR_POS = +chrpos;
+        }
+        else if (startsWith(q, 'rs')) {
+            /*
+            q = q.replace("rs", "");
+            if (!isNaN(q)) {
+                fields.push({SNP_ID_CURRENT: q});
+            }
+            */
+            fields.push({ SNPS: q });
+        }
+        else {
+            const r = RegExp(q, 'i');
+            fields.push({ REGION: { $regex: r } });
+            fields.push({ 'FIRST AUTHOR': { $regex: r } });
+            fields.push({ traits: { $regex: r } });
+            fields.push({ 'DISEASE/TRAIT': { $regex: r } });
+            fields.push({ 'MAPPED_GENE': { $regex: r } });
+        }
+    }
+    if (fields.length) {
+        query.$or = fields;
+    }
+    if (tromso) {
+        query.imputed = { $exists: 1 };
+    }
+    query['P-VALUE'] = { $lt: 0.00000005, $exists: 1, $ne: null };
+
+    return query;
+}
+
 class ResultDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
@@ -58,12 +114,27 @@ const searchQueryType = new GraphQLObjectType({
                     type: new GraphQLNonNull(GraphQLString),
                 },
             },
-            resolve: (_, args) => {
-                console.log("GERAjala", args, args.term);
-                //Result.find().limit(2).exec((err, data) => { console.log(data); });
-                return Result.find().limit(10).exec();
-            },
+            resolve: (_, args) => Result.find(prepareQuery(args.term)).limit(1000).sort('CHR_ID CHR_POS').exec(),
         },
+        count: {
+            type: GraphQLInt,
+            args: {
+                term: {
+                    type: new GraphQLNonNull(GraphQLString),
+                },
+            },
+            resolve: (_, args) => Result.aggregate(
+                { $match: prepareQuery(args.term) },
+                { $group: { _id: '$SNP_ID_CURRENT', count: { $sum: 1 } } },
+            ).exec().then(data => data.length),
+        }
+    },
+});
+
+// TODO: Use grouped data for variable ordering
+const snpsPerTraitType = new GraphQLObjectType({
+    name: 'SnpsPerTrait',
+    fields: {
     },
 });
 

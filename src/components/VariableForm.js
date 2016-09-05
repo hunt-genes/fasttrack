@@ -60,12 +60,11 @@ class VariableForm extends React.Component {
     }
 
     render() {
-        let variables = this.props.relay.variables;
         // const csv = this.state.rsids.filter((v) => v).map((v, k) => k).join('\r\n') + '\r\n';
         const nonempty = this.state.rsids.filter((v) => v).count();
         return (
             <form action={`/variables/${this.state.trait}`} method="post">
-                <h2>Trait: {this.state.trait}</h2>
+                <h2>Trait: {this.props.relay.variables.term}</h2>
                 <Table>
                     <thead>
                         <tr>
@@ -98,6 +97,7 @@ class VariableForm extends React.Component {
                         }
                     </tbody>
                 </Table>
+                <div>{this.props.searchQuery.count}</div>
                 <Button bsStyle="primary" type="submit" download disabled={!nonempty}>Download</Button>
             </form>
         );
@@ -106,7 +106,7 @@ class VariableForm extends React.Component {
 
 export default Relay.createContainer(VariableForm, {
     initialVariables: {
-        term: '',
+        term: null,
     },
     fragments: {
         searchQuery: () => Relay.QL`
@@ -117,6 +117,9 @@ export default Relay.createContainer(VariableForm, {
                 id
                 SNP_ID_CURRENT
             }
+            count(
+                term: $term
+            )
         }`,
     },
 });
