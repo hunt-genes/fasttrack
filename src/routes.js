@@ -1,23 +1,34 @@
 import React from 'react';
-import { Route, Redirect, IndexRoute } from 'react-router';
+import Relay from 'react-relay';
+import { Route, Redirect, IndexRoute, createRoutes } from 'react-router';
 import App from './components/App';
 import Variables from './components/Variables';
 import VariableList from './components/VariableList';
 import VariableForm from './components/VariableForm';
 import About from './components/About';
 
-const routes = (
+export const queries = {
+    searchQuery: (Component, vars) => {
+        console.log(vars);
+        return Relay.QL`
+    query {
+        searchQuery {
+            ${Component.getFragment('searchQuery', vars)}
+        }
+    }`;
+    }
+};
+
+export default createRoutes(
     <Route>
         <Route path="/search" component={App}>
             <Route path=":q" ignoreScrollBehaviour />
         </Route>
-        <Route path="/variables" component={Variables} >
+        <Route path="/variables" component={Variables}>
             <IndexRoute component={VariableList} />
-            <Route path=":q" component={VariableForm} />
+            <Route path=":term" component={VariableForm} queries={queries} />
         </Route>
         <Route path="/about" component={About} />
         <Redirect from="/" to="/search" />
     </Route>
 );
-
-module.exports = routes;

@@ -1,7 +1,5 @@
 import React from 'react';
-import connectToStores from 'alt/utils/connectToStores';
-import GwasActions from '../actions/GwasActions';
-import GwasStore from '../stores/GwasStore';
+import Relay from 'react-relay';
 import { Input, Button, Table, Alert, Grid, Row, Col, Image } from 'react-bootstrap';
 import { Link } from 'react-router';
 import Footer from './Footer';
@@ -9,15 +7,6 @@ import TraitList from './TraitList';
 import Result from './Result';
 
 class App extends React.Component {
-    static getStores() {
-        return [GwasStore];
-    }
-
-    static getPropsFromStores() {
-        return {
-            results: GwasStore.getResults(),
-        };
-    }
 
     constructor(props) {
         super(props);
@@ -190,4 +179,15 @@ App.propTypes = {
     history: React.PropTypes.object,
 };
 
-export default connectToStores(App);
+export default Relay.createContainer(App, {
+    fragments: {
+        searchQuery: () => Relay.QL`
+        fragment on SearchQuery {
+            term
+            results {
+                id
+                SNP_ID_CURRENT
+            }
+        }`,
+    },
+});

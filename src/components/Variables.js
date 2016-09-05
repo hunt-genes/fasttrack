@@ -1,24 +1,13 @@
 import React from 'react';
-import connectToStores from 'alt/utils/connectToStores';
-import { Input, Button, Table, Alert, Grid, Row, Col, Image, PageHeader } from 'react-bootstrap';
-import TraitList from './TraitList';
+import { Grid, Row, Col, PageHeader } from 'react-bootstrap';
 import Footer from './Footer';
-import GwasStore from '../stores/GwasStore';
-import GwasActions from '../actions/GwasActions';
 
 class Variables extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            query: this.props.location.query.q || '',
-        };
-    }
-    static getStores() {
-        return [];
-    }
-
-    static getPropsFromStores() {
-        return {
+            //query: this.props.location.query.q || '',
         };
     }
 
@@ -39,4 +28,4 @@ class Variables extends React.Component {
     }
 }
 
-export default connectToStores(Variables);
+export default Variables;

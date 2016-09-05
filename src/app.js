@@ -108,7 +108,7 @@ app.get('/requests', (req, res, next) => {
     });
 });
 
-app.get('/search/', (req, res, next) => {
+app.get('_/search/', (req, res, next) => {
     let download = false;
     const query = {};
     const fields = [];
@@ -293,7 +293,7 @@ app.use((req, res) => {
 
 app.use('/graphql', graphqlHTTP(req => ({
     schema,
-    rootValue: { query: null },
+    rootValue: { term: 'foot' },
     pretty: process.env.NODE_ENV !== 'production',
     graphiql: process.env.NODE_ENV !== 'production',
 })));
@@ -325,6 +325,7 @@ function renderFullPage(renderedContent, initialState, head = {
 
 /** Universal app endpoint **/
 app.get('*', (req, res, next) => {
+    console.log("url", req.url, routes);
     match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
         if (err) {
             return next(err);
@@ -336,8 +337,9 @@ app.get('*', (req, res, next) => {
         else if (renderProps) {
             const rootValue = {};
             if (req.query.q) {
-                rootValue.query = req.query.q;
+                rootValue.term = 'foot';
             }
+            rootValue.term = 'foot';
 
             const networkLayer = new RelayLocalSchema.NetworkLayer({
                 schema,
@@ -346,7 +348,6 @@ app.get('*', (req, res, next) => {
             });
             return Router.prepareData(renderProps, networkLayer).then(({ data, props }) => {
                 try {
-                    global.navigator = { userAgent: req.headers['user-agent'] };
                     const renderedContent = ReactDOMServer.renderToString(Router.render(props));
                     // const helmet = Helmet.rewind();
 
@@ -360,6 +361,39 @@ app.get('*', (req, res, next) => {
         }
         return next();
     });
+});
+
+app.use((err, req, res, next) => {
+    console.error("Error!", err);
+    res.format({
+        html: () => {
+            res.sendStatus(500);
+        },
+        json: () => {
+            res.status(500).json({
+                error: err.message,
+            });
+        },
+    });
+});
+
+app.use((req, res, next) => {
+    res.format({
+        html: () => {
+            res.sendStatus(404);
+        },
+        json: () => {
+            res.status(404).json({
+                error: 'Not Found',
+                status: 404,
+            });
+        },
+    });
+});
+
+process.on('uncaughtException', (err) => {
+    console.error(err);
+    process.exit(1);
 });
 
 export default app;

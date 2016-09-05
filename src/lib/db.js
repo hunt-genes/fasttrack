@@ -1,4 +1,8 @@
 import mongoose from 'mongoose';
+import Promise from 'bluebird';
+
+mongoose.Promise = Promise;
+
 
 let db;
 if (process.env.NODE_ENV === 'test') {

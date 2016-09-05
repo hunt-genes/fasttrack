@@ -29,8 +29,8 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
     },
     (obj) => {
-        if (obj instanceof UserDTO) {
-            return userType;
+        if (obj instanceof ResultDTO) {
+            return resultType;
         }
         return null;
     }
@@ -47,13 +47,33 @@ const resultType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+const searchQueryType = new GraphQLObjectType({
+    name: 'SearchQuery',
+    fields: {
+        term: { type: GraphQLString },
+        results: {
+            type: new GraphQLList(resultType),
+            args: {
+                term: {
+                    type: new GraphQLNonNull(GraphQLString),
+                },
+            },
+            resolve: (_, args) => {
+                console.log("GERAjala", args, args.term);
+                //Result.find().limit(2).exec((err, data) => { console.log(data); });
+                return Result.find().limit(10).exec();
+            },
+        },
+    },
+});
+
 const queryType = new GraphQLObjectType({
     name: 'Query',
     fields: {
         node: nodeField,
-        results: {
-            type: resultType,
-            resolve: ({ query }) => Result.find().limit(10),
+        searchQuery: {
+            type: searchQueryType,
+            resolve: (_) => _,
         },
     },
 });

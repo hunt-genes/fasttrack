@@ -1,9 +1,7 @@
 import React from 'react';
+import Relay from 'react-relay';
 import Immutable from 'immutable';
-import connectToStores from 'alt/utils/connectToStores';
 import { Input, Button, Table } from 'react-bootstrap';
-import GwasStore from '../stores/GwasStore';
-import GwasActions from '../actions/GwasActions';
 
 class RsInput extends React.Component {
     constructor(props) {
@@ -28,6 +26,14 @@ class RsInput extends React.Component {
 }
 
 class VariableForm extends React.Component {
+    static propTypes = {
+        results: React.PropTypes.array,
+    }
+
+    static contextTypes = {
+        relay: Relay.PropTypes.Environtment,
+    };
+
     constructor(props) {
         super(props);
         this.onItemChange = this.onItemChange.bind(this);
@@ -38,21 +44,6 @@ class VariableForm extends React.Component {
             selectAll: false,
         };
     }
-    static getStores() {
-        return [GwasStore];
-    }
-
-    static getPropsFromStores() {
-        return {
-            results: GwasStore.getResults(),
-            rsids: GwasStore.getRsids(),
-        };
-    }
-
-    componentDidMount() {
-        GwasActions.search(this.props.params.q);
-    }
-
     componentWillReceiveProps(nextProps) {
         this.setState({ rsids: nextProps.rsids });
     }
@@ -69,7 +60,8 @@ class VariableForm extends React.Component {
     }
 
     render() {
-        const csv = this.state.rsids.filter((v) => v).map((v, k) => k).join('\r\n') + '\r\n';
+        let variables = this.props.relay.variables;
+        // const csv = this.state.rsids.filter((v) => v).map((v, k) => k).join('\r\n') + '\r\n';
         const nonempty = this.state.rsids.filter((v) => v).count();
         return (
             <form action={`/variables/${this.state.trait}`} method="post">
@@ -90,14 +82,14 @@ class VariableForm extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.rsids.keySeq().map(
-                            key => <tr key={key}>
+                        {this.props.searchQuery.results.map(
+                            result => <tr key={result.id}>
                                 <td>
                                     <RsInput
-                                        label={key}
+                                        label={result.SNP_ID_CURRENT}
                                         name="rsids"
-                                        value={key}
-                                        checked={this.state.rsids.get(key)}
+                                        value={result.SNP_ID_CURRENT}
+                                        checked={this.state.rsids.get(result.SNP_ID_CURRENT)}
                                         onChange={this.onItemChange}
                                     />
                                 </td>
@@ -112,4 +104,19 @@ class VariableForm extends React.Component {
     }
 }
 
-export default connectToStores(VariableForm);
+export default Relay.createContainer(VariableForm, {
+    initialVariables: {
+        term: '',
+    },
+    fragments: {
+        searchQuery: () => Relay.QL`
+        fragment on SearchQuery {
+            results(
+                term: $term
+            ) {
+                id
+                SNP_ID_CURRENT
+            }
+        }`,
+    },
+});

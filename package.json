@@ -17,6 +17,11 @@
     "type": "git",
     "url": "git://github.com/hunt-genes/gwasc.git"
   },
+  "metadata": {
+    "graphql": {
+      "schema": "./src/schema.json"
+    }
+  },
   "dependencies": {
     "alt": "^0.16.10",
     "axios": "^0.8.1",
