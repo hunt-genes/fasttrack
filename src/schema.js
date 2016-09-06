@@ -117,7 +117,7 @@ const searchQueryType = new GraphQLObjectType({
             args: {
                 ...connectionArgs,
             },
-            async function resolve(term, { ...args }) {
+            async resolve(term, { ...args }) {
                 return await connectionFromMongooseQuery(
                     Result.find(prepareQuery('foot')).limit(1000).sort('CHR_ID CHR_POS'),
                     args,
