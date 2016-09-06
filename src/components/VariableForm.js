@@ -81,14 +81,14 @@ class VariableForm extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.searchQuery.results.map(
-                            result => <tr key={result.id}>
+                        {this.props.searchQuery.results.edges.map(
+                            edge => <tr key={edge.node.id}>
                                 <td>
                                     <RsInput
-                                        label={result.SNP_ID_CURRENT}
+                                        label={edge.node.SNP_ID_CURRENT}
                                         name="rsids"
-                                        value={result.SNP_ID_CURRENT}
-                                        checked={this.state.rsids.get(result.SNP_ID_CURRENT)}
+                                        value={edge.node.SNP_ID_CURRENT}
+                                        checked={this.state.rsids.get(edge.node.SNP_ID_CURRENT)}
                                         onChange={this.onItemChange}
                                     />
                                 </td>
@@ -111,11 +111,14 @@ export default Relay.createContainer(VariableForm, {
     fragments: {
         searchQuery: () => Relay.QL`
         fragment on SearchQuery {
-            results(
-                term: $term
-            ) {
-                id
-                SNP_ID_CURRENT
+            results(first:3)
+            {
+                edges {
+                    node {
+                        id
+                        SNP_ID_CURRENT
+                    }
+                }
             }
             count(
                 term: $term

@@ -15,7 +15,11 @@ import {
   globalIdField,
   mutationWithClientMutationId,
   nodeDefinitions,
+  connectionDefinitions,
+  connectionArgs,
 } from 'graphql-relay';
+
+import connectionFromMongooseQuery from 'relay-mongoose-connection';
 
 import Result from './models/Result';
 
@@ -106,15 +110,19 @@ const resultType = new GraphQLObjectType({
 const searchQueryType = new GraphQLObjectType({
     name: 'SearchQuery',
     fields: {
+        id: globalIdField('SearchQuery'),
         term: { type: GraphQLString },
         results: {
-            type: new GraphQLList(resultType),
+            type: connectionDefinitions({ name: 'Result', nodeType: resultType }).connectionType,
             args: {
-                term: {
-                    type: new GraphQLNonNull(GraphQLString),
-                },
+                ...connectionArgs,
             },
-            resolve: (_, args) => Result.find(prepareQuery(args.term)).limit(1000).sort('CHR_ID CHR_POS').exec(),
+            async resolve(term, { ...args }) {
+                return await connectionFromMongooseQuery(
+                    Result.find(prepareQuery('foot')).limit(1000).sort('CHR_ID CHR_POS'),
+                    args,
+                );
+            },
         },
         count: {
             type: GraphQLInt,
@@ -127,8 +135,9 @@ const searchQueryType = new GraphQLObjectType({
                 { $match: prepareQuery(args.term) },
                 { $group: { _id: '$SNP_ID_CURRENT', count: { $sum: 1 } } },
             ).exec().then(data => data.length),
-        }
+        },
     },
+    interfaces: [nodeInterface],
 });
 
 // TODO: Use grouped data for variable ordering
