@@ -54,7 +54,6 @@ class VariableForm extends React.Component {
     }
 
     loadMore() {
-        console.log("MOre", this.props);
         const results = this.props.searchQuery.results;
         this.props.relay.setVariables({
             pageSize: results.edges.length + pageSize,
@@ -63,9 +62,6 @@ class VariableForm extends React.Component {
 
     render() {
         const results = this.props.searchQuery.results;
-        console.log(results);
-        // const csv = this.state.rsids.filter((v) => v).map((v, k) => k).join('\r\n') + '\r\n';
-        //const nonempty = this.state.rsids.filter((v) => v).count();
         return (
             <form action={`/variables/${this.props.relay.variables.term}`} method="post">
                 <h2>Trait: {this.props.relay.variables.term}</h2>
