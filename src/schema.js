@@ -111,15 +111,15 @@ const searchQueryType = new GraphQLObjectType({
     name: 'SearchQuery',
     fields: {
         id: globalIdField('SearchQuery'),
-        term: { type: GraphQLString },
         results: {
             type: connectionDefinitions({ name: 'Result', nodeType: resultType }).connectionType,
             args: {
+                term: { type: new GraphQLNonNull(GraphQLString) },
                 ...connectionArgs,
             },
-            async resolve(term, { ...args }) {
+            async resolve(term, { ...args }) { // term here is unused for now, coming from server
                 return await connectionFromMongooseQuery(
-                    Result.find(prepareQuery('foot')).limit(1000).sort('CHR_ID CHR_POS'),
+                    Result.find(prepareQuery(args.term)).limit(1000).sort('CHR_ID CHR_POS'),
                     args,
                 );
             },

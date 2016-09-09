@@ -107,11 +107,12 @@ class VariableForm extends React.Component {
 export default Relay.createContainer(VariableForm, {
     initialVariables: {
         term: null,
+        after: null,
     },
     fragments: {
         searchQuery: () => Relay.QL`
         fragment on SearchQuery {
-            results(first:3)
+            results(first:3, term: $term, after: $after)
             {
                 edges {
                     node {
