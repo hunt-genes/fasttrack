@@ -1,7 +1,8 @@
 import React from 'react';
 import Relay from 'react-relay';
-import Immutable from 'immutable';
 import { Input, Button, Table } from 'react-bootstrap';
+
+const pageSize = 3;
 
 class RsInput extends React.Component {
     constructor(props) {
@@ -38,14 +39,7 @@ class VariableForm extends React.Component {
         super(props);
         this.onItemChange = this.onItemChange.bind(this);
         this.selectAll = this.selectAll.bind(this);
-        this.state = {
-            rsids: Immutable.OrderedMap(),
-            trait: this.props.params.q,
-            selectAll: false,
-        };
-    }
-    componentWillReceiveProps(nextProps) {
-        this.setState({ rsids: nextProps.rsids });
+        this.loadMore = this.loadMore.bind(this);
     }
 
     onItemChange(rsid) {
@@ -59,11 +53,21 @@ class VariableForm extends React.Component {
         });
     }
 
+    loadMore() {
+        console.log("MOre", this.props);
+        const results = this.props.searchQuery.results;
+        this.props.relay.setVariables({
+            pageSize: results.edges.length + pageSize,
+        });
+    }
+
     render() {
+        const results = this.props.searchQuery.results;
+        console.log(results);
         // const csv = this.state.rsids.filter((v) => v).map((v, k) => k).join('\r\n') + '\r\n';
-        const nonempty = this.state.rsids.filter((v) => v).count();
+        //const nonempty = this.state.rsids.filter((v) => v).count();
         return (
-            <form action={`/variables/${this.state.trait}`} method="post">
+            <form action={`/variables/${this.props.relay.variables.term}`} method="post">
                 <h2>Trait: {this.props.relay.variables.term}</h2>
                 <Table>
                     <thead>
@@ -73,7 +77,6 @@ class VariableForm extends React.Component {
                                     type="checkbox"
                                     label="Select all"
                                     ref="selectAll"
-                                    checked={this.state.selectAll}
                                     onChange={this.selectAll}
                                 />
                             </th>
@@ -81,14 +84,13 @@ class VariableForm extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.searchQuery.results.edges.map(
+                        {results.edges.map(
                             edge => <tr key={edge.node.id}>
                                 <td>
                                     <RsInput
                                         label={edge.node.SNP_ID_CURRENT}
                                         name="rsids"
                                         value={edge.node.SNP_ID_CURRENT}
-                                        checked={this.state.rsids.get(edge.node.SNP_ID_CURRENT)}
                                         onChange={this.onItemChange}
                                     />
                                 </td>
@@ -98,7 +100,7 @@ class VariableForm extends React.Component {
                     </tbody>
                 </Table>
                 <div>{this.props.searchQuery.count}</div>
-                <Button bsStyle="primary" type="submit" download disabled={!nonempty}>Download</Button>
+                {results.pageInfo.hasNextPage ? <Button onClick={this.loadMore}>More</Button> : null }
             </form>
         );
     }
@@ -107,18 +109,22 @@ class VariableForm extends React.Component {
 export default Relay.createContainer(VariableForm, {
     initialVariables: {
         term: null,
-        after: null,
+        pageSize,
     },
     fragments: {
         searchQuery: () => Relay.QL`
         fragment on SearchQuery {
-            results(first:3, term: $term, after: $after)
+            results(first: $pageSize, term: $term)
             {
                 edges {
                     node {
                         id
                         SNP_ID_CURRENT
                     }
+                },
+                pageInfo {
+                    endCursor
+                    hasNextPage
                 }
             }
             count(

@@ -31,6 +31,7 @@ function getIP(req) {
 }
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 // request logging middleware, logs timestamp, ip and query if defined
 app.use((req, res, next) => {
     const q = req.query.q;

@@ -183,7 +183,6 @@ export default Relay.createContainer(App, {
     fragments: {
         searchQuery: () => Relay.QL`
         fragment on SearchQuery {
-            term
             results {
                 id
                 SNP_ID_CURRENT

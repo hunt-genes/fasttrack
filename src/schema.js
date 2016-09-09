@@ -80,6 +80,7 @@ function prepareQuery(_query, options = {}) {
 }
 
 class ResultDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class SearchQueryDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -87,10 +88,17 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'Result') {
             return Result.findById(id).exec().then((result) => new ResultDTO(result.toObject()));
         }
+        if (type === 'SearchQuery') {
+            console.log("DTATA", id);
+            return new SearchQueryDTO({id: id});
+        }
     },
     (obj) => {
         if (obj instanceof ResultDTO) {
             return resultType;
+        }
+        if (obj instanceof SearchQueryDTO) {
+            return searchQueryType;
         }
         return null;
     }
