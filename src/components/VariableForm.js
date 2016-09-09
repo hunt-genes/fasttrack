@@ -54,14 +54,14 @@ class VariableForm extends React.Component {
     }
 
     loadMore() {
-        const results = this.props.searchQuery.results;
+        const results = this.props.viewer.results;
         this.props.relay.setVariables({
             pageSize: results.edges.length + pageSize,
         });
     }
 
     render() {
-        const results = this.props.searchQuery.results;
+        const results = this.props.viewer.results;
         return (
             <form action={`/variables/${this.props.relay.variables.term}`} method="post">
                 <h2>Trait: {this.props.relay.variables.term}</h2>
@@ -95,7 +95,7 @@ class VariableForm extends React.Component {
                         }
                     </tbody>
                 </Table>
-                <div>{this.props.searchQuery.count}</div>
+                <div>{this.props.viewer.count}</div>
                 {results.pageInfo.hasNextPage ? <Button onClick={this.loadMore}>More</Button> : null }
             </form>
         );
@@ -108,8 +108,8 @@ export default Relay.createContainer(VariableForm, {
         pageSize,
     },
     fragments: {
-        searchQuery: () => Relay.QL`
-        fragment on SearchQuery {
+        viewer: () => Relay.QL`
+        fragment on User {
             results(first: $pageSize, term: $term)
             {
                 edges {

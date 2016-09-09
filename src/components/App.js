@@ -181,12 +181,9 @@ App.propTypes = {
 
 export default Relay.createContainer(App, {
     fragments: {
-        searchQuery: () => Relay.QL`
-        fragment on SearchQuery {
-            results {
-                id
-                SNP_ID_CURRENT
-            }
+        viewer: () => Relay.QL`
+        fragment on User {
+            id
         }`,
     },
 });

@@ -38,8 +38,8 @@ prodConfig.plugins = prodConfig.plugins.concat(
 
 gulp.task("default", ["build-dev"]);
 gulp.task("build", ["webpack:build", "sass", "icons", "images", "assets"]);
-gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "assets", "lint"], function () {
-    gulp.watch("src/**/*.js", ["webpack:build-dev", "lint"]);
+gulp.task("build-dev", ["webpack:build-dev", "sass", "icons", "images", "assets"], function () {
+    gulp.watch("src/**/*.js", ["webpack:build-dev"]);
     gulp.watch("src/scss/*.scss", ["sass"]);
     gulp.watch("src/images/*.scss", ["images"]);
 });

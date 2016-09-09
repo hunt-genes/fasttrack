@@ -8,12 +8,11 @@ import VariableForm from './components/VariableForm';
 import About from './components/About';
 
 export const queries = {
-    searchQuery: (Component, vars) => {
-        console.log(vars);
+    viewer: (Component, vars) => {
         return Relay.QL`
     query {
-        searchQuery {
-            ${Component.getFragment('searchQuery', vars)}
+        viewer {
+        ${Component.getFragment('viewer', vars)}
         }
     }`;
     }
