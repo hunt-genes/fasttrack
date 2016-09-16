@@ -11,6 +11,9 @@ class Result extends React.Component {
         }
     }
     exp(number) {
+        if (number && typeof number === 'string') {
+            return number;
+        }
         if (number && !isNaN(number)) {
             return number.toExponential();
         }
@@ -24,7 +27,7 @@ class Result extends React.Component {
         const imputed = this.props.imputed;
         const genotyped = imputed && imputed.tromso.Genotyped;
         return (
-            <tr className={this.rowclass(result['P-VALUE'])}>
+            <tr className={this.rowclass(result.p_value)}>
                 <td>
                     <div>
                         <Link to={`/search/?q=${result.SNP_ID_CURRENT}`}>
@@ -38,10 +41,10 @@ class Result extends React.Component {
                 </td>
                 <td>
                     <div>
-                        {this.exp(result['P-VALUE']) || '0.0' }
+                        {this.exp(result.p_value) || '0.0' }
                     </div>
                     <div>
-                        {result['P-VALUE (TEXT)']}
+                        {result.p_value_text}
                     </div>
                 </td>
                 <td>
@@ -82,16 +85,16 @@ class Result extends React.Component {
                     </ul>
                 </td>
                 <td>
-                    <div>{result['OR or BETA']}</div>
-                    <div>{result['95% CI (TEXT)']}</div>
+                    <div>{result.or_or_beta}</div>
+                    <div>{result.p95_ci}</div>
                 </td>
                 <td>
                     <div>{this.getYear(result.DATE)}</div>
-                    <div className="uninteresting">{result['DATE ADDED TO CATALOG']}</div>
+                    <div className="uninteresting">{result.date_added_to_catalog}</div>
                 </td>
                 <td>
-                    <Link to={`/search/?q=${result['FIRST AUTHOR']}`}>
-                        {result['FIRST AUTHOR']}
+                    <Link to={`/search/?q=${result.first_author}`}>
+                        {result.first_author}
                     </Link>
                 </td>
                 <td>

@@ -130,6 +130,27 @@ export default Relay.createContainer(Search, {
                     node {
                         id
                         SNP_ID_CURRENT
+                        SNPS
+                        DATE
+                        MAPPED_GENE
+                        MAPPED_TRAIT
+                        or_or_beta
+                        PUBMEDID
+                        REGION
+                        CHR_ID
+                        CHR_POS
+                        CONTEXT
+                        p_value
+                        p_value_text
+                        p95_ci
+                        date_added_to_catalog
+                        first_author
+                        JOURNAL
+                        imputed {
+                            tromso {
+                                Genotyped
+                            }
+                        }
                     }
                 },
                 pageInfo {

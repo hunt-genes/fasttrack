@@ -1,19 +1,16 @@
 import {
     GraphQLBoolean,
-    GraphQLID,
     GraphQLList,
-    GraphQLNonNull,
     GraphQLObjectType,
     GraphQLSchema,
     GraphQLString,
     GraphQLInt,
-    GraphQLInputObjectType,
+    GraphQLFloat,
 } from 'graphql';
 
 import {
   fromGlobalId,
   globalIdField,
-  mutationWithClientMutationId,
   nodeDefinitions,
   connectionDefinitions,
   connectionArgs,
@@ -25,7 +22,7 @@ import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import Result from './models/Result';
 import Trait from './models/Trait';
 
-import { startsWith, endsWith, each, values } from 'lodash';
+import { startsWith } from 'lodash';
 
 function prepareQuery(_query, options = {}) {
     const query = {};
@@ -119,11 +116,44 @@ const resultType = new GraphQLObjectType({
     fields: {
         id: globalIdField('Result'),
         SNP_ID_CURRENT: { type: GraphQLString },
+        SNPS: { type: GraphQLString },
         PUBMEDID: { type: GraphQLString },
         MAPPED_TRAIT: { type: GraphQLString },
         MAPPED_GENE: { type: GraphQLString },
         DATE: { type: GraphQLString },
+        or_or_beta: { type: GraphQLString },
         strongest_snp_risk_allele: { type: GraphQLString },
+        p_value: { type: GraphQLString },
+        p_value_text: { type: GraphQLString },
+        REGION: { type: GraphQLString },
+        CHR_ID: { type: GraphQLInt },
+        CHR_POS: { type: GraphQLInt },
+        CONTEXT: { type: GraphQLString },
+        p95_ci: { type: GraphQLString },
+        date_added_to_catalog: { type: GraphQLString },
+        first_author: { type: GraphQLString },
+        JOURNAL: { type: GraphQLString },
+        imputed: { type: new GraphQLObjectType({
+            name: 'Imputed',
+            fields: {
+                tromso: { type: new GraphQLObjectType({
+                    name: 'Tromso',
+                    fields: {
+                        REF: { type: GraphQLString },
+                        ALT: { type: GraphQLString },
+                        MAF: { type: GraphQLString },
+                        AvgCall: { type: GraphQLFloat },
+                        Rsq: { type: GraphQLFloat },
+                        Genotyped: { type: GraphQLBoolean },
+                        LooRsq: { type: GraphQLFloat },
+                        EmpR: { type: GraphQLFloat },
+                        EmpRsq: { type: GraphQLFloat },
+                        Dose0: { type: GraphQLFloat },
+                        Dose1: { type: GraphQLFloat },
+                    },
+                }) },
+            },
+        }) },
     },
     interfaces: [nodeInterface],
 });
