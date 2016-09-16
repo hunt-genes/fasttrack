@@ -1,5 +1,6 @@
 import React from 'react';
-import { Input, Button, Table, Alert, Grid, Row, Col, Image } from 'react-bootstrap';
+import ReactDOM from 'react-dom';
+import { FormGroup, InputGroup, FormControl, HelpBlock, Button, Table, Alert, Grid, Row, Col, Image } from 'react-bootstrap';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
 
@@ -12,6 +13,11 @@ const pageSize = 5;
 class Search extends React.Component {
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
+        router: React.PropTypes.object.isRequired,
+    }
+
+    state = {
+        term: this.props.location.query.q,
     }
 
     componentDidMount() {
@@ -42,12 +48,19 @@ class Search extends React.Component {
 
     onSearch = (event) => {
         event.preventDefault();
-        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}`);
+        const value = ReactDOM.findDOMNode(this.refs.query).value;
+        this.context.router.push({ query: { q: value } });
     }
 
     onClear = (event) => {
         event.preventDefault();
-        this.props.history.pushState(null, `/search/?q=`);
+        this.context.router.push({ query: { q: '' } });
+    }
+
+    onChange = (event) => {
+        this.setState({
+            term: ReactDOM.findDOMNode(this.refs.query).value,
+        });
     }
 
     render() {
@@ -78,14 +91,18 @@ class Search extends React.Component {
                                     </Col>
                                     <Col sm={11}>
                                         <h1>HUNT fast-track GWAS catalog search</h1>
-                                        <Input
-                                            buttonAfter={buttons}
-                                            help={help}
-                                            placeholder="Search"
-                                            ref="query"
-                                            type="text"
-                                            value={this.props.relay.variables.term}
-                                        />
+                                        <FormGroup controlId="query">
+                                            <InputGroup>
+                                                <FormControl type="text" ref="query" placeholder="Search" value={this.state.term} onChange={this.onChange} />
+                                                <InputGroup.Button>
+                                                    <Button type="submit" bsStyle="primary">Search</Button>
+                                                </InputGroup.Button>
+                                                <InputGroup.Button>
+                                                    <Button type="reset" bsStyle="link">Clear</Button>
+                                                </InputGroup.Button>
+                                            </InputGroup>
+                                            {help && <HelpBlock>{help}</HelpBlock>}
+                                        </FormGroup>
                                     </Col>
                                 </Row>
                             </form>
@@ -101,7 +118,7 @@ class Search extends React.Component {
 
 export default Relay.createContainer(Search, {
     initialVariables: {
-        term: null,
+        term: '',
         pageSize,
     },
     fragments: {
