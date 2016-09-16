@@ -17,6 +17,10 @@ const ResultSchema = new mongoose.Schema({
     '95% CI (TEXT)': { type: String },
 });
 
+ResultSchema.virtual('strongest_snp_risk_allele').get(function () {
+    return this['STRONGEST SNP-RISK ALLELE'];
+});
+
 ResultSchema.set('toJSON', {
     versionKey: false,
     transform: (document, ret) => {

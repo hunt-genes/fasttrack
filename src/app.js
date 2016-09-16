@@ -326,7 +326,6 @@ function renderFullPage(renderedContent, initialState, head = {
 
 /** Universal app endpoint **/
 app.get('*', (req, res, next) => {
-    console.log("url", req.url, routes);
     match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
         if (err) {
             return next(err);

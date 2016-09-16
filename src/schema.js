@@ -17,11 +17,13 @@ import {
   nodeDefinitions,
   connectionDefinitions,
   connectionArgs,
+  connectionFromArray,
 } from 'graphql-relay';
 
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 
 import Result from './models/Result';
+import Trait from './models/Trait';
 
 import { startsWith, endsWith, each, values } from 'lodash';
 
@@ -67,14 +69,15 @@ function prepareQuery(_query, options = {}) {
             fields.push({ 'DISEASE/TRAIT': { $regex: r } });
             fields.push({ 'MAPPED_GENE': { $regex: r } });
         }
+
+        query['P-VALUE'] = { $lt: 0.00000005, $exists: 1, $ne: null };
+        if (fields.length) {
+            query.$or = fields;
+        }
+        if (tromso) {
+            query.imputed = { $exists: 1 };
+        }
     }
-    if (fields.length) {
-        query.$or = fields;
-    }
-    if (tromso) {
-        query.imputed = { $exists: 1 };
-    }
-    query['P-VALUE'] = { $lt: 0.00000005, $exists: 1, $ne: null };
 
     return query;
 }
@@ -103,6 +106,14 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     }
 );
 
+const traitType = new GraphQLObjectType({
+    name: 'Trait',
+    fields: {
+        id: { type: GraphQLString },
+        uri: { type: GraphQLString },
+    },
+});
+
 const resultType = new GraphQLObjectType({
     name: 'Result',
     fields: {
@@ -110,6 +121,9 @@ const resultType = new GraphQLObjectType({
         SNP_ID_CURRENT: { type: GraphQLString },
         PUBMEDID: { type: GraphQLString },
         MAPPED_TRAIT: { type: GraphQLString },
+        MAPPED_GENE: { type: GraphQLString },
+        DATE: { type: GraphQLString },
+        strongest_snp_risk_allele: { type: GraphQLString },
     },
     interfaces: [nodeInterface],
 });
@@ -121,12 +135,16 @@ const userType = new GraphQLObjectType({
         results: {
             type: connectionDefinitions({ name: 'Result', nodeType: resultType }).connectionType,
             args: {
-                term: { type: new GraphQLNonNull(GraphQLString) },
+                term: { type: GraphQLString },
                 ...connectionArgs,
             },
             async resolve(term, { ...args }) { // term here is unused for now, coming from server
+                if (!args.term || args.term.length < 3) {
+                    return connectionFromArray([], args);
+                }
+                const query = prepareQuery(args.term);
                 return await connectionFromMongooseQuery(
-                    Result.find(prepareQuery(args.term)).limit(1000).sort('CHR_ID CHR_POS'),
+                    Result.find(query).limit(1000).sort('CHR_ID CHR_POS'),
                     args,
                 );
             },
@@ -134,14 +152,16 @@ const userType = new GraphQLObjectType({
         count: {
             type: GraphQLInt,
             args: {
-                term: {
-                    type: new GraphQLNonNull(GraphQLString),
-                },
+                term: { type: GraphQLString },
             },
             resolve: (_, args) => Result.aggregate(
                 { $match: prepareQuery(args.term) },
                 { $group: { _id: '$SNP_ID_CURRENT', count: { $sum: 1 } } },
             ).exec().then(data => data.length),
+        },
+        traits: {
+            type: new GraphQLList(traitType),
+            resolve: () => Trait.find().exec(),
         },
     },
     interfaces: [nodeInterface],
