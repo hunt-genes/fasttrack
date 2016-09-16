@@ -6,15 +6,18 @@ const ResultSchema = new mongoose.Schema({
     MAPPED_TRAIT: { type: String },
     MAPPED_TRAIT_URI: { type: String },
     SNPS: { type: String },
-    CHR_ID: { type: Number },
-    CHR_POS: { type: Number },
+    CHR_ID: { type: Number, index: true },
+    CHR_POS: { type: Number, index: true },
     'DISEASE/TRAIT': { type: String },
     STUDY: { type: String },
     JOURNAL: { type: String },
     'FIRST AUTHOR': { type: String },
-    MAPPED_GENE: { type: String },
+    MAPPED_GENE: { type: String, index: true },
     'OR or BETA': { type: String },
     '95% CI (TEXT)': { type: String },
+    REGION: { type: String, index: true },
+    'P-VALUE': { type: Number, index: true },
+    traits: [{ type: String, index: true }],
 });
 
 ResultSchema.virtual('strongest_snp_risk_allele').get(function () {

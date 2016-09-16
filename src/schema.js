@@ -70,7 +70,7 @@ function prepareQuery(_query, options = {}) {
             fields.push({ 'MAPPED_GENE': { $regex: r } });
         }
 
-        query['P-VALUE'] = { $lt: 0.00000005, $exists: 1, $ne: null };
+        query['P-VALUE'] = { $lt: 0.00000005, $exists: true, $ne: null };
         if (fields.length) {
             query.$or = fields;
         }

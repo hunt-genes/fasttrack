@@ -40,6 +40,16 @@ class Search extends React.Component {
         }
     }
 
+    onSearch = (event) => {
+        event.preventDefault();
+        this.props.history.pushState(null, `/search/?q=${this.refs.query.getValue()}`);
+    }
+
+    onClear = (event) => {
+        event.preventDefault();
+        this.props.history.pushState(null, `/search/?q=`);
+    }
+
     render() {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
@@ -56,7 +66,7 @@ class Search extends React.Component {
                 <Grid>
                     <Row>
                         <Col xs={12} md={10} mdOffset={1} lg={8} lgOffset={2}>
-                            <form>
+                            <form onSubmit={this.onSearch} onReset={this.onClear}>
                                 <Row>
                                     <Col sm={1}>
                                         <Image
@@ -71,10 +81,10 @@ class Search extends React.Component {
                                         <Input
                                             buttonAfter={buttons}
                                             help={help}
-                                            onChange={this.onQueryChange}
                                             placeholder="Search"
                                             ref="query"
                                             type="text"
+                                            value={this.props.relay.variables.term}
                                         />
                                     </Col>
                                 </Row>
