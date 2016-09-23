@@ -8,7 +8,7 @@ import Footer from './Footer';
 import SearchResults from './SearchResults';
 import TraitList from './TraitList';
 
-const pageSize = 5;
+const pageSize = 50;
 
 class Search extends React.Component {
     static contextTypes = {
@@ -63,6 +63,13 @@ class Search extends React.Component {
         });
     }
 
+    loadMore = () => {
+        const results = this.props.viewer.results;
+        this.props.relay.setVariables({
+            resultsToShow: results.edges.length + pageSize,
+        });
+    }
+
     render() {
         const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
@@ -108,8 +115,16 @@ class Search extends React.Component {
                             </form>
                         </Col>
                     </Row>
+                    <Row>
+                        <Col xs={12}>
+                            <p style={{ textAlign: 'center', fontSize: '2rem' }}>
+                                {this.props.viewer.stats.unique} unique SNPs in {this.props.viewer.stats.total} results <small style={{ fontSize: '1.2rem' }}>for <span style={{ fontStyle: 'italic' }}>P</span> &lt; 5x10-8</small>
+                            </p>
+                        </Col>
+                    </Row>
                 </Grid>
                 {this.props.viewer.results.edges.length > 0 ? <SearchResults results={this.props.viewer.results} />: <TraitList viewer={this.props.viewer}/>}
+                {this.props.viewer.results.pageInfo.hasNextPage ? <Button onClick={this.loadMore}>Load more</Button> : null }
                 <Footer />
             </section>
         );
@@ -119,36 +134,36 @@ class Search extends React.Component {
 export default Relay.createContainer(Search, {
     initialVariables: {
         term: '',
-        pageSize,
+        resultsToShow: pageSize,
     },
     fragments: {
         viewer: () => Relay.QL`
         fragment on User {
-            results(first: $pageSize, term: $term)
+            results(first: $resultsToShow, term: $term)
             {
                 edges {
                     node {
                         id
-                        SNP_ID_CURRENT
-                        SNPS
-                        DATE
-                        MAPPED_GENE
-                        MAPPED_TRAIT
+                        snp_id_current
+                        snps
+                        date
+                        genes
+                        traits
                         or_or_beta
-                        PUBMEDID
-                        REGION
-                        CHR_ID
-                        CHR_POS
-                        CONTEXT
+                        pubmedid
+                        region
+                        chr_id
+                        chr_pos
+                        context
                         p_value
                         p_value_text
                         p95_ci
                         date_added_to_catalog
                         first_author
-                        JOURNAL
+                        journal
                         imputed {
                             tromso {
-                                Genotyped
+                                genotyped
                             }
                         }
                     }
@@ -158,9 +173,12 @@ export default Relay.createContainer(Search, {
                     hasNextPage
                 }
             }
-            count(
+            stats(
                 term: $term
-            )
+            ) {
+                total
+                unique
+            }
             ${TraitList.getFragment('viewer')}
         }`,
     },

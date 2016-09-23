@@ -19,7 +19,10 @@ class Result extends React.Component {
         }
     }
     getYear(datestring) {
-        return datestring.split('-').pop();
+        if (datestring) {
+            return datestring.split('-').shift();
+        }
+        return datestring;
     }
 
     render() {
@@ -30,8 +33,8 @@ class Result extends React.Component {
             <tr className={this.rowclass(result.p_value)}>
                 <td>
                     <div>
-                        <Link to={`/search/?q=${result.SNP_ID_CURRENT}`}>
-                            {result.SNPS}
+                        <Link to={`/search/?q=${result.snp_id_current}`}>
+                            {result.snps}
                         </Link>
                         <div>{ genotyped ? 'Genotyped' : imputed ? 'Imputed' : '' }</div>
                     </div>
@@ -49,24 +52,24 @@ class Result extends React.Component {
                 </td>
                 <td>
                     <div>
-                        <Link to={`/search/?q=${result.REGION}`}>
-                            {result.REGION}
+                        <Link to={`/search/?q=${result.region}`}>
+                            {result.region}
                         </Link>
                     </div>
                     <div>
-                        <Link to={result.CHR_ID ? `/search/?q=chr${result.CHR_ID}:${result.CHR_POS}` : ''}>
-                            {result.CHR_ID ? `chr${result.CHR_ID}:${result.CHR_POS}` : ''}
+                        <Link to={result.chr_id ? `/search/?q=chr${result.chr_id}:${result.chr_pos}` : ''}>
+                            {result.chr_id ? `chr${result.chr_id}:${result.chr_pos}` : ''}
                         </Link>
                     </div>
-                    <div title={result.CONTEXT} style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {result.CONTEXT}
+                    <div title={result.context} style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {result.context}
                     </div>
                 </td>
                 <td>
                     <ul>
-                        {result.MAPPED_GENE.split(' - ').map(gene =>
+                        {result.genes.map(gene =>
                             <li key={gene}>
-                                <Link to={`/search/q=${gene}`}>
+                                <Link to={`/search/?q=${gene}`}>
                                     {gene}
                                 </Link> <ExternalLink href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene}`} />
                             </li>
@@ -75,7 +78,7 @@ class Result extends React.Component {
                 </td>
                 <td>
                     <ul>
-                        {result.MAPPED_TRAIT.split(', ').map(trait =>
+                        {result.traits.map(trait =>
                         <li key={trait}>
                             <Link to={`/search/?q=${trait}`}>
                                 {trait}
@@ -89,7 +92,7 @@ class Result extends React.Component {
                     <div>{result.p95_ci}</div>
                 </td>
                 <td>
-                    <div>{this.getYear(result.DATE)}</div>
+                    <div>{this.getYear(result.date)}</div>
                     <div className="uninteresting">{result.date_added_to_catalog}</div>
                 </td>
                 <td>
@@ -98,10 +101,10 @@ class Result extends React.Component {
                     </Link>
                 </td>
                 <td>
-                    <Link to={`/search/?q=${result.PUBMEDID}`}>
-                        {result.PUBMEDID}
-                    </Link> <ExternalLink href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.PUBMEDID}`} />
-                    <div>{result.JOURNAL}</div>
+                    <Link to={`/search/?q=${result.pubmedid}`}>
+                        {result.pubmedid}
+                    </Link> <ExternalLink href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.pubmedid}`} />
+                    <div>{result.journal}</div>
                 </td>
             </tr>
         );

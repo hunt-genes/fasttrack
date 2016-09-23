@@ -84,9 +84,9 @@ class VariableForm extends React.Component {
                             edge => <tr key={edge.node.id}>
                                 <td>
                                     <RsInput
-                                        label={edge.node.SNP_ID_CURRENT}
+                                        label={edge.node.snp_id_current}
                                         name="rsids"
-                                        value={edge.node.SNP_ID_CURRENT}
+                                        value={edge.node.snp_id_current}
                                         onChange={this.onItemChange}
                                     />
                                 </td>
@@ -115,7 +115,7 @@ export default Relay.createContainer(VariableForm, {
                 edges {
                     node {
                         id
-                        SNP_ID_CURRENT
+                        snp_id_current
                     }
                 },
                 pageInfo {
@@ -123,9 +123,6 @@ export default Relay.createContainer(VariableForm, {
                     hasNextPage
                 }
             }
-            count(
-                term: $term
-            )
         }`,
     },
 });

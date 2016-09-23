@@ -41,33 +41,33 @@ function prepareQuery(_query, options = {}) {
         // even working normally now, but that may be a different issue.
         const chrSearch = q.match(/^chr(\w+):(\d+)$/);
         if (!isNaN(q)) {
-            fields.push({ PUBMEDID: q });
-            fields.push({ SNPS: 'rs' + q });
+            fields.push({ pubmedid: q });
+            fields.push({ snps: 'rs' + q });
         }
         else if (chrSearch) {
             const [_, chrid, chrpos] = chrSearch;
-            query.CHR_ID = +chrid;
-            query.CHR_POS = +chrpos;
+            query.chr_id = +chrid;
+            query.chr_pos = +chrpos;
         }
         else if (startsWith(q, 'rs')) {
             /*
             q = q.replace("rs", "");
             if (!isNaN(q)) {
-                fields.push({SNP_ID_CURRENT: q});
+                fields.push({snp_id_current: q});
             }
             */
-            fields.push({ SNPS: q });
+            fields.push({ snps: q });
         }
         else {
             const r = RegExp(q, 'i');
-            fields.push({ REGION: { $regex: r } });
-            fields.push({ 'FIRST AUTHOR': { $regex: r } });
+            fields.push({ region: { $regex: r } });
+            fields.push({ first_author: { $regex: r } });
             fields.push({ traits: { $regex: r } });
-            fields.push({ 'DISEASE/TRAIT': { $regex: r } });
-            fields.push({ 'MAPPED_GENE': { $regex: r } });
+            fields.push({ disease_trait: { $regex: r } });
+            fields.push({ mapped_gene: { $regex: r } });
         }
 
-        query['P-VALUE'] = { $lt: 0.00000005, $exists: true, $ne: null };
+        query.p_value = { $lt: 0.00000005, $exists: true, $ne: null };
         if (fields.length) {
             query.$or = fields;
         }
@@ -115,41 +115,43 @@ const resultType = new GraphQLObjectType({
     name: 'Result',
     fields: {
         id: globalIdField('Result'),
-        SNP_ID_CURRENT: { type: GraphQLString },
-        SNPS: { type: GraphQLString },
-        PUBMEDID: { type: GraphQLString },
-        MAPPED_TRAIT: { type: GraphQLString },
-        MAPPED_GENE: { type: GraphQLString },
-        DATE: { type: GraphQLString },
+        snp_id_current: { type: GraphQLString },
+        snps: { type: GraphQLString },
+        pubmedid: { type: GraphQLString },
+        mapped_trait: { type: GraphQLString },
+        mapped_gene: { type: GraphQLString },
+        date: { type: GraphQLString },
         or_or_beta: { type: GraphQLString },
         strongest_snp_risk_allele: { type: GraphQLString },
         p_value: { type: GraphQLString },
         p_value_text: { type: GraphQLString },
-        REGION: { type: GraphQLString },
-        CHR_ID: { type: GraphQLInt },
-        CHR_POS: { type: GraphQLInt },
-        CONTEXT: { type: GraphQLString },
+        region: { type: GraphQLString },
+        chr_id: { type: GraphQLInt },
+        chr_pos: { type: GraphQLInt },
+        context: { type: GraphQLString },
         p95_ci: { type: GraphQLString },
         date_added_to_catalog: { type: GraphQLString },
         first_author: { type: GraphQLString },
-        JOURNAL: { type: GraphQLString },
+        journal: { type: GraphQLString },
+        traits: { type: new GraphQLList(GraphQLString) },
+        genes: { type: new GraphQLList(GraphQLString) },
         imputed: { type: new GraphQLObjectType({
             name: 'Imputed',
             fields: {
                 tromso: { type: new GraphQLObjectType({
                     name: 'Tromso',
                     fields: {
-                        REF: { type: GraphQLString },
-                        ALT: { type: GraphQLString },
-                        MAF: { type: GraphQLString },
-                        AvgCall: { type: GraphQLFloat },
-                        Rsq: { type: GraphQLFloat },
-                        Genotyped: { type: GraphQLBoolean },
-                        LooRsq: { type: GraphQLFloat },
-                        EmpR: { type: GraphQLFloat },
-                        EmpRsq: { type: GraphQLFloat },
-                        Dose0: { type: GraphQLFloat },
-                        Dose1: { type: GraphQLFloat },
+                        ref: { type: GraphQLString },
+                        alt: { type: GraphQLString },
+                        maf: { type: GraphQLString },
+                        avgcall: { type: GraphQLFloat },
+                        rsq: { type: GraphQLFloat },
+                        genotyped: { type: GraphQLBoolean },
+                        loorsq: { type: GraphQLFloat },
+                        empr: { type: GraphQLFloat },
+                        emprsq: { type: GraphQLFloat },
+                        dose0: { type: GraphQLFloat },
+                        dose1: { type: GraphQLFloat },
                     },
                 }) },
             },
@@ -179,15 +181,30 @@ const userType = new GraphQLObjectType({
                 );
             },
         },
-        count: {
-            type: GraphQLInt,
+        stats: {
+            type: new GraphQLObjectType({
+                name: 'Stats',
+                fields: {
+                    unique: { type: GraphQLInt },
+                    total: { type: GraphQLInt },
+                },
+            }),
             args: {
                 term: { type: GraphQLString },
             },
             resolve: (_, args) => Result.aggregate(
                 { $match: prepareQuery(args.term) },
-                { $group: { _id: '$SNP_ID_CURRENT', count: { $sum: 1 } } },
-            ).exec().then(data => data.length),
+                { $group: { _id: '$snp_id_current', count: { $sum: 1 } } },
+            ).exec().then(count => {
+                const total = count.reduce((previous, current) => {
+                    return previous + current.count;
+                }, 0);
+                const unique = count.length;
+                return {
+                    unique,
+                    total,
+                };
+            }),
         },
         traits: {
             type: new GraphQLList(traitType),

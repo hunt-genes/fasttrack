@@ -1,8 +1,10 @@
 from pymongo import MongoClient
 import csv
+import argparse
+import re
 
 mongo_client = MongoClient()
-db = mongo_client.gwasc
+db = mongo_client.fasttrack
 
 
 def is_int(value):
@@ -17,6 +19,11 @@ traits = {}
 db.drop_collection("gwas")
 db.drop_collection("traits")
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument("filename", help="Filename to tsv file")
+args = parser.parse_args()
+
 # with open('freq-table-hunt.csv') as tsvfile:
     # freqs = csv.reader(tsvfile, delimiter='\t')
     # for row in freqs:
@@ -24,36 +31,31 @@ db.drop_collection("traits")
         # if is_int(snp):
             # data[snp] = row[3]
 
-with open('gwas_catalog_v1.0.1-downloaded_2016-02-17.tsv') as tsvfile:
+with open(args.filename) as tsvfile:
     gwas = csv.reader(tsvfile, delimiter='\t')
     header_line = True
-    headers = None
     pvalue_index = None
-    i = 0
-    for row in gwas:
-        if False:
-            continue
-        i += 1
-
+    for i, row in enumerate(gwas):
+        row_data = None
         if header_line:
-            headers = row
+            __headers = [ re.sub(r"\W+", "_", header).strip("_").lower().replace("95_ci_text", "p95_ci_text") for header in row ]
 
-            pvalue_index = row.index("P-VALUE")
-            mapped_trait_index = row.index("MAPPED_TRAIT")
-            mapped_trait_uri_index = row.index("MAPPED_TRAIT_URI")
-            chr_id_index = row.index("CHR_ID")
-            chr_pos_index = row.index("CHR_POS")
+            snp_id_current_index = __headers.index("snp_id_current")
+            chr_id_index = __headers.index("chr_id")
+            chr_pos_index = __headers.index("chr_pos")
+            region_index = __headers.index("region")
+            snps_index = __headers.index("snps")
+            pvalue_index = __headers.index("p_value")
+            mapped_trait_index = __headers.index("mapped_trait")
+            mapped_trait_uri_index = __headers.index("mapped_trait_uri")
+            mapped_gene_index = __headers.index("mapped_gene")
+            reported_gene_s_index = __headers.index("reported_gene_s")
+            strongest_snp_risk_allele_index = __headers.index("strongest_snp_risk_allele")
+            context_index = __headers.index("context")
 
             header_line = False
 
         else:
-            __headers = list(headers)
-
-            # snp = row[23]
-            # if snp in data:
-                # hunt = data[snp]
-                # __headers.append("hunt")
-                # row.append(hunt)
 
             # parse pvalue
             try:
@@ -61,35 +63,88 @@ with open('gwas_catalog_v1.0.1-downloaded_2016-02-17.tsv') as tsvfile:
             except:
                 pass
 
-            # parse chr_id
-            if row[chr_id_index]:
-                try:
-                    row[chr_id_index] = int(row[chr_id_index])
-                except:
-                    print("ERROR: could not parse CHR_ID <", row[chr_id_index], "as int")
-
-            # parse chr_pos
-            if row[chr_pos_index]:
-                try:
-                    row[chr_pos_index] = int(row[chr_pos_index])
-                except:
-                    print("ERROR: could not parse CHR_POS <", row[chr_id_index], "as int")
-
-            # parse and split traits
-            trait_ids = [trait.strip().replace(".", "").lower() for trait in row[mapped_trait_index].split(",")]
+            # parse and split traits - not depending on chr_id
+            trait_ids = [trait.strip().replace(".", "_").lower() for trait in row[mapped_trait_index].split(",")]
             if trait_ids:
-                __headers.append("traits")
-                row.append(trait_ids)
                 if isinstance(row[pvalue_index], float) and row[pvalue_index] < 0.00000005:
                     trait_uris = [trait_uri.strip() for trait_uri in row[mapped_trait_uri_index].split(",")]
                     traits_with_uris = zip(trait_ids, trait_uris)
                     for trait, uri in traits_with_uris:
                         traits[trait] = uri
 
-            row_data = dict(zip(__headers, row))
-            db.gwas.insert(row_data)
-            # print(i, snp)
+            # parse chr_id
+            if row[chr_id_index]:
+                row_data = dict(zip(__headers, row))
+                row_data["traits"] = trait_ids
+                # if ";" in _chr:
+                    # # validate contents. all should be equal?
+                    # v = set()
+                    # [ v.add(c) for c in _chr.split(";") ]
+                    # if len(v) > 1:
+                        # print("ERROR", _chr, "has more than one value")
+                    # _chr = _chr.split(";")[0]
+
+                chrs = re.split(r" x |;", row[chr_id_index])
+                pos = re.split(r" x |;", row[chr_pos_index])
+                regions = re.split(r" x |;", row[region_index])
+                snps = re.split(r" x |;", row[snps_index])
+                risk = re.split(r" x |;", row[strongest_snp_risk_allele_index])
+                reported = re.split(r" x |;", row[reported_gene_s_index])
+                mapped = re.split(r" x |;", row[mapped_gene_index])
+                context = re.split(r" x |;", row[context_index])
+
+                chr_set = set(chrs)
+                pos_set = set(pos)
+                snps_set = set(snps)
+                risk_set = set(risk)
+                reported_set = set(reported)
+                mapped_set = set(mapped)
+                context_set = set(context)
+
+                for _c, j in enumerate(chrs):
+                    if _c != "X" and _c != "Y":
+                        try:
+                            int(_c)
+                        except:
+                            print("ERROR: could not parse CHR_ID", row[chr_id_index], _c, "as int", zip(__headers, row))
+                            raise KeyError
+
+                row_data["chr_set"] = list(chr_set)
+                row_data["pos_set"] = list(pos_set)
+                row_data["snps_set"] = list(snps_set)
+                row_data["risk_set"] = list(risk_set)
+                row_data["reported_set"] = list(reported_set)
+                row_data["mapped_set"] = list(mapped_set)
+                row_data["context_set"] = list(context_set)
+
+                if " x " in row[mapped_trait_index]:
+                    print("ERROR: we do not support x operator in mapped trait field", row[mapped_trait_index])
+                    raise KeyError
+
+                genes = set()
+                [ [ genes.add(gene) for gene in m.split(" - ") ] for m in mapped_set  ]
+                row_data["genes"] = list(genes)
+
+                # if this uses "x" as separator, this indicates gene interactions and strict format
+                if " x " in row[chr_id_index] and not (len(chrs) == len(pos) == len(regions) == len(risk) == len(mapped)):
+                    interactions = []
+                    for _c, _i in enumerate(chrs):
+                        interactions.append(dict(
+                            chr_id=_c,
+                            chr_pos=pos[_i],
+                            snps=snps[_i],
+                            strongest_snp_risk_allele=risk[_i],
+                            reported_gene_s=reported[_i],
+                            mapped_gene=mapped[_i],
+                            ))
+
+                    row_data["interactions"] = interactions
+
+                # print chrs, pos, snps, risk, reported, mapped
+
+                db.gwas.insert_one(row_data)
+
 
     for trait, uri in traits.items():
-        _id = trait.replace(".", "")
+        _id = trait.replace(".", "_")
         db.traits.insert({"_id": _id, "uri": uri})

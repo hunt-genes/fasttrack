@@ -1,24 +1,38 @@
 import mongoose from 'mongoose';
 
 const ResultSchema = new mongoose.Schema({
-    SNP_ID_CURRENT: { type: String },
-    PUBMEDID: { type: String },
-    MAPPED_TRAIT: { type: String },
-    MAPPED_TRAIT_URI: { type: String },
-    SNPS: { type: String },
-    CHR_ID: { type: Number, index: true },
-    CHR_POS: { type: Number, index: true },
-    'DISEASE/TRAIT': { type: String },
-    STUDY: { type: String },
-    JOURNAL: { type: String },
-    'FIRST AUTHOR': { type: String },
-    MAPPED_GENE: { type: String, index: true },
-    'OR or BETA': { type: String },
-    '95% CI (TEXT)': { type: String },
-    REGION: { type: String, index: true },
-    'P-VALUE': { type: Number, index: true },
-    'P-VALUE (TEXT)': { type: String },
+    snp_id_current: { type: String },
+    pubmedid: { type: String },
+    mapped_trait: { type: String },
+    mapped_trait_uri: { type: String },
+    snps: { type: String },
+    chr_id: { type: Number, index: true },
+    chr_pos: { type: Number, index: true },
+    disease_trait: { type: String },
+    study: { type: String },
+    journal: { type: String },
+    first_author: { type: String },
+    mapped_gene: { type: String, index: true },
+    or_or_beta: { type: String },
+    p95_ci_text: { type: String },
+    region: { type: String, index: true },
+    p_value: { type: Number, index: true },
+    p_value_text: { type: String },
+    strongest_snp_risk_allele: { type: String },
+    context: { type: String },
+    date_added_to_catalog: { type: String },
+    date: { type: String },
     traits: [{ type: String, index: true }],
+    genes: [{ type: String, index: true }],
+    interactions: [{
+        chr_id: { type: Number },
+        chr_pos: { type: Number },
+        snps: { type: String },
+        region: { type: String },
+        strongest_snp_risk_allele: { type: String },
+        reported_gene_s: { type: String },
+        mapped_gene: { type: String },
+    }],
     imputed: {
         tromso: {
             REF: { type: String },
@@ -34,30 +48,6 @@ const ResultSchema = new mongoose.Schema({
             Dose1: { type: Number },
         },
     },
-    CONTEXT: { type: String },
-    'DATE ADDED TO CATALOG': { type: String },
-});
-
-ResultSchema.virtual('strongest_snp_risk_allele').get(function () {
-    return this['STRONGEST SNP-RISK ALLELE'];
-});
-ResultSchema.virtual('or_or_beta').get(function () {
-    return this['OR or BETA'];
-});
-ResultSchema.virtual('p_value').get(function () {
-    return this['P-VALUE'];
-});
-ResultSchema.virtual('p_value_text').get(function () {
-    return this['P-VALUE (TEXT)'];
-});
-ResultSchema.virtual('p95_ci').get(function () {
-    return this['95% CI (TEXT)'];
-});
-ResultSchema.virtual('date_added_to_catalog').get(function () {
-    return this['DATE ADDED TO CATALOG'];
-});
-ResultSchema.virtual('first_author').get(function () {
-    return this['FIRST AUTHOR'];
 });
 
 ResultSchema.set('toJSON', {
@@ -78,6 +68,6 @@ ResultSchema.set('toObject', {
     },
 });
 
-const Result = mongoose.model('gwas', ResultSchema);
+const Result = mongoose.model('Result', ResultSchema, 'gwas');
 
 export default Result;
