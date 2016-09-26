@@ -33,20 +33,21 @@ const ResultSchema = new mongoose.Schema({
         reported_gene_s: { type: String },
         mapped_gene: { type: String },
     }],
-    imputed: {
-        tromso: {
-            REF: { type: String },
-            ALT: { type: String },
-            MAF: { type: String },
-            AvgCall: { type: Number },
-            Rsq: { type: Number },
-            Genotyped: { type: Boolean },
-            LooRsq: { type: Number },
-            EmpR: { type: Number },
-            EmpRsq: { type: Number },
-            Dose0: { type: Number },
-            Dose1: { type: Number },
-        },
+    tromso: {
+        ref: { type: String },
+        alt: { type: String },
+        maf: { type: String },
+        avgcall: { type: Number },
+        rsq: { type: Number },
+        genotyped: { type: Boolean },
+    },
+    hunt: {
+        ref: { type: String },
+        alt: { type: String },
+        maf: { type: String },
+        avgcall: { type: Number },
+        rsq: { type: Number },
+        genotyped: { type: Boolean },
     },
 });
 

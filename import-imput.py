@@ -52,13 +52,13 @@ with open(args.filename) as tsvfile:
                 counter += 1
 
                 _imputed = {
-                        "REF": line[3],
-                        "ALT": line[4],
+                        "ref": line[3],
+                        "alt": line[4],
                         # "ALT_Frq": categorize_float(float(line[5])),
-                        "MAF": categorize_float(float(line[6])),
-                        "AvgCall": float(line[7]),
-                        "Rsq": float(line[8]),
-                        "Genotyped": line[9] == "Genotyped",
+                        "maf": categorize_float(float(line[6])),
+                        "avgcall": float(line[7]),
+                        "rsq": float(line[8]),
+                        "genotyped": line[9] == "Genotyped",
                         }
                 if line[9] == "Genotyped":
                     print("Genotyped", _id)
@@ -73,7 +73,7 @@ with open(args.filename) as tsvfile:
                 # if line[14] != "-":
                     # _imputed["Dose1"] = float(line[14])
                 db.gwas.update_many({"CHR_ID": chr_id, "CHR_POS": chr_pos},
-                        {"$set": {"imputed": {args.biobank_identifier: _imputed}}})
+                        {"$set": {args.biobank_identifier: _imputed}})
         except:
             pass
 
