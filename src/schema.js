@@ -126,7 +126,7 @@ const resultType = new GraphQLObjectType({
         p_value: { type: GraphQLString },
         p_value_text: { type: GraphQLString },
         region: { type: GraphQLString },
-        chr_id: { type: GraphQLInt },
+        chr_id: { type: GraphQLString },
         chr_pos: { type: GraphQLInt },
         context: { type: GraphQLString },
         p95_ci: { type: GraphQLString },
@@ -179,7 +179,7 @@ const userType = new GraphQLObjectType({
                 }
                 const query = prepareQuery(args.term, args.unique, args.tromso);
                 return await connectionFromMongooseQuery(
-                    Result.find(query).limit(1000).sort('chr_id chr_pos'),
+                    Result.find(query).sort('sortable_chr_id chr_pos'),
                     args,
                 );
             },

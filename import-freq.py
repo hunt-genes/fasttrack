@@ -101,16 +101,10 @@ with open(args.filename) as tsvfile:
                         traits[trait] = uri
 
             # parse chr_id
-            if row[chr_id_index]:
+            chr_id = row[chr_id_index]
+            if chr_id:
                 row_data = dict(zip(__headers, row))
                 row_data["traits"] = trait_ids
-                # if ";" in _chr:
-                    # # validate contents. all should be equal?
-                    # v = set()
-                    # [ v.add(c) for c in _chr.split(";") ]
-                    # if len(v) > 1:
-                        # print("ERROR", _chr, "has more than one value")
-                    # _chr = _chr.split(";")[0]
 
                 chrs = re.split(r" x |;", row[chr_id_index])
                 pos = re.split(r" x |;", row[chr_pos_index])
@@ -129,7 +123,17 @@ with open(args.filename) as tsvfile:
                 mapped_set = set(mapped)
                 context_set = set(context)
 
-                for _c, j in enumerate(chrs):
+                # add extra database row since we want to sort chromosomes
+                # numerically, but still have Xs and Ys
+                if len(chr_set) == 1:
+                    if chr_id == "X":
+                        row_data["sortable_chr_id"] = 100
+                    elif chr_id == "Y":
+                        row_data["sortable_chr_id"] = 101
+                    else:
+                        row_data["sortable_chr_id"] = int(list(chr_set)[0])
+
+                for _c, j in enumerate(chr_set):
                     if _c != "X" and _c != "Y":
                         try:
                             int(_c)
