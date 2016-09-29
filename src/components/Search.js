@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { FormGroup, InputGroup, FormControl, HelpBlock, Button, Checkbox, Alert, Grid, Row, Col, Image } from 'react-bootstrap';
+import { FormGroup, InputGroup, FormControl, HelpBlock, Button, Checkbox, Alert, Grid, Image } from 'react-bootstrap';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
 
 import Footer from './Footer';
 import SearchResults from './SearchResults';
 import TraitList from './TraitList';
+import Summary from './Summary';
 
 const pageSize = 50;
 
@@ -87,7 +88,7 @@ class Search extends React.Component {
     }
 
     render() {
-        const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link">Clear</Button></div>;
+        const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link" style={{ outline: 'none' }}>Clear</Button></div>;
         const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
         const help = (
             <div style={{ display: 'flex' }}>
@@ -142,13 +143,23 @@ class Search extends React.Component {
                         </div>
                     </form>
                 </div>
-                <div>
-                    <p style={{ textAlign: 'center', fontSize: '2rem' }}>
-                        {this.props.viewer.stats.unique} unique SNPs in {this.props.viewer.stats.total} results <small style={{ fontSize: '1.2rem' }}>for <span style={{ fontStyle: 'italic' }}>P</span> &lt; 5x10-8</small>
-                    </p>
-                </div>
-                {this.props.viewer.results.edges.length > 0 ? <SearchResults results={this.props.viewer.results} />: <TraitList viewer={this.props.viewer}/>}
-                {this.props.viewer.results.pageInfo.hasNextPage ? <Button onClick={this.loadMore}>Load more</Button> : null }
+                <Summary
+                    term={this.props.location.query.q}
+                    unique={this.props.viewer.stats.unique}
+                    total={this.props.viewer.stats.total}
+                    style={{
+                        textAlign: 'center',
+                        fontSize: '2rem',
+                    }}
+                />
+                {this.props.location.query.q ?
+                    <div>
+                        <SearchResults results={this.props.viewer.results} />
+                        {this.props.viewer.results.pageInfo.hasNextPage ? <div style={{ display: 'flex', justifyContent: 'space-around' }}><Button onClick={this.loadMore}>Load more</Button></div> : null }
+                    </div>
+                    :
+                        <TraitList viewer={this.props.viewer} />
+                }
                 <Footer />
             </section>
         );
