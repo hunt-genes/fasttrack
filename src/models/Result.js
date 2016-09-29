@@ -24,6 +24,7 @@ const ResultSchema = new mongoose.Schema({
     date: { type: String },
     traits: [{ type: String, index: true }],
     genes: [{ type: String, index: true }],
+    best_for_unique: { type: Boolean },
     interactions: [{
         chr_id: { type: Number },
         chr_pos: { type: Number },

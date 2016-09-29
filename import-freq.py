@@ -1,6 +1,7 @@
+from datetime import datetime
 from pymongo import MongoClient
-import csv
 import argparse
+import csv
 import re
 
 mongo_client = MongoClient()
@@ -13,6 +14,32 @@ def is_int(value):
         return True
     except ValueError:
         return False
+
+
+def should_update(old, new):
+    # should have p value
+    if not new['p_value']:
+        return False
+
+    # insert if not already there
+    if not old:
+        return True
+
+    old_p = old['p_value']
+    new_p = row_data['p_value']
+    old_date = datetime.strptime(old['date'], '%Y-%m-%d')
+    new_date = datetime.strptime(row_data['date'], '%Y-%m-%d')
+
+    # don't update if the value to keep is the newest
+    if new_date < old_date:
+        return False
+
+    # don't update if the value to keep is lowest
+    # date should be equal if we want to rate on p values
+    if new_date == old_date and new_p > old_p:
+        return False
+
+    return True
 
 # data = {}
 traits = {}
@@ -35,6 +62,7 @@ with open(args.filename) as tsvfile:
     gwas = csv.reader(tsvfile, delimiter='\t')
     header_line = True
     pvalue_index = None
+    best_for_unique = dict()
     for i, row in enumerate(gwas):
         row_data = None
         if header_line:
@@ -122,7 +150,7 @@ with open(args.filename) as tsvfile:
                     raise KeyError
 
                 genes = set()
-                [ [ genes.add(gene) for gene in m.split(" - ") ] for m in mapped_set  ]
+                [ [ genes.add(gene) for gene in re.split(r", | - ", m) ] for m in mapped_set  ]
                 row_data["genes"] = list(genes)
 
                 # if this uses "x" as separator, this indicates gene interactions and strict format
@@ -142,9 +170,17 @@ with open(args.filename) as tsvfile:
 
                 # print chrs, pos, snps, risk, reported, mapped
 
-                db.gwas.insert_one(row_data)
+                result = db.gwas.insert_one(row_data)
 
+                snp_id = row[snp_id_current_index]
+
+                if should_update(best_for_unique.get(snp_id), row_data):
+                    row_data['_id'] = result.inserted_id
+                    best_for_unique[snp_id] = row_data
 
     for trait, uri in traits.items():
         _id = trait.replace(".", "_")
         db.traits.insert({"_id": _id, "uri": uri})
+
+    for rsid, data in best_for_unique.items():
+        db.gwas.update_one({'_id': data['_id']}, {'$set': {'best_for_unique': True}})

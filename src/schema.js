@@ -24,12 +24,9 @@ import Trait from './models/Trait';
 
 import { startsWith } from 'lodash';
 
-function prepareQuery(_query, options = {}) {
+function prepareQuery(_query, _unique = false, _tromso = false) {
     const query = {};
     const fields = [];
-
-    const tromso = options.tromso || false;
-    const unique = options.unique || false;
 
     let q = _query;
     // query param handling
@@ -71,8 +68,11 @@ function prepareQuery(_query, options = {}) {
         if (fields.length) {
             query.$or = fields;
         }
-        if (tromso) {
-            query.imputed = { $exists: 1 };
+        if (_tromso) {
+            query.tromso = { $exists: 1 };
+        }
+        if (_unique) {
+            query.best_for_unique = true;
         }
     }
 
@@ -169,15 +169,17 @@ const userType = new GraphQLObjectType({
             type: connectionDefinitions({ name: 'Result', nodeType: resultType }).connectionType,
             args: {
                 term: { type: GraphQLString },
+                unique: { type: GraphQLBoolean },
+                tromso: { type: GraphQLBoolean },
                 ...connectionArgs,
             },
             async resolve(term, { ...args }) { // term here is unused for now, coming from server
                 if (!args.term || args.term.length < 3) {
                     return connectionFromArray([], args);
                 }
-                const query = prepareQuery(args.term);
+                const query = prepareQuery(args.term, args.unique, args.tromso);
                 return await connectionFromMongooseQuery(
-                    Result.find(query).limit(1000).sort('CHR_ID CHR_POS'),
+                    Result.find(query).limit(1000).sort('chr_id chr_pos'),
                     args,
                 );
             },
