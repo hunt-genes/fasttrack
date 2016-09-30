@@ -1,11 +1,11 @@
 import React from 'react';
-import { Grid, Row, Col, Table } from 'react-bootstrap';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
-import ExternalLink from './ExternalLink';
+import { Table } from 'react-bootstrap';
 import Result from './Result';
 
 export default class SearchResults extends React.Component {
+    static propTypes = {
+        results: React.PropTypes.object,
+    }
 
     render() {
         return (

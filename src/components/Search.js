@@ -160,7 +160,7 @@ class Search extends React.Component {
                     :
                         <TraitList viewer={this.props.viewer} />
                 }
-                <Footer />
+                <Footer requests={this.props.viewer.requests} />
             </section>
         );
     }
@@ -213,6 +213,10 @@ export default Relay.createContainer(Search, {
             ) {
                 total
                 unique
+            }
+            requests {
+                total
+                local
             }
             ${TraitList.getFragment('viewer')}
         }`,

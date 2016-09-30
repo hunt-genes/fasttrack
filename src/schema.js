@@ -19,8 +19,11 @@ import {
 
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 
+import ip from 'ip';
+
 import Result from './models/Result';
 import Trait from './models/Trait';
+import Request from './models/Request';
 
 import { startsWith } from 'lodash';
 
@@ -212,6 +215,31 @@ const userType = new GraphQLObjectType({
         traits: {
             type: new GraphQLList(traitType),
             resolve: () => Trait.find().exec(),
+        },
+        requests: {
+            type: new GraphQLObjectType({
+                name: 'Requests',
+                fields: {
+                    local: { type: GraphQLInt },
+                    total: { type: GraphQLInt },
+                }
+            }),
+            resolve: () => Request.count().exec().then(
+                total => {
+                    const localStart = ip.toBuffer('129.241.0.0');
+                    const localEnd = ip.toBuffer('129.241.255.255');
+                    return Request.count({
+                        $and: [
+                            { remote_address: { $gte: localStart } },
+                            { remote_address: { $lte: localEnd } },
+                        ],
+                    }).exec().then(local => {
+                        return {
+                            total,
+                            local,
+                        };
+                    });
+                }),
         },
     },
     interfaces: [nodeInterface],
