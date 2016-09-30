@@ -5,8 +5,8 @@ import argparse
 
 
 def categorize_float(value):
-    if value <= 0.001:
-        return "[0,0.001]"
+    if value > 0 and value <= 0.001:
+        return "(0,0.001]"
     elif value <= 0.01:
         return "(0.001,0.01]"
     elif value <= 0.1:
