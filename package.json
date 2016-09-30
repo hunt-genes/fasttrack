@@ -23,13 +23,10 @@
     }
   },
   "dependencies": {
-    "alt": "^0.16.10",
-    "axios": "^0.8.1",
     "babel-core": "^6.3.15",
     "babel-register": "^6.3.13",
     "babel-relay-plugin": "^0.9.2",
     "body-parser": "^1.15.0",
-    "es6-promise": "^3.0.2",
     "express": "^4.13.3",
     "express-graphql": "^0.5.4",
     "fast-csv": "^1.0.0",
@@ -39,7 +36,6 @@
     "history": "^1.17.0",
     "immutable": "^3.7.5",
     "ip": "^1.1.0",
-    "iso": "^5.0.0",
     "isomorphic-relay": "^0.7.1",
     "isomorphic-relay-router": "^0.8.1",
     "lodash": "^3.10.1",
