@@ -145,8 +145,9 @@ class Search extends React.Component {
                 </div>
                 <Summary
                     term={this.props.location.query.q}
-                    unique={this.props.viewer.stats.unique}
-                    total={this.props.viewer.stats.total}
+                    stats={this.props.viewer.stats}
+                    unique={this.props.relay.variables.unique}
+                    tromso={this.props.relay.variables.tromso}
                     style={{
                         textAlign: 'center',
                         fontSize: '2rem',

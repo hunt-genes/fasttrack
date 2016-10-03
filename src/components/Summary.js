@@ -4,8 +4,9 @@ import { Alert } from 'react-bootstrap';
 export default class Summary extends React.Component {
     static propTypes = {
         term: React.PropTypes.string,
-        total: React.PropTypes.number,
-        unique: React.PropTypes.number,
+        stats: React.PropTypes.object,
+        unique: React.PropTypes.bool,
+        tromso: React.PropTypes.bool,
         style: React.PropTypes.object,
     }
     render() {
@@ -28,7 +29,19 @@ export default class Summary extends React.Component {
         );
         return (
             <p style={this.props.style}>
-                {this.props.unique} unique SNPs in {this.props.total} results {small}
+                <a
+                    style={{
+                        display: 'block',
+                        float: 'right',
+                        marginRight: 10,
+                    }}
+                    className="btn"
+                    href={`/search/export?q=${this.props.term}&unique=${this.props.unique}&tromso=${this.props.tromso}`}
+                    download
+                >
+                    Export all
+                </a>
+                {this.props.stats.unique} unique SNPs in {this.props.stats.total} results {small}
             </p>
         );
     }

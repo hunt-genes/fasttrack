@@ -1,6 +1,6 @@
 import path from 'path';
 import express from 'express';
-// import csv from 'fast-csv';
+import csv from 'fast-csv';
 import favicon from 'serve-favicon';
 import ReactDOMServer from 'react-dom/server';
 import Request from './models/Request';
@@ -13,6 +13,9 @@ import RelayLocalSchema from 'relay-local-schema';
 import { match } from 'react-router';
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
+
+import Result from './models/Result';
+import prepareQuery from './models/prepareQuery';
 
 const app = express();
 app.db = db;
@@ -43,6 +46,59 @@ app.use((req, res, next) => {
 
     // do not wait for request logger
     next();
+});
+
+// Export data as CSV
+app.get('/search/export', (req, res, next) => {
+    // query term
+    const term = req.query.q;
+
+    // If we restrict to tromso imputation data, default: false
+    let tromso = false;
+    if (req.query.tromso) {
+        tromso = JSON.parse(req.query.tromso) || false;
+    }
+
+    // If we restrict to unique SNPs. For export, default is true
+    let unique = true;
+    if (req.query.unique) {
+        unique = JSON.parse(req.query.unique);
+    }
+
+    const query = prepareQuery(term, unique, tromso);
+    Result.find(query).sort('sortable_chr_id chr_pos').exec().then(_results => {
+        const results = _results.map(_result => {
+            const result = _result.toObject();
+            result.mapped_genes = result.genes;
+            delete result.genes;
+            return result;
+        });
+        csv.writeToString(results, { headers: [
+            'snp_id_current',
+            'chr_id',
+            'chr_pos',
+            'strongest_snp_risk_allele',
+            'snps',
+            'p_value',
+            'or_or_beta',
+            'p95_ci_text',
+            'risk_allele_frequency',
+            'hg19chr',
+            'hg19pos',
+            'mapped_genes',
+            'initial_sample_size',
+            'replication_sample_size',
+            'date',
+        ], delimiter: '\t' }, (err, data) => {
+            res.set('Content-Type', 'text/csv');
+            res.set(
+                'Content-Disposition',
+                `attachment; filename=export-${term.replace(/[^a-zA-Z0-9]+/g, '-')}.csv`
+            );
+            res.write(data);
+            res.end();
+        });
+    });
 });
 
 app.post('/variables/:trait', (req, res, next) => {
@@ -144,7 +200,7 @@ app.get('*', (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error("Error!", err);
+    console.error("Error!", err, err.stack);
     res.format({
         html: () => {
             res.sendStatus(500);
@@ -172,7 +228,7 @@ app.use((req, res, next) => {
 });
 
 process.on('uncaughtException', (err) => {
-    console.error(err);
+    console.error(err, err.stack);
     process.exit(1);
 });
 
