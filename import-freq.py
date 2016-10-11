@@ -1,3 +1,7 @@
+"""
+Import data from the official GWAS catalog.
+"""
+
 from datetime import datetime
 from pymongo import MongoClient
 import argparse
@@ -79,6 +83,7 @@ with open(args.filename) as tsvfile:
             mapped_gene_index = __headers.index("mapped_gene")
             reported_gene_s_index = __headers.index("reported_gene_s")
             strongest_snp_risk_allele_index = __headers.index("strongest_snp_risk_allele")
+            risk_allele_frequency_index = __headers.index("risk_allele_frequency")
             context_index = __headers.index("context")
 
             header_line = False
@@ -90,6 +95,10 @@ with open(args.filename) as tsvfile:
                 row[pvalue_index] = float(row[pvalue_index])
             except:
                 pass
+
+            # parse/convert other values
+            # * snp_id_current does sometimes contain a "b" at the end
+            # * risk_allele_frequency sometimes contains a comment
 
             # parse and split traits - not depending on chr_id
             trait_ids = [trait.strip().replace(".", "_").lower() for trait in row[mapped_trait_index].split(",")]
