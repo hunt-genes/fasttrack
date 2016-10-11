@@ -7,4 +7,7 @@
 /dist
 /src/schema.json
 /src/schema.graphql
-/lift
+/IMPUTATION_INFO
+*.gz
+*.tsv
+*.csv
