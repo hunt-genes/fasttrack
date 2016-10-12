@@ -158,7 +158,7 @@ class Search extends React.Component {
                                 <Image
                                     responsive
                                     src="/img/logo2_ntnu_u-slagord.jpg"
-                                    style={{ marginTop: 28, minWidth: 50 }}
+                                    style={{ marginTop: 28, width: 50 }}
                                 />
                             </div>
                             <div style={{ flexGrow: 1, margin: '0 10px' }}>
