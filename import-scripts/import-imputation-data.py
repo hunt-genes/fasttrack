@@ -80,27 +80,31 @@ with gzip.open(args.filename, 'rt', encoding='utf-8') as zipfile:
         if counter % 100000 == 0:
             print(counter)
 
-        pos, ref, alt, _alt_frq, _maf, avg_call, _rsq, genotyped, *rest = line
+        pos, ref, alt, _alt_frq, _maf, avg_call, _rsq, _genotyped, *rest = line
         if pos not in positions:
             # ignore this line if we don't have it in fasttrack database
             missed += 1
             continue
 
+        rsq = None
+        imputed = _genotyped == "Imputed"
+        genotyped = _genotyped == "Genotyped"
         try:
             alt_frq = float(_alt_frq)
             maf = float(_maf)
-            rsq = float(_rsq)
-            imputed = genotyped == "Imputed"
+            if genotyped or imputed:
+                rsq = float(_rsq)
         except:
             print(line)
             raise "ost"
 
-        if genotyped == "Genotyped":
-            # print(line, "genotyped")
+        if _genotyped == "Typed_Only":
             add_imputation_data(positions, pos, ref, alt, alt_frq, maf, None,
                     genotyped, imputed)
-        else:
-            # genotyped == "Imputed"
+        elif _genotyped == "Genotyped":
+            add_imputation_data(positions, pos, ref, alt, alt_frq, maf, rsq,
+                    genotyped, imputed)
+        else:  # imputed
             if maf < 0.005:
                 # print(line, "low maf")
                 if rsq >= 0.8:

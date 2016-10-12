@@ -13,6 +13,7 @@ Express (Javascript) and an import script in Python.
 
 ````sh
 make install
+make schema
 make
 npm start
 ````
@@ -23,6 +24,23 @@ source venv/bin/activate
 pip install -r requirements
 python import-freq.py
 ````
+
+Deployment
+----------
+
+````sh
+make install
+make schema
+make build
+``
+
+````sh
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements
+````
+
+Get your web server to point to server.js in your cloned directory.
 
 License
 -------

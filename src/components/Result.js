@@ -31,13 +31,19 @@ class Result extends React.Component {
         const tromso = result.tromso;
         let analysis;
         if (
+            hunt && hunt.length && hunt[0].genotyped ||
+            tromso && tromso.length && tromso[0].genotyped
+        ) {
+            analysis = 'Genotyped';
+        }
+        else if (
             hunt && hunt.length && hunt[0].imputed ||
             tromso && tromso.length && tromso[0].imputed
         ) {
             analysis = 'Imputed';
         }
         else if (hunt && hunt.length || tromso && tromso.length) {
-            analysis = 'Genotyped';
+            analysis = 'Typed_Only';
         }
         return (
             <tr className={this.rowclass(result.p_value)}>

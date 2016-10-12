@@ -90,10 +90,8 @@ const resultType = new GraphQLObjectType({
                 maf: { type: GraphQLString },
                 avgcall: { type: GraphQLFloat },
                 rsq: { type: GraphQLFloat },
-                imputed: {
-                    type: GraphQLBoolean,
-                    resolve: (parent) => parent.genotyped === 'Imputed',
-                },
+                genotyped: { type: GraphQLBoolean },
+                imputed: { type: GraphQLBoolean },
             },
         })) },
         hunt: { type: new GraphQLList(new GraphQLObjectType({
@@ -104,10 +102,8 @@ const resultType = new GraphQLObjectType({
                 maf: { type: GraphQLString },
                 avgcall: { type: GraphQLFloat },
                 rsq: { type: GraphQLFloat },
-                imputed: {
-                    type: GraphQLBoolean,
-                    resolve: (parent) => parent.genotyped === 'Imputed',
-                },
+                genotyped: { type: GraphQLBoolean },
+                imputed: { type: GraphQLBoolean },
             },
         })) },
     },
