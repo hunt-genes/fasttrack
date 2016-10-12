@@ -82,7 +82,7 @@ const resultType = new GraphQLObjectType({
         journal: { type: GraphQLString },
         traits: { type: new GraphQLList(GraphQLString) },
         genes: { type: new GraphQLList(GraphQLString) },
-        tromso: { type: new GraphQLObjectType({
+        tromso: { type: new GraphQLList(new GraphQLObjectType({
             name: 'Tromso',
             fields: {
                 ref: { type: GraphQLString },
@@ -90,10 +90,13 @@ const resultType = new GraphQLObjectType({
                 maf: { type: GraphQLString },
                 avgcall: { type: GraphQLFloat },
                 rsq: { type: GraphQLFloat },
-                genotyped: { type: GraphQLBoolean },
+                imputed: {
+                    type: GraphQLBoolean,
+                    resolve: (parent) => parent.genotyped === 'Imputed',
+                },
             },
-        }) },
-        hunt: { type: new GraphQLObjectType({
+        })) },
+        hunt: { type: new GraphQLList(new GraphQLObjectType({
             name: 'Hunt',
             fields: {
                 ref: { type: GraphQLString },
@@ -101,9 +104,12 @@ const resultType = new GraphQLObjectType({
                 maf: { type: GraphQLString },
                 avgcall: { type: GraphQLFloat },
                 rsq: { type: GraphQLFloat },
-                genotyped: { type: GraphQLBoolean },
+                imputed: {
+                    type: GraphQLBoolean,
+                    resolve: (parent) => parent.genotyped === 'Imputed',
+                },
             },
-        }) },
+        })) },
     },
     interfaces: [nodeInterface],
 });
@@ -118,13 +124,14 @@ const userType = new GraphQLObjectType({
                 term: { type: GraphQLString },
                 unique: { type: GraphQLBoolean },
                 tromso: { type: GraphQLBoolean },
+                hunt: { type: GraphQLBoolean },
                 ...connectionArgs,
             },
             async resolve(term, { ...args }) { // term here is unused for now, coming from server
                 if (!args.term || args.term.length < 3) {
                     return connectionFromArray([], args);
                 }
-                const query = prepareQuery(args.term, args.unique, args.tromso);
+                const query = prepareQuery(args.term, args.unique, args.tromso, args.hunt);
                 return await connectionFromMongooseQuery(
                     Result.find(query).sort('sortable_chr_id chr_pos'),
                     args,

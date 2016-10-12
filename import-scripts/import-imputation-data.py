@@ -33,10 +33,10 @@ def categorize_float(value):
         raise ValueError
 
 
-def add_imputation_data(snps, position, ref, alt, alt_frq, maf, rsq, genotyped):
+def add_imputation_data(snps, position, ref, alt, alt_frq, maf, rsq, genotyped, imputed):
 
     data = dict(position=position, ref=ref, alt=alt, alt_frq=alt_frq, maf=maf,
-            rsq=rsq, genotyped=genotyped)
+            rsq=rsq, genotyped=genotyped, imputed=imputed)
 
     snps[position].append(data)
 
@@ -90,6 +90,7 @@ with gzip.open(args.filename, 'rt', encoding='utf-8') as zipfile:
             alt_frq = float(_alt_frq)
             maf = float(_maf)
             rsq = float(_rsq)
+            imputed = genotyped == "Imputed"
         except:
             print(line)
             raise "ost"
@@ -97,21 +98,21 @@ with gzip.open(args.filename, 'rt', encoding='utf-8') as zipfile:
         if genotyped == "Genotyped":
             # print(line, "genotyped")
             add_imputation_data(positions, pos, ref, alt, alt_frq, maf, None,
-                    genotyped)
+                    genotyped, imputed)
         else:
             # genotyped == "Imputed"
             if maf < 0.005:
                 # print(line, "low maf")
                 if rsq >= 0.8:
                     add_imputation_data(positions, pos, ref, alt, alt_frq, maf,
-                            rsq, genotyped)
+                            rsq, genotyped, imputed)
                 else:
                     ignored += 1
             else:
                 # print(line, "high maf")
                 if rsq >= 0.3:
                     add_imputation_data(positions, pos, ref, alt, alt_frq, maf,
-                            rsq, genotyped)
+                            rsq, genotyped, imputed)
                 else:
                     ignored += 1
 

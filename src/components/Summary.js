@@ -7,13 +7,14 @@ export default class Summary extends React.Component {
         stats: React.PropTypes.object,
         unique: React.PropTypes.bool,
         tromso: React.PropTypes.bool,
+        hunt: React.PropTypes.bool,
         style: React.PropTypes.object,
     }
     render() {
         if (!this.props.term) {
             return (
                 <p style={this.props.style}>Use the search field or select from
-                    the traits below if you want to see some results</p>);
+                    the traits below</p>);
         }
         if (this.props.term.length < 3) {
             return (
@@ -22,11 +23,17 @@ export default class Summary extends React.Component {
                 </div>
             );
         }
+
+        const term = this.props.term;
+        const unique = this.props.unique;
+        const hunt = this.props.hunt;
+        const tromso = this.props.tromso;
         const small = (
-            <small style={{ fontSize: '1.2rem' }}> for <span
-                    style={{ fontStyle: 'italic' }}>P</span> &lt;
-                5x10-8</small>
+            <small
+                style={{ fontSize: '1.2rem' }}
+            > for <span style={{ fontStyle: 'italic' }}>P</span> &lt; 5x10-8</small>
         );
+
         return (
             <p style={this.props.style}>
                 <a
@@ -36,7 +43,7 @@ export default class Summary extends React.Component {
                         marginRight: 10,
                     }}
                     className="btn"
-                    href={`/search/export?q=${this.props.term}&unique=${this.props.unique}&tromso=${this.props.tromso}`}
+                    href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`}
                     download
                 >
                     Export all

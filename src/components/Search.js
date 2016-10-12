@@ -1,8 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { FormGroup, InputGroup, FormControl, HelpBlock, Button, Checkbox, Alert, Grid, Image } from 'react-bootstrap';
 import Relay from 'react-relay';
 import { Link } from 'react-router';
+import {
+    FormGroup,
+    InputGroup,
+    FormControl,
+    HelpBlock,
+    Button,
+    Checkbox,
+    Image,
+} from 'react-bootstrap';
 
 import Footer from './Footer';
 import SearchResults from './SearchResults';
@@ -12,6 +20,11 @@ import Summary from './Summary';
 const pageSize = 50;
 
 class Search extends React.Component {
+    static propTypes = {
+        location: React.PropTypes.object,
+        viewer: React.PropTypes.object,
+    }
+
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
         router: React.PropTypes.object.isRequired,
@@ -25,6 +38,7 @@ class Search extends React.Component {
         this.props.relay.setVariables({
             term: this.props.location.query.q,
             unique: this.props.location.query.unique === 'true',
+            hunt: this.props.location.query.hunt === 'true',
             tromso: this.props.location.query.tromso === 'true',
         });
     }
@@ -58,7 +72,7 @@ class Search extends React.Component {
         this.context.router.push({ query: { q: '' } });
     }
 
-    onChange = (event) => {
+    onChange = () => {
         this.setState({
             term: ReactDOM.findDOMNode(this.refs.query).value,
         });
@@ -72,6 +86,14 @@ class Search extends React.Component {
         this.props.relay.setVariables({ unique });
     }
 
+    onHuntChange = () => {
+        const hunt = !this.props.relay.variables.hunt;
+        const query = this.props.location.query;
+        query.hunt = hunt;
+        this.context.router.push({ query });
+        this.props.relay.setVariables({ hunt });
+    }
+
     onTromsoChange = () => {
         const tromso = !this.props.relay.variables.tromso;
         const query = this.props.location.query;
@@ -83,13 +105,20 @@ class Search extends React.Component {
     loadMore = () => {
         const results = this.props.viewer.results;
         this.props.relay.setVariables({
-            resultsToShow: results.edges.length + pageSize,
+            pageSize: results.edges.length + pageSize,
         });
     }
 
     render() {
-        const buttons = <div><Button type="submit" bsStyle="primary">Search</Button><Button type="reset" bsStyle="link" style={{ outline: 'none' }}>Clear</Button></div>;
-        const examples = <p>Examples: <Link to="/search/?q=diabetes">diabetes</Link>, <Link to="/search/?q=rs3820706">rs3820706</Link>, <Link to="/search/?q=Chung S">Chung S</Link>, <Link to="/search/?q=2q23.3">2q23.3</Link>, <Link to="/search/?q=CACNB4">CACNB4</Link></p>;
+        const examples = (
+            <p>
+                Examples: <Link to="/search/?q=diabetes">diabetes</Link>
+                , <Link to="/search/?q=rs3820706">rs3820706</Link>
+                , <Link to="/search/?q=Chung S">Chung S</Link>
+                , <Link to="/search/?q=2q23.3">2q23.3</Link>
+                , <Link to="/search/?q=CACNB4">CACNB4</Link>
+            </p>
+        );
         const help = (
             <div style={{ display: 'flex' }}>
                 <div style={{ flexGrow: '1' }}>
@@ -102,6 +131,13 @@ class Search extends React.Component {
                         onChange={this.onUniqueChange}
                     >
                         Unique
+                    </Checkbox>
+                    <Checkbox
+                        checked={this.props.relay.variables.hunt}
+                        inline
+                        onChange={this.onHuntChange}
+                    >
+                        Hunt
                     </Checkbox>
                     <Checkbox
                         checked={this.props.relay.variables.tromso}
@@ -129,7 +165,13 @@ class Search extends React.Component {
                                 <h1>HUNT fast-track GWAS catalog search</h1>
                                 <FormGroup controlId="query">
                                     <InputGroup>
-                                        <FormControl type="text" ref="query" placeholder="Search" value={this.state.term} onChange={this.onChange} />
+                                        <FormControl
+                                            type="text"
+                                            ref="query"
+                                            placeholder="Search"
+                                            value={this.state.term}
+                                            onChange={this.onChange}
+                                        />
                                         <InputGroup.Button>
                                             <Button type="submit" bsStyle="primary">Search</Button>
                                         </InputGroup.Button>
@@ -147,6 +189,7 @@ class Search extends React.Component {
                     term={this.props.location.query.q}
                     stats={this.props.viewer.stats}
                     unique={this.props.relay.variables.unique}
+                    hunt={this.props.relay.variables.hunt}
                     tromso={this.props.relay.variables.tromso}
                     style={{
                         textAlign: 'center',
@@ -156,7 +199,12 @@ class Search extends React.Component {
                 {this.props.location.query.q ?
                     <div>
                         <SearchResults results={this.props.viewer.results} />
-                        {this.props.viewer.results.pageInfo.hasNextPage ? <div style={{ display: 'flex', justifyContent: 'space-around' }}><Button onClick={this.loadMore}>Load more</Button></div> : null }
+                        {this.props.viewer.results.pageInfo.hasNextPage ?
+                            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                <Button onClick={this.loadMore}>Load more</Button>
+                            </div>
+                            : null
+                        }
                     </div>
                     :
                         <TraitList viewer={this.props.viewer} />
@@ -170,14 +218,15 @@ class Search extends React.Component {
 export default Relay.createContainer(Search, {
     initialVariables: {
         term: '',
-        resultsToShow: pageSize,
+        pageSize,
         unique: false,
         tromso: false,
+        hunt: false,
     },
     fragments: {
         viewer: () => Relay.QL`
         fragment on User {
-            results(first: $resultsToShow, term: $term, unique: $unique, tromso: $tromso)
+            results(first: $pageSize, term: $term, unique: $unique, tromso: $tromso, hunt: $hunt)
             {
                 edges {
                     node {
@@ -200,7 +249,18 @@ export default Relay.createContainer(Search, {
                         first_author
                         journal
                         tromso {
-                            genotyped
+                            maf
+                            ref
+                            alt
+                            rsq
+                            imputed
+                        }
+                        hunt {
+                            maf
+                            ref
+                            alt
+                            rsq
+                            imputed
                         }
                     }
                 },

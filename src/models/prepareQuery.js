@@ -1,5 +1,5 @@
 
-export default function prepareQuery(_query, _unique = false, _tromso = false) {
+export default function prepareQuery(_query, _unique = false, _tromso = false, _hunt = false) {
     const query = {};
     const fields = [];
 
@@ -44,8 +44,11 @@ export default function prepareQuery(_query, _unique = false, _tromso = false) {
         if (fields.length) {
             query.$or = fields;
         }
+        if (_hunt) {
+            query.hunt = { $exists: true };
+        }
         if (_tromso) {
-            query.tromso = { $exists: 1 };
+            query.tromso = { $exists: true };
         }
         if (_unique) {
             query.best_for_unique = true;

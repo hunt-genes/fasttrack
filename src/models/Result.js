@@ -46,14 +46,14 @@ const ResultSchema = new mongoose.Schema({
         rsq: { type: Number },
         genotyped: { type: Boolean },
     },
-    hunt: {
+    hunt: [{
         ref: { type: String },
         alt: { type: String },
         maf: { type: String },
         avgcall: { type: Number },
         rsq: { type: Number },
-        genotyped: { type: Boolean },
-    },
+        imputed: { type: Boolean },
+    }],
 });
 
 ResultSchema.set('toJSON', {
