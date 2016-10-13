@@ -254,6 +254,7 @@ export default Relay.createContainer(Search, {
                             alt
                             rsq
                             imputed
+                            genotyped
                         }
                         hunt {
                             maf
@@ -261,6 +262,7 @@ export default Relay.createContainer(Search, {
                             alt
                             rsq
                             imputed
+                            genotyped
                         }
                     }
                 },
