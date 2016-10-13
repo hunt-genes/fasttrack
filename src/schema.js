@@ -144,9 +144,11 @@ const userType = new GraphQLObjectType({
             }),
             args: {
                 term: { type: GraphQLString },
+                tromso: { type: GraphQLBoolean },
+                hunt: { type: GraphQLBoolean },
             },
             resolve: (_, args) => Result.aggregate(
-                { $match: prepareQuery(args.term) },
+                { $match: prepareQuery(args.term, null, args.tromso, args.hunt) },
                 { $group: { _id: '$snp_id_current', count: { $sum: 1 } } },
             ).exec().then(count => {
                 const total = count.reduce((previous, current) => {

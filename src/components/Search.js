@@ -271,9 +271,7 @@ export default Relay.createContainer(Search, {
                     hasNextPage
                 }
             }
-            stats(
-                term: $term
-            ) {
+            stats(term: $term, tromso: $tromso, hunt: $hunt) {
                 total
                 unique
             }
