@@ -14,7 +14,6 @@ class ImputationResults extends React.Component {
         let analysisLetter = '';
         let rsq = '';
         if (data.genotyped) {
-            rsq = data.rsq;
             analysisLetter = 'g';
         }
         else if (data.imputed) {
@@ -22,6 +21,7 @@ class ImputationResults extends React.Component {
             analysisLetter = 'i';
         }
         else {
+            // 'Typed_Only'
             analysisLetter = 't';
         }
         return (
@@ -29,12 +29,12 @@ class ImputationResults extends React.Component {
                 <span style={{ fontWeight: 'bold' }}>{biobankLetter}</span>
                 <span style={{ fontStyle: 'italic' }}>{analysisLetter}</span>
                 {" "}
-                {data.maf}
+                {data.maf.toPrecision(3)}
                 <br />
                 {data.ref}
                 {" "}
                 {data.alt}
-                {rsq ? ` ${rsq}` : ''}
+                {rsq ? ` ${rsq.toPrecision(3)}` : ''}
             </div>
         );
     }
