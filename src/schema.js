@@ -87,7 +87,7 @@ const resultType = new GraphQLObjectType({
             fields: {
                 ref: { type: GraphQLString },
                 alt: { type: GraphQLString },
-                maf: { type: GraphQLString },
+                maf: { type: GraphQLFloat },
                 avgcall: { type: GraphQLFloat },
                 rsq: { type: GraphQLFloat },
                 genotyped: { type: GraphQLBoolean },
@@ -99,7 +99,7 @@ const resultType = new GraphQLObjectType({
             fields: {
                 ref: { type: GraphQLString },
                 alt: { type: GraphQLString },
-                maf: { type: GraphQLString },
+                maf: { type: GraphQLFloat },
                 avgcall: { type: GraphQLFloat },
                 rsq: { type: GraphQLFloat },
                 genotyped: { type: GraphQLBoolean },

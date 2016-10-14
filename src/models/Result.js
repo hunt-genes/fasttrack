@@ -41,7 +41,7 @@ const ResultSchema = new mongoose.Schema({
     tromso: {
         ref: { type: String },
         alt: { type: String },
-        maf: { type: String },
+        maf: { type: Number },
         avgcall: { type: Number },
         rsq: { type: Number },
         genotyped: { type: Boolean },
@@ -49,7 +49,7 @@ const ResultSchema = new mongoose.Schema({
     hunt: [{
         ref: { type: String },
         alt: { type: String },
-        maf: { type: String },
+        maf: { type: Number },
         avgcall: { type: Number },
         rsq: { type: Number },
         imputed: { type: Boolean },
