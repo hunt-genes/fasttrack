@@ -5,28 +5,12 @@ class ImputationResults extends React.Component {
         imputation_data: React.PropTypes.object,
         biobank: React.PropTypes.string,
     }
-        let analysis;
-        if (
-            hunt && hunt.length && hunt[0].genotyped ||
-            tromso && tromso.length && tromso[0].genotyped
-        ) {
-            analysis = 'Genotyped';
-        }
-        else if (
-            hunt && hunt.length && hunt[0].imputed ||
-            tromso && tromso.length && tromso[0].imputed
-        ) {
-            analysis = 'Imputed';
-        }
-        else if (hunt && hunt.length || tromso && tromso.length) {
-            analysis = 'Typed_Only';
-        }
     render() {
         if (!this.props.imputation_data) {
             return <div />;
         }
         const data = this.props.imputation_data;
-        const biobankLetter = this.props.biobank && this.props.biobank[0].toUTCString();
+        const biobankLetter = this.props.biobank && this.props.biobank[0].toUpperCase();
         let analysisLetter = '';
         let rsq = '';
         if (data.genotyped) {
