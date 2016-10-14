@@ -156,7 +156,6 @@ class Search extends React.Component {
                         <div style={{ display: 'flex' }}>
                             <div style={{ margin: '0 10px' }} className="hidden-xs">
                                 <Image
-                                    responsive
                                     src="/img/logo2_ntnu_u-slagord.jpg"
                                     style={{ marginTop: 28, width: 50 }}
                                 />
