@@ -59,14 +59,19 @@ app.get('/search/export', (req, res, next) => {
         tromso = JSON.parse(req.query.tromso) || false;
     }
 
+    let hunt = false;
+    if (req.query.hunt) {
+        hunt = JSON.parse(req.query.hunt) || false;
+    }
+
     // If we restrict to unique SNPs. For export, default is true
     let unique = true;
     if (req.query.unique) {
-        unique = JSON.parse(req.query.unique);
+        unique = JSON.parse(req.query.unique) || false;
     }
 
-    const query = prepareQuery(term, unique, tromso);
-    Result.find(query).sort('sortable_chr_id chr_pos').exec().then(_results => {
+    const query = prepareQuery(term, unique, tromso, hunt);
+    Result.find(query).exec().then(_results => {
         const results = _results.map(_result => {
             const result = _result.toObject();
             result.mapped_genes = result.genes;
@@ -83,8 +88,8 @@ app.get('/search/export', (req, res, next) => {
             'or_or_beta',
             'p95_ci_text',
             'risk_allele_frequency',
-            'hg19chr',
-            'hg19pos',
+            'build37_chr_id',
+            'build37_pos',
             'mapped_genes',
             'initial_sample_size',
             'replication_sample_size',
@@ -203,7 +208,7 @@ app.use((err, req, res, next) => {
     console.error("Error!", err, err.stack);
     res.format({
         html: () => {
-            res.sendStatus(500);
+            res.status(500).send(err.message);
         },
         json: () => {
             res.status(500).json({

@@ -39,20 +39,20 @@ export default function prepareQuery(_query, _unique = false, _tromso = false, _
             fields.push({ disease_trait: { $regex: r } });
             fields.push({ mapped_gene: { $regex: r } });
         }
+    }
 
-        query.p_value = { $lt: 0.00000005, $exists: true, $ne: null };
-        if (fields.length) {
-            query.$or = fields;
-        }
-        if (_hunt) {
-            query.hunt = { $exists: true };
-        }
-        if (_tromso) {
-            query.tromso = { $exists: true };
-        }
-        if (_unique) {
-            query.best_for_unique = true;
-        }
+    query.p_value = { $lt: 0.00000005, $exists: true, $ne: null };
+    if (fields.length) {
+        query.$or = fields;
+    }
+    if (_hunt) {
+        query.hunt = { $exists: true };
+    }
+    if (_tromso) {
+        query.tromso = { $exists: true };
+    }
+    if (_unique) {
+        query.best_for_unique = true;
     }
 
     return query;
