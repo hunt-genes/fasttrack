@@ -29,22 +29,6 @@ class Result extends React.Component {
         const result = this.props;
         const hunt = result.hunt;
         const tromso = result.tromso;
-        let analysis;
-        if (
-            hunt && hunt.length && hunt[0].genotyped ||
-            tromso && tromso.length && tromso[0].genotyped
-        ) {
-            analysis = 'Genotyped';
-        }
-        else if (
-            hunt && hunt.length && hunt[0].imputed ||
-            tromso && tromso.length && tromso[0].imputed
-        ) {
-            analysis = 'Imputed';
-        }
-        else if (hunt && hunt.length || tromso && tromso.length) {
-            analysis = 'Typed_Only';
-        }
         return (
             <tr className={this.rowclass(result.p_value)}>
                 <td>
@@ -53,17 +37,14 @@ class Result extends React.Component {
                             {result.snps}
                         </Link>
                     </div>
-                    <div>
-                        {analysis}
-                    </div>
                 </td>
                 <td>
                     {hunt && hunt.map(
-                        data => <ImputationResults key={`${result.snp_id_current}-hunt-${data.ref}-${data.alt}`} imputation_data={data} />
+                        data => <ImputationResults key={`${result.snp_id_current}-hunt-${data.ref}-${data.alt}`} imputation_data={data} biobank="hunt" />
                         )
                     }
                     {tromso && tromso.map(
-                        data => <ImputationResults key={`${result.snp_id_current}-hunt-${data.ref}-${data.alt}`} imputation_data={data} />
+                        data => <ImputationResults key={`${result.snp_id_current}-tromso-${data.ref}-${data.alt}`} imputation_data={data} biobank="tromso" />
                         )
                     }
                 </td>

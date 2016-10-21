@@ -32,6 +32,7 @@ class Search extends React.Component {
 
     state = {
         term: this.props.location.query.q,
+        loading: false,
     }
 
     componentDidMount() {
@@ -52,9 +53,10 @@ class Search extends React.Component {
         const q = location.query.q;
         const newQ = newLocation.query.q;
         if (q !== newQ) {
+            this.setState({ loading: true });
             this.props.relay.setVariables({
                 term: newQ || '',
-            });
+            }, () => { this.setState({ loading: false }); });
             this.setState({
                 term: newQ || '',
             });
@@ -82,8 +84,9 @@ class Search extends React.Component {
         const unique = !this.props.relay.variables.unique;
         const query = this.props.location.query;
         query.unique = unique;
+        this.setState({ loading: true });
         this.context.router.push({ query });
-        this.props.relay.setVariables({ unique });
+        this.props.relay.setVariables({ unique }, () => { this.setState({ loading: false }); });
     }
 
     onHuntChange = () => {
@@ -156,7 +159,6 @@ class Search extends React.Component {
                         <div style={{ display: 'flex' }}>
                             <div style={{ margin: '0 10px' }} className="hidden-xs">
                                 <Image
-                                    responsive
                                     src="/img/logo2_ntnu_u-slagord.jpg"
                                     style={{ marginTop: 28, width: 50 }}
                                 />
@@ -191,6 +193,7 @@ class Search extends React.Component {
                     unique={this.props.relay.variables.unique}
                     hunt={this.props.relay.variables.hunt}
                     tromso={this.props.relay.variables.tromso}
+                    loading={this.state.loading}
                     style={{
                         textAlign: 'center',
                         fontSize: '2rem',

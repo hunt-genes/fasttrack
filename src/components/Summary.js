@@ -9,8 +9,16 @@ export default class Summary extends React.Component {
         tromso: React.PropTypes.bool,
         hunt: React.PropTypes.bool,
         style: React.PropTypes.object,
+        loading: React.PropTypes.bool,
     }
     render() {
+        if (this.props.loading) {
+            return (
+                <div className="loader">
+                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                </div>
+            );
+        }
         if (!this.props.term) {
             return (
                 <p style={this.props.style}>Use the search field or select from
