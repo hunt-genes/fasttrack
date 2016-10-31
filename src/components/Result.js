@@ -92,6 +92,7 @@ class Result extends React.Component {
                         </li>
                         )}
                     </ul>
+                    {result.disease_trait}
                 </td>
                 <td>
                     <div>{result.or_or_beta}</div>

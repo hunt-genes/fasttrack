@@ -239,6 +239,7 @@ export default Relay.createContainer(Search, {
                         date
                         genes
                         traits
+                        disease_trait
                         or_or_beta
                         pubmedid
                         region

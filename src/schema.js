@@ -80,6 +80,7 @@ const resultType = new GraphQLObjectType({
         date_added_to_catalog: { type: GraphQLString },
         first_author: { type: GraphQLString },
         journal: { type: GraphQLString },
+        disease_trait: { type: GraphQLString },
         traits: { type: new GraphQLList(GraphQLString) },
         genes: { type: new GraphQLList(GraphQLString) },
         tromso: { type: new GraphQLList(new GraphQLObjectType({
