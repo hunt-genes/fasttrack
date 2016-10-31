@@ -27,7 +27,7 @@ export default class Summary extends React.Component {
             );
         }
 
-        const term = this.props.term;
+        const term = this.props.term || '';
         const unique = this.props.unique;
         const hunt = this.props.hunt;
         const tromso = this.props.tromso;

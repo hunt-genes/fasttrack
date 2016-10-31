@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 // Export data as CSV
 app.get('/search/export', (req, res, next) => {
     // query term
-    const term = req.query.q;
+    const term = req.query.q || '';
 
     // If we restrict to tromso imputation data, default: false
     let tromso = false;
