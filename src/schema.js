@@ -163,7 +163,7 @@ const userType = new GraphQLObjectType({
         },
         traits: {
             type: new GraphQLList(traitType),
-            resolve: () => Trait.find().exec(),
+            resolve: () => Trait.find().sort('_id').exec(),
         },
         requests: {
             type: new GraphQLObjectType({
@@ -171,7 +171,7 @@ const userType = new GraphQLObjectType({
                 fields: {
                     local: { type: GraphQLInt },
                     total: { type: GraphQLInt },
-                }
+                },
             }),
             resolve: () => Request.count().exec().then(
                 total => {
