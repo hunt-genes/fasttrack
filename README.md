@@ -12,9 +12,9 @@ This is a Python and Javascript project that has a frontend server running
 Express (Javascript) and an import script in Python.
 
 ````sh
-make install
-make schema
-make
+npm install
+npm run build:schema
+npm run watch
 npm start
 ````
 
@@ -28,9 +28,9 @@ Deployment
 ----------
 
 ````sh
-make install
-make schema
-make build
+npm install
+npm run build:schema
+npm run build
 ``
 
 ````sh
