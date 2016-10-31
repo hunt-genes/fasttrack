@@ -49,9 +49,9 @@ export default class Summary extends React.Component {
                     href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`}
                     download
                 >
-                    Export all
+                    Export .tsv
                 </a>
-                {this.props.stats.unique} unique SNPs in {this.props.stats.total} results {small}
+                {this.props.stats.unique} unique SNPs in {this.props.stats.total} studies {small}
             </p>
         );
     }
