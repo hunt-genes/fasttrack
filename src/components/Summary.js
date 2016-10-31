@@ -19,12 +19,7 @@ export default class Summary extends React.Component {
                 </div>
             );
         }
-        if (!this.props.term) {
-            return (
-                <p style={this.props.style}>Use the search field or select from
-                    the traits below</p>);
-        }
-        if (this.props.term.length < 3) {
+        if (this.props.term && this.props.term.length < 3) {
             return (
                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                     <Alert bsStyle="danger">We need at least three characters</Alert>
