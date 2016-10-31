@@ -9,7 +9,7 @@
     "build:schema": "babel-node ./src/build-schema.js",
     "watch": "gulp",
     "lint": "gulp lint",
-    "start": "node index.js"
+    "start": "nodemon"
   },
   "author": "Sigurd Gartmann",
   "license": "AGPL-3.0",
