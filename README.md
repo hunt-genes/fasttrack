@@ -41,6 +41,23 @@ pip install -r requirements
 
 Get your web server to point to server.js in your cloned directory.
 
+Status
+------
+
+The newest version is checked out to `/srv/fasttrack`. If updates are needed,
+do the npm parts above.
+
+Forever
+-------
+
+Before systemd in Ubuntu, we started using `forever`. It should be converted,
+but for now, we just keep using it. There is a binary in the old checkout at
+`/srv/gwasc`. List running processes by running:
+`/srv/gwasc/gwasc/node_modules/.bin/forever list`. Forever also has a `restart`
+subcommand that takes an ID.
+
+Or just restart the server.
+
 Data import
 -----------
 
