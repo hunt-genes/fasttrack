@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import { Checkbox } from 'react-bootstrap';
 
 import ImputationResults from './ImputationResults';
 import ExternalLink from './ExternalLink';
@@ -25,6 +26,15 @@ class Result extends React.Component {
         return datestring;
     }
 
+    toggleRSID = () => {
+        this.props.toggleRSID(this.props.snp_id_current);
+    }
+
+    isSelected = () => {
+        console.log("checking", this.props.isSelected, this.props.snp_id_current);
+        return this.props.isSelected(this.props.snp_id_current);
+    }
+
     render() {
         const result = this.props;
         const hunt = result.hunt;
@@ -37,6 +47,7 @@ class Result extends React.Component {
                             {result.snps}
                         </Link>
                     </div>
+                    {this.props.ordering ? <Checkbox onChange={this.toggleRSID} checked={this.isSelected()} /> : null}
                 </td>
                 <td>
                     {hunt && hunt.map(
@@ -120,6 +131,9 @@ class Result extends React.Component {
 
 Result.propTypes = {
     data: React.PropTypes.object,
+    ordering: React.PropTypes.bool,
+    toggleRSID: React.PropTypes.func,
+    isSelected: React.PropTypes.func,
 };
 
 export default Result;

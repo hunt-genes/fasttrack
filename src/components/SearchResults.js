@@ -5,6 +5,9 @@ import Result from './Result';
 export default class SearchResults extends React.Component {
     static propTypes = {
         results: React.PropTypes.object,
+        ordering: React.PropTypes.bool,
+        toggleRSID: React.PropTypes.func,
+        isSelected: React.PropTypes.func.isRequired,
     }
 
     render() {
@@ -26,7 +29,7 @@ export default class SearchResults extends React.Component {
                 </thead>
                 <tbody>
                     {this.props.results.edges.map(edge => (
-                        <Result key={edge.node.id} {...edge.node} />
+                        <Result key={edge.node.id} ordering={this.props.ordering} toggleRSID={this.props.toggleRSID} isSelected={this.props.isSelected} {...edge.node} />
                         ))
                     }
                 </tbody>

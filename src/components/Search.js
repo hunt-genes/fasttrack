@@ -33,6 +33,8 @@ class Search extends React.Component {
     state = {
         term: this.props.location.query.q,
         loading: false,
+        ordering: false,
+        selected: new Set(),
     }
 
     componentDidMount() {
@@ -110,6 +112,26 @@ class Search extends React.Component {
         this.props.relay.setVariables({
             pageSize: results.edges.length + pageSize,
         });
+    }
+
+    toggleOrdering = () => {
+        this.setState({
+            ordering: !this.state.ordering,
+        });
+    }
+
+    toggleRSID = (rsid) => {
+        if (this.state.selected.has(rsid)) {
+            this.setState({ selected: this.state.selected.delete(rsid) });
+        }
+        else {
+            this.setState({ selected: this.state.selected.add(rsid) });
+        }
+    }
+
+    isSelected = (rsid) => {
+        console.log(rsid, this.state.selected, this.state.selected.has(rsid));
+        return this.state.selected.has(rsid);
     }
 
     render() {
@@ -198,10 +220,11 @@ class Search extends React.Component {
                         textAlign: 'center',
                         fontSize: '2rem',
                     }}
+                    toggleOrdering={this.toggleOrdering}
                 />
                 {this.props.location.query.q ?
                     <div>
-                        <SearchResults results={this.props.viewer.results} />
+                        <SearchResults results={this.props.viewer.results} ordering={this.state.ordering} toggleRSID={this.toggleRSID} isSelected={this.isSelected} />
                         {this.props.viewer.results.pageInfo.hasNextPage ?
                             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                                 <Button onClick={this.loadMore}>Load more</Button>

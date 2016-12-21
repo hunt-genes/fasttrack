@@ -10,7 +10,13 @@ export default class Summary extends React.Component {
         hunt: React.PropTypes.bool,
         style: React.PropTypes.object,
         loading: React.PropTypes.bool,
+        toggleOrdering: React.PropTypes.func,
     }
+
+    toggleOrdering = () => {
+        this.props.toggleOrdering();
+    }
+
     render() {
         if (this.props.loading) {
             return (
@@ -39,6 +45,21 @@ export default class Summary extends React.Component {
 
         return (
             <p style={this.props.style}>
+                { this.props.ordering ?
+                    <a className="btn">Order</a>
+                    :
+                <a
+                    style={{
+                        display: 'block',
+                        float: 'right',
+                        marginRight: 10,
+                    }}
+                    className="btn"
+                    onClick={this.toggleOrdering}
+                >
+                    Order variables
+                </a>
+                }
                 <a
                     style={{
                         display: 'block',
