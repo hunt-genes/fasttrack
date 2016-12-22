@@ -45,7 +45,7 @@ module.exports = {
         ],
     },
     output: {
-        path: path.join(__dirname, 'dist', 'assets'),
+        path: path.join(__dirname, 'dist'),
         publicPath: '/',
         filename: 'javascript.js',
     },

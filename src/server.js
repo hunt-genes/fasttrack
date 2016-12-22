@@ -2,6 +2,7 @@
 
 import http from 'http';
 import app from "./app";
+import 'babel-polyfill';
 
 const httpServer = http.createServer(app);
 
