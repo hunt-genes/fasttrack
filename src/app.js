@@ -12,6 +12,8 @@ import RelayLocalSchema from 'relay-local-schema';
 // import Helmet from 'react-helmet';
 import { match } from 'react-router';
 import graphqlHTTP from 'express-graphql';
+
+import config from 'config';
 import schema from './schema';
 
 import Result from './models/Result';
@@ -143,8 +145,11 @@ app.use('/graphql', graphqlHTTP(req => ({
 function renderFullPage(renderedContent, initialState, head = {
     title: '<title>Fast-track</title>',
     meta: '<meta name="viewport" content="width=device-width, initial-scale=1" />',
-    link: '<link rel="stylesheet" href="/stylesheet.css"/>',
 }) {
+    let style = '';
+    if (config.get('html.style')) {
+        style = '<link rel="stylesheet" href="/styles.css">';
+    }
     return `
     <!doctype html>
     <html>
@@ -152,14 +157,14 @@ function renderFullPage(renderedContent, initialState, head = {
         <meta charset="utf-8" />
         ${head.title}
         ${head.meta}
-        ${head.link}
+        ${style}
     </head>
     <body>
         <div id="app">${renderedContent}</div>
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/client.js"></script>
+        <script src="/javascript.js"></script>
     </body>
     </html>
     `;
