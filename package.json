@@ -78,6 +78,7 @@
     "extract-text-webpack-plugin": "^1.0.1",
     "is-fullwidth-code-point": "^2.0.0",
     "mocha": "^2.3.4",
+    "nodemon": "^1.11.0",
     "v8flags": "^2.0.11",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.16.2",
