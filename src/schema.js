@@ -27,8 +27,10 @@ import Request from './models/Request';
 import prepareQuery from './models/prepareQuery';
 
 class ResultDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 let resultType;
+let userType;
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -36,10 +38,16 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'Result') {
             return Result.findById(id).exec().then((result) => new ResultDTO(result.toObject()));
         }
+        if (type === 'User') {
+            return new UserDTO({});
+        }
     },
     (obj) => {
         if (obj instanceof ResultDTO) {
             return resultType;
+        }
+        if (obj instanceof UserDTO) {
+            return userType;
         }
         return null;
     }
@@ -111,7 +119,7 @@ const resultConnection = connectionDefinitions({
     nodeType: resultType,
 });
 
-const userType = new GraphQLObjectType({
+userType = new GraphQLObjectType({
     name: 'User',
     fields: {
         id: globalIdField('User'),

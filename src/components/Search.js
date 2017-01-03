@@ -31,7 +31,7 @@ class Search extends React.Component {
     }
 
     state = {
-        term: this.props.location.query.q,
+        term: this.props.location.query.q || '',
         loading: false,
     }
 
