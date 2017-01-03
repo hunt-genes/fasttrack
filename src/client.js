@@ -8,6 +8,9 @@ import { match, Router, browserHistory } from 'react-router';
 import routes from './routes';
 import moment from 'moment';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import 'font-awesome/css/font-awesome.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import './scss/stylesheet.scss';
 
 injectTapEventPlugin();
 
