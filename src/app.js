@@ -148,7 +148,7 @@ function renderFullPage(renderedContent, initialState, head = {
 }) {
     let style = '';
     if (config.get('html.style')) {
-        style = '<link rel="stylesheet" href="/styles.css">';
+        style = '<link rel="stylesheet" href="/stylesheet.css">';
     }
     return `
     <!doctype html>
