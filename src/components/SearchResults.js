@@ -1,5 +1,4 @@
 import React from 'react';
-import { Table } from 'react-bootstrap';
 import Result from './Result';
 
 export default class SearchResults extends React.Component {
@@ -9,7 +8,7 @@ export default class SearchResults extends React.Component {
 
     render() {
         return (
-            <Table striped condensed hover id="results">
+            <table>
                 <thead>
                     <tr>
                         <th>SNP</th>
@@ -30,7 +29,7 @@ export default class SearchResults extends React.Component {
                         ))
                     }
                 </tbody>
-            </Table>
+            </table>
         );
     }
 }

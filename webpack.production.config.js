@@ -48,10 +48,5 @@ module.exports = {
                 '*.scss',
             ]
         })
-    ],
-    sassLoader: {
-        includePaths: [
-            path.resolve(__dirname, 'node_modules/font-awesome/scss'),
-        ]
-    }
+    ]
 };

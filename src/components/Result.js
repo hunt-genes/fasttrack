@@ -72,7 +72,7 @@ class Result extends React.Component {
                     </div>
                 </td>
                 <td>
-                    <ul>
+                    <ul style={{ margin: 0, paddingLeft: 20 }}>
                         {result.genes.map(gene =>
                             <li key={gene}>
                                 <Link to={`/search/?q=${gene}`}>
@@ -83,7 +83,7 @@ class Result extends React.Component {
                     </ul>
                 </td>
                 <td>
-                    <ul>
+                    <ul style={{ margin: 0, paddingLeft: 20 }}>
                         {result.traits.map(trait =>
                         <li key={trait}>
                             <Link to={`/search/?q=${trait}`}>

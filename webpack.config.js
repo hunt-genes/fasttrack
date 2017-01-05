@@ -56,10 +56,12 @@ module.exports = {
             from: path.join(__dirname, 'src', 'assets'),
         }]),
         new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en)$/),
+        new CopyWebpackPlugin([{
+            from: __dirname + '/src/assets',
+        }], {
+            ignore: [
+                '*.scss',
+            ],
+        }),
     ],
-    sassLoader: {
-        includePaths: [
-            path.resolve(__dirname, 'node_modules/font-awesome/scss'),
-        ],
-    },
 };
