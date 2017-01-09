@@ -11,3 +11,4 @@
 *.gz
 *.tsv
 *.csv
+*.retry

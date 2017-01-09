@@ -1,6 +1,6 @@
+import Checkbox from 'material-ui/Checkbox';
 import React from 'react';
 import { Link } from 'react-router';
-import { Checkbox } from 'react-bootstrap';
 
 import ImputationResults from './ImputationResults';
 import ExternalLink from './ExternalLink';
@@ -43,11 +43,11 @@ class Result extends React.Component {
             <tr className={this.rowclass(result.p_value)}>
                 <td>
                     <div>
+                        {this.props.ordering ? <Checkbox onCheck={this.toggleRSID} checked={this.isSelected()} /> : null}
                         <Link to={`/search/?q=${result.snp_id_current}`}>
                             {result.snps}
                         </Link>
                     </div>
-                    {this.props.ordering ? <Checkbox onChange={this.toggleRSID} checked={this.isSelected()} /> : null}
                 </td>
                 <td>
                     {hunt && hunt.map(
@@ -83,7 +83,7 @@ class Result extends React.Component {
                     </div>
                 </td>
                 <td>
-                    <ul>
+                    <ul style={{ margin: 0, paddingLeft: 20 }}>
                         {result.genes.map(gene =>
                             <li key={gene}>
                                 <Link to={`/search/?q=${gene}`}>
@@ -94,7 +94,7 @@ class Result extends React.Component {
                     </ul>
                 </td>
                 <td>
-                    <ul>
+                    <ul style={{ margin: 0, paddingLeft: 20 }}>
                         {result.traits.map(trait =>
                         <li key={trait}>
                             <Link to={`/search/?q=${trait}`}>

@@ -1,16 +1,228 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 //@import url(https://fonts.googleapis.com/css?family=Droid+Serif:300,400,500,700);
 
-@import 'variables';
-@import 'bootstrap';
-@import 'paper';
-@import 'font-awesome';
+//== Colors
+//
+//## Gray and brand colors for use across Bootstrap.
 
-// our bootstrap styles
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              #212121 !default;
+$gray:                   #666 !default;
+$gray-light:             #bbb !default;
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
 
-#footer {
-    margin-top: 50px;
-    padding-bottom: 80px;
+// $brand-primary:         #2196F3 !default;
+$brand-primary:         #00509e !default;
+$brand-success:         #4CAF50 !default;
+$brand-info:            #9C27B0 !default;
+$brand-warning:         #ff9800 !default;
+$brand-danger:          #e51c23 !default;
+
+
+//== Scaffolding
+//
+//## Settings for some of the most global styles.
+
+//** Background color for `<body>`.
+$body-bg:               #fff !default;
+//** Global text color on `<body>`.
+$text-color:            $gray !default;
+
+//** Global textual link color.
+$link-color:            $brand-primary !default;
+//** Link hover color set via `darken()` function.
+$link-hover-color:      darken($link-color, 15%) !default;
+//** Link hover decoration.
+$link-hover-decoration: underline !default;
+
+
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
+
+$font-family-sans-serif:  "Open Sans", Helvetica, Arial, sans-serif !default;
+$font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+$font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
+$font-family-base:        $font-family-sans-serif !default;
+
+$font-size-base:          13px !default;
+$font-size-large:         ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-small:         ceil(($font-size-base * 0.85)) !default; // ~12px
+
+$font-size-h1:            32px !default;
+$font-size-h2:            24px !default;
+$font-size-h3:            18px !default;
+$font-size-h4:            24px !default;
+$font-size-h5:            20px !default;
+$font-size-h6:            14px !default;
+
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base:        1.846 !default; // 20/14
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+
+//** By default, this inherits from the `<body>`.
+$headings-font-family:    inherit !default;
+$headings-font-weight:    400 !default;
+$headings-line-height:    1.1 !default;
+$headings-color:          #444 !default;
+
+//== Media queries breakpoints
+//
+//## Define the breakpoints at which your layout will change, adapting to different screen sizes.
+
+// Extra small screen / phone
+//** Deprecated `$screen-xs` as of v3.0.1
+$screen-xs:                  480px !default;
+//** Deprecated `$screen-xs-min` as of v3.2.0
+$screen-xs-min:              $screen-xs !default;
+//** Deprecated `$screen-phone` as of v3.0.1
+$screen-phone:               $screen-xs-min !default;
+
+// Small screen / tablet
+//** Deprecated `$screen-sm` as of v3.0.1
+$screen-sm:                  768px !default;
+$screen-sm-min:              $screen-sm !default;
+//** Deprecated `$screen-tablet` as of v3.0.1
+$screen-tablet:              $screen-sm-min !default;
+
+// Medium screen / desktop
+//** Deprecated `$screen-md` as of v3.0.1
+$screen-md:                  992px !default;
+$screen-md-min:              $screen-md !default;
+//** Deprecated `$screen-desktop` as of v3.0.1
+$screen-desktop:             $screen-md-min !default;
+
+// Large screen / wide desktop
+//** Deprecated `$screen-lg` as of v3.0.1
+$screen-lg:                  1200px !default;
+$screen-lg-min:              $screen-lg !default;
+//** Deprecated `$screen-lg-desktop` as of v3.0.1
+$screen-lg-desktop:          $screen-lg-min !default;
+
+// So media queries don't overlap when required, provide a maximum
+$screen-xs-max:              ($screen-sm-min - 1) !default;
+$screen-sm-max:              ($screen-md-min - 1) !default;
+$screen-md-max:              ($screen-lg-min - 1) !default;
+
+
+//== Grid system
+//
+//## Define your custom responsive grid.
+
+//** Number of columns in the grid.
+$grid-columns:              12 !default;
+//** Padding between columns. Gets divided in half for the left and right.
+$grid-gutter-width:         30px !default;
+// Navbar collapse
+//** Point at which the navbar becomes uncollapsed.
+$grid-float-breakpoint:     $screen-sm-min !default;
+//** Point at which the navbar begins collapsing.
+$grid-float-breakpoint-max: ($grid-float-breakpoint - 1) !default;
+
+
+//== Container sizes
+//
+//## Define the maximum width of `.container` for different screen sizes.
+
+// Small screen / tablet
+$container-tablet:             (720px + $grid-gutter-width) !default;
+//** For `$screen-sm-min` and up.
+$container-sm:                 $container-tablet !default;
+
+// Medium screen / desktop
+$container-desktop:            (940px + $grid-gutter-width) !default;
+//** For `$screen-md-min` and up.
+$container-md:                 $container-desktop !default;
+
+// Large screen / wide desktop
+$container-large-desktop:      (1140px + $grid-gutter-width) !default;
+//** For `$screen-lg-min` and up.
+$container-lg:                 $container-large-desktop !default;
+
+// reset
+
+html, body, figure {
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing:inherit;
+}
+body {
+    font-family: $font-family-base;
+    font-size: $font-size-base;
+    color: $text-color;
+    line-height: $line-height-computed;
+}
+h1, h2, h3 {
+    font-family: $headings-font-family;
+    font-weight: $headings-font-weight;
+    line-height: $headings-line-height;
+    color: $headings-color;
+}
+h1 {
+    font-size: $font-size-h1;
+}
+h2 {
+    font-size: $font-size-h2;
+}
+h3 {
+    font-size: $font-size-h3;
+}
+a {
+    color: $link-color;
+    text-decoration: none;
+    &:hover {
+        color: $link-hover-color;
+        text-decoration: $link-hover-decoration;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: table;
+    thead {
+        tr {
+            th {
+                border-bottom: 1px solid #ddd;
+                border-bottom-width: 2px;
+                vertical-align: bottom;
+                padding: 4px;
+                line-height: $line-height-computed;
+                text-align: left;
+            }
+            td {
+                border-bottom: 1px solid #ddd;
+                border-bottom-width: 2px;
+                vertical-align: top;
+                padding: 4px;
+                line-height: $line-height-computed;
+            }
+        }
+    }
+    tbody {
+        tr {
+            transition: all 0.2s;
+            &:nth-of-type(odd) {
+                background-color: #f9f9f9;
+            }
+            &:hover {
+                background-color: #f5f5f5;
+            }
+            th, td {
+                border-bottom: 1px solid #ddd;
+                vertical-align: top;
+                padding: 4px;
+                line-height: $line-height-computed;
+            }
+        }
+    }
 }
 
 .cite-names {
@@ -42,156 +254,10 @@
     h2 {
         font-size: 20px;
     }
-}
-
-.loader {
-    position: relative;
-}
-
-.loader > div {
-    position: absolute;
-    top: 0;
-    background-color: #fff;
-    width: 15px;
-    height: 15px;
-    -moz-animation-name:bounce_loader;
-    -moz-animation-duration:1.3s;
-    -moz-animation-iteration-count:infinite;
-    -moz-animation-direction:linear;
-    -moz-transform:scale(.3);
-    -moz-border-radius:19px;
-    -webkit-animation-name:bounce_loader;
-    -webkit-animation-duration:1.3s;
-    -webkit-animation-iteration-count:infinite;
-    -webkit-animation-direction:linear;
-    -webkit-transform:scale(.3);
-    -webkit-border-radius:19px;
-    -ms-animation-name:bounce_loader;
-    -ms-animation-duration:1.3s;
-    -ms-animation-iteration-count:infinite;
-    -ms-animation-direction:linear;
-    -ms-transform:scale(.3);
-    -ms-border-radius:19px;
-    -o-animation-name:bounce_loader;
-    -o-animation-duration:1.3s;
-    -o-animation-iteration-count:infinite;
-    -o-animation-direction:linear;
-    -o-transform:scale(.3);
-    -o-border-radius:19px;
-    animation-name:bounce_loader;
-    animation-duration:1.3s;
-    animation-iteration-count:infinite;
-    animation-direction:linear;
-    transform:scale(.3);
-    border-radius:50%;
-}
-
-.loader > div:nth-child(1) {
-    left: 0px;
-    -moz-animation-delay:0.52s;
-    -webkit-animation-delay:0.52s;
-    -ms-animation-delay:0.52s;
-    -o-animation-delay:0.52s;
-    animation-delay:0.52s;
-}
-.loader > div:nth-child(2) {
-    left: 20px;
-    -moz-animation-delay:0.65s;
-    -webkit-animation-delay:0.65s;
-    -ms-animation-delay:0.65s;
-    -o-animation-delay:0.65s;
-    animation-delay:0.65s;
-}
-
-.loader > div:nth-child(3) {
-    left: 40px;
-    -moz-animation-delay:0.78s;
-    -webkit-animation-delay:0.78s;
-    -ms-animation-delay:0.78s;
-    -o-animation-delay:0.78s;
-    animation-delay:0.78s;
-}
-.loader > div:nth-child(4) {
-    left: 60px;
-    -moz-animation-delay:0.91s;
-    -webkit-animation-delay:0.91s;
-    -ms-animation-delay:0.91s;
-    -o-animation-delay:0.91s;
-    animation-delay:0.91s;
-}
-.loader > div:nth-child(5) {
-    left: 80px;
-    -moz-animation-delay:1.04s;
-    -webkit-animation-delay:1.04s;
-    -ms-animation-delay:1.04s;
-    -o-animation-delay:1.04s;
-    animation-delay:1.04s;
-}
-.loader > div:nth-child(6) {
-    left: 100px;
-    -moz-animation-delay:1.17s;
-    -webkit-animation-delay:1.17s;
-    -ms-animation-delay:1.17s;
-    -o-animation-delay:1.17s;
-    animation-delay:1.17s;
-}
-
-@-moz-keyframes bounce_loader {
-    0% {
-        -moz-transform:scale(1);
-        background-color:#333;
+    #logo {
+        display: none;
     }
-
-    100% {
-        -moz-transform:scale(.3);
-        background-color:#fff;
-    }
-}
-
-@-webkit-keyframes bounce_loader {
-    0% {
-        -webkit-transform:scale(1);
-        background-color:#333;
-    }
-
-    100% {
-        -webkit-transform:scale(.3);
-        background-color:#fff;
-    }
-}
-
-@-ms-keyframes bounce_loader {
-    0% {
-        -ms-transform:scale(1);
-        background-color:#333;
-    }
-
-    100% {
-        -ms-transform:scale(.3);
-        background-color:#fff;
-    }
-}
-
-@-o-keyframes bounce_loader {
-    0% {
-        -o-transform:scale(1);
-        background-color:#333;
-    }
-
-    100% {
-        -o-transform:scale(.3);
-        background-color:#fff;
-    }
-}
-
-@keyframes bounce_loader {
-    0% {
-        transform:scale(1);
-        background-color:#333;
-    }
-
-    100% {
-        transform:scale(.3);
-        background-color:#fff;
+    #checkboxes, #buttons {
+        flex-wrap: wrap;
     }
 }

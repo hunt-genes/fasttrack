@@ -1,5 +1,8 @@
+#!/usr/bin/env node
+
 import http from 'http';
-import app from "./src/app";
+import app from "./app";
+import 'babel-polyfill';
 
 const httpServer = http.createServer(app);
 

@@ -1,5 +1,6 @@
+import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
-import { Alert } from 'react-bootstrap';
+import theme from '../theme';
 
 export default class Summary extends React.Component {
     static propTypes = {
@@ -28,7 +29,19 @@ export default class Summary extends React.Component {
         if (this.props.term && this.props.term.length < 3) {
             return (
                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <Alert bsStyle="danger">We need at least three characters</Alert>
+                    <div
+                        style={{
+                            backgroundColor: theme.palette.accent1Color,
+                            color: theme.palette.alternateTextColor,
+                            paddingLeft: theme.spacing.desktopGutterLess,
+                            paddingRight: theme.spacing.desktopGutterLess,
+                            paddingTop: theme.spacing.desktopGutterMini,
+                            paddingBottom: theme.spacing.desktopGutterMini,
+                            margin: theme.spacing.desktopGutter,
+                        }}
+                    >
+                        We need at least three characters
+                    </div>
                 </div>
             );
         }
@@ -44,36 +57,36 @@ export default class Summary extends React.Component {
         );
 
         return (
-            <p style={this.props.style}>
-                { this.props.ordering ?
-                    <a className="btn">Order</a>
-                    :
-                <a
-                    style={{
-                        display: 'block',
-                        float: 'right',
-                        marginRight: 10,
-                    }}
-                    className="btn"
-                    onClick={this.toggleOrdering}
-                >
-                    Order variables
-                </a>
+            <div>
+            <div style={this.props.style}>
+                { this.props.ordering
+                    ? <RaisedButton label="Order variables" onTouchTap={this.toggleOrdering} />
+                    : <RaisedButton label="Order variables" onTouchTap={this.toggleOrdering} />
                 }
-                <a
+            </div>
+            <div style={{ maxWidth: 800, margin: '0 auto' }}>
+                <div
                     style={{
-                        display: 'block',
-                        float: 'right',
-                        marginRight: 10,
+                        marginTop: theme.spacing.desktopGutter,
+                        marginBottom: theme.spacing.desktopGutter,
+                        paddingLeft: 10,
+                        fontSize: '1.2rem',
                     }}
-                    className="btn"
-                    href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`}
-                    download
                 >
-                    Export .tsv
-                </a>
-                {this.props.stats.unique} unique SNPs in {this.props.stats.total} studies {small}
-            </p>
+                    <RaisedButton
+                        style={{
+                            display: 'block',
+                            float: 'right',
+                            marginRight: 10,
+                        }}
+                        href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`}
+                        download
+                        label="Export .tsv"
+                    />
+                    {this.props.stats.unique} unique SNPs in {this.props.stats.total} studies {small}
+                </div>
+            </div>
+            </div>
         );
     }
 }

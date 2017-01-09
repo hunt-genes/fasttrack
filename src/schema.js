@@ -29,6 +29,9 @@ import prepareQuery from './models/prepareQuery';
 class ResultDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
+let resultType;
+let userType;
+
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
         const { type, id } = fromGlobalId(globalId);
@@ -36,7 +39,7 @@ const { nodeInterface, nodeField } = nodeDefinitions(
             return Result.findById(id).exec().then((result) => new ResultDTO(result.toObject()));
         }
         if (type === 'User') {
-            return new UserDTO({ id });
+            return new UserDTO({});
         }
     },
     (obj) => {
@@ -58,7 +61,7 @@ const traitType = new GraphQLObjectType({
     },
 });
 
-const resultType = new GraphQLObjectType({
+resultType = new GraphQLObjectType({
     name: 'Result',
     fields: {
         id: globalIdField('Result'),
@@ -111,12 +114,17 @@ const resultType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
-const userType = new GraphQLObjectType({
+const resultConnection = connectionDefinitions({
+    name: 'Result',
+    nodeType: resultType,
+});
+
+userType = new GraphQLObjectType({
     name: 'User',
     fields: {
         id: globalIdField('User'),
         results: {
-            type: connectionDefinitions({ name: 'Result', nodeType: resultType }).connectionType,
+            type: resultConnection.connectionType,
             args: {
                 term: { type: GraphQLString },
                 unique: { type: GraphQLBoolean },
@@ -124,12 +132,12 @@ const userType = new GraphQLObjectType({
                 hunt: { type: GraphQLBoolean },
                 ...connectionArgs,
             },
-            async resolve(term, { ...args }) { // term here is unused for now, coming from server
+            resolve: (term, args) => { // term here is unused for now, coming from server
                 if (!args.term || args.term.length < 3) {
                     return connectionFromArray([], args);
                 }
                 const query = prepareQuery(args.term, args.unique, args.tromso, args.hunt);
-                return await connectionFromMongooseQuery(
+                return connectionFromMongooseQuery(
                     Result.find(query).sort('sortable_chr_id chr_pos'),
                     args,
                 );
