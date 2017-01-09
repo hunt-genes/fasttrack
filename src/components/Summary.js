@@ -1,5 +1,12 @@
+import FlatButton from 'material-ui/FlatButton';
+import IconMenu from 'material-ui/IconMenu';
+import IconButton from 'material-ui/IconButton/IconButton';
+import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
+import { Link } from 'react-router';
 import theme from '../theme';
 
 export default class Summary extends React.Component {
@@ -11,6 +18,7 @@ export default class Summary extends React.Component {
         hunt: React.PropTypes.bool,
         style: React.PropTypes.object,
         loading: React.PropTypes.bool,
+        ordering: React.PropTypes.bool,
         toggleOrdering: React.PropTypes.func,
     }
 
@@ -57,35 +65,49 @@ export default class Summary extends React.Component {
         );
 
         return (
-            <div>
-            <div style={this.props.style}>
-                { this.props.ordering
-                    ? <RaisedButton label="Order variables" onTouchTap={this.toggleOrdering} />
-                    : <RaisedButton label="Order variables" onTouchTap={this.toggleOrdering} />
-                }
-            </div>
             <div style={{ maxWidth: 800, margin: '0 auto' }}>
-                <div
-                    style={{
-                        marginTop: theme.spacing.desktopGutter,
-                        marginBottom: theme.spacing.desktopGutter,
-                        paddingLeft: 10,
-                        fontSize: '1.2rem',
-                    }}
-                >
-                    <RaisedButton
-                        style={{
-                            display: 'block',
-                            float: 'right',
-                            marginRight: 10,
-                        }}
-                        href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`}
-                        download
-                        label="Export .tsv"
-                    />
-                    {this.props.stats.unique} unique SNPs in {this.props.stats.total} studies {small}
-                </div>
-            </div>
+                <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
+                    <ToolbarGroup firstChild>
+                        <div
+                            style={{
+                                marginTop: theme.spacing.desktopGutter,
+                                marginBottom: theme.spacing.desktopGutter,
+                                paddingLeft: 10,
+                                fontSize: '1.2rem',
+                            }}
+                        >
+                            {this.props.stats.unique} unique SNPs in {this.props.stats.total} studies {small}
+                        </div>
+                    </ToolbarGroup>
+                    <ToolbarGroup lastChild>
+                        <div style={{ padding: 12 }}>
+                            {this.props.ordering
+                                ? <Link to="/order" ><RaisedButton label="Make order" primary /></Link>
+                                : null
+                            }
+                            {this.props.ordering
+                                ? <RaisedButton label="Cancel" onClick={this.toggleOrdering} />
+                                : null
+                            }
+                        </div>
+                        <IconMenu
+                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                            targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                        >
+                            {this.props.ordering
+                                ? null
+                                : <MenuItem primaryText="Order variables" onTouchTap={this.toggleOrdering} />
+                            }
+                            <Link
+                                href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`}
+                                download
+                            >
+                                <MenuItem primaryText="Export .tsv" />
+                            </Link>
+                        </IconMenu>
+                    </ToolbarGroup>
+                </Toolbar>
             </div>
         );
     }

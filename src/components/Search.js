@@ -54,7 +54,9 @@ class Search extends React.Component {
         const selected = sessionStorage.getItem('orderSelected');
         if (selected) {
             this.setState({ selected: new Set(JSON.parse(selected)) });
-            this.setState({ ordering: true });
+            if (JSON.parse(selected).length) {
+                this.setState({ ordering: true });
+            }
         }
     }
 
@@ -236,6 +238,7 @@ loadMore = () => {
                     hunt={this.props.relay.variables.hunt}
                     tromso={this.props.relay.variables.tromso}
                     loading={this.state.loading}
+                    ordering={this.state.ordering}
                     toggleOrdering={this.toggleOrdering}
                 />
                 {this.props.location.query.q ?
