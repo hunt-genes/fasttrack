@@ -31,7 +31,6 @@ class Result extends React.Component {
     }
 
     isSelected = () => {
-        console.log("checking", this.props.isSelected, this.props.snp_id_current);
         return this.props.isSelected(this.props.snp_id_current);
     }
 

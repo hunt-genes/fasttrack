@@ -51,6 +51,11 @@ class Search extends React.Component {
             hunt: this.props.location.query.hunt === 'true',
             tromso: this.props.location.query.tromso === 'true',
         });
+        const selected = sessionStorage.getItem('orderSelected');
+        if (selected) {
+            this.setState({ selected: new Set(JSON.parse(selected)) });
+            this.setState({ ordering: true });
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -129,10 +134,10 @@ loadMore = () => {
         else {
             this.setState({ selected: this.state.selected.add(rsid) });
         }
+        sessionStorage.setItem('orderSelected', JSON.stringify(this.state.selected));
     }
 
     isSelected = (rsid) => {
-        console.log(rsid, this.state.selected, this.state.selected.has(rsid));
         return this.state.selected.has(rsid);
     }
 
