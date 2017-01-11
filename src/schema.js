@@ -15,22 +15,28 @@ import {
   connectionDefinitions,
   connectionArgs,
   connectionFromArray,
+  mutationWithClientMutationId,
 } from 'graphql-relay';
 
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
+import GraphQLDate from 'graphql-custom-datetype';
 
 import ip from 'ip';
 
 import Result from './models/Result';
 import Trait from './models/Trait';
 import Request from './models/Request';
+import Order from './models/Order';
+import Site from './models/Site';
 import prepareQuery from './models/prepareQuery';
 
 class ResultDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
+class SiteDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 
 let resultType;
 let userType;
+let siteType;
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
@@ -41,6 +47,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         if (type === 'User') {
             return new UserDTO({});
         }
+        if (type === 'Site') {
+            return new SiteDTO({});
+        }
     },
     (obj) => {
         if (obj instanceof ResultDTO) {
@@ -48,6 +57,9 @@ const { nodeInterface, nodeField } = nodeDefinitions(
         }
         if (obj instanceof UserDTO) {
             return userType;
+        }
+        if (obj instanceof SiteDTO) {
+            return siteType;
         }
         return null;
     }
@@ -58,6 +70,16 @@ const traitType = new GraphQLObjectType({
     fields: {
         id: { type: GraphQLString },
         uri: { type: GraphQLString },
+    },
+});
+
+const orderType = new GraphQLObjectType({
+    name: 'Order',
+    fields: {
+        id: globalIdField('Order'),
+        email: { type: GraphQLString },
+        snps: { type: new GraphQLList(GraphQLString) },
+        createdAt: { type: GraphQLDate },
     },
 });
 
@@ -203,6 +225,14 @@ userType = new GraphQLObjectType({
     interfaces: [nodeInterface],
 });
 
+siteType = new GraphQLObjectType({
+    name: 'Site',
+    fields: () => ({
+        id: globalIdField('Site'),
+        order: { type: orderType },
+    }),
+});
+
 const queryType = new GraphQLObjectType({
     name: 'Query',
     fields: {
@@ -211,11 +241,46 @@ const queryType = new GraphQLObjectType({
             type: userType,
             resolve: (_) => _,
         },
+        site: {
+            type: siteType,
+            resolve: ({ site }) => site,
+        }
     },
+});
+
+const mutationOrderVariables = mutationWithClientMutationId({
+    name: 'OrderVariables',
+    inputFields: {
+        snps: { type: new GraphQLList(GraphQLString) },
+        email: { type: GraphQLString },
+    },
+    outputFields: {
+        site: {
+            type: siteType,
+            resolve: payload => payload,
+        },
+    },
+    mutateAndGetPayload: ({ snps, email }, { site }) => {
+        // TODO: Check email
+        return Site.findById(site.id).exec().then(site => {
+            return Order.create({ snps, email }).then(order => {
+                site.order = order;
+                return site;
+            });
+        });
+    },
+});
+
+const mutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: () => ({
+        orderVariables: mutationOrderVariables,
+    }),
 });
 
 const schema = new GraphQLSchema({
     query: queryType,
+    mutation: mutationType,
 });
 
 export default schema;

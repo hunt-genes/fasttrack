@@ -35,6 +35,7 @@
     "express-graphql": "^0.6.1",
     "fast-csv": "^1.0.0",
     "graphql": "^0.8.2",
+    "graphql-custom-datetype": "^0.3.0",
     "graphql-relay": "^0.4.3",
     "history": "^4.5.0",
     "immutable": "^3.7.5",

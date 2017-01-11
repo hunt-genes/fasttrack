@@ -14,6 +14,9 @@ export const queries = {
             }
         }`;
     },
+    site: () => {
+        return Relay.QL`query { site  }`;
+    },
 };
 
 export default createRoutes(

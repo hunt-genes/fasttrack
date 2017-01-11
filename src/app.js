@@ -17,6 +17,7 @@ import config from 'config';
 import schema from './schema';
 
 import Result from './models/Result';
+import Site from './models/Site';
 import prepareQuery from './models/prepareQuery';
 
 const app = express();
@@ -48,6 +49,21 @@ app.use((req, res, next) => {
 
     // do not wait for request logger
     next();
+});
+app.use((req, res, next) => {
+    Site.findById('fasttrack').exec().then(site => {
+        if (site) {
+            req.site = site;
+            next();
+        }
+        else {
+            Site.create({_id: 'fasttrack'}).then(site => {
+                req.site = site;
+                next();
+            });
+        }
+    });
+    // TODO: Handle errors
 });
 
 // Export data as CSV
@@ -135,12 +151,16 @@ else {
 }
 app.use(express.static(path.join(__dirname, '..', 'dist')));
 
-app.use('/graphql', graphqlHTTP(req => ({
-    schema,
-    rootValue: { term: 'foot' },
-    pretty: process.env.NODE_ENV !== 'production',
-    graphiql: process.env.NODE_ENV !== 'production',
-})));
+app.use('/graphql', graphqlHTTP(req => {
+    const contextValue = { site: req.site };
+    return {
+        schema,
+        context: contextValue,
+        rootValue: contextValue,
+        pretty: process.env.NODE_ENV !== 'production',
+        graphiql: process.env.NODE_ENV !== 'production',
+    }
+}));
 
 function renderFullPage(renderedContent, initialState, head = {
     title: '<title>Fast-track</title>',
@@ -181,15 +201,11 @@ app.get('*', (req, res, next) => {
             return res.redirect(302, redirectLocation.pathname + redirectLocation.search);
         }
         else if (renderProps) {
-            const rootValue = {};
-            if (req.query.q) {
-                rootValue.term = 'foot';
-            }
-            rootValue.term = 'foot';
-
+            const contextValue = { site: req.site };
             const networkLayer = new RelayLocalSchema.NetworkLayer({
                 schema,
-                rootValue,
+                contextValue,
+                rootValue: contextValue,
                 onError: (errors, request) => next(new Error(errors)),
             });
             return Router.prepareData(renderProps, networkLayer).then(({ data, props }) => {

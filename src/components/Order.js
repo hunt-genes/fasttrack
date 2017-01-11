@@ -1,9 +1,11 @@
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import moment from 'moment';
 import React from 'react';
 import Relay from 'react-relay';
 import theme from '../theme';
+import OrderVariablesMutation from '../mutations/orderVariables';
 
 class Order extends React.Component {
     static contextTypes = {
@@ -37,18 +39,39 @@ class Order extends React.Component {
         }
     }
 
+    onSubmitOrder = (event) => {
+        event.preventDefault();
+        if (this.validateEmail()) {
+            this.context.relay.commitUpdate(new OrderVariablesMutation({
+                email: this.state.email,
+                snps: Array.from(this.state.selected),
+                site: this.props.site,
+            }));
+        }
+    }
+
     onChangeEmail = (event, email) => {
         this.setState({ email });
+        if (!this.state.emailValid) {
+            this.validateEmail();
+        }
     }
 
     onBlurEmail = () => {
-        const { email } = this.props;
-        if (email && email.match(/ntnu.no$/) ) {
-            this.setState({ emailValid: true });
+        this.validateEmail();
+    }
+
+    validateEmail = () => {
+        const { email } = this.state;
+        let emailValid = false;
+        if (email && email.match(/ntnu.no$/)) {
+            emailValid = true;
         }
         else {
-            this.setState({ emailValid: false });
+            emailValid = false;
         }
+        this.setState({ emailValid });
+        return emailValid;
     }
 
     onClickCancel = () => {
@@ -67,38 +90,51 @@ class Order extends React.Component {
         return (
             <section>
                 <div style={{ maxWidth: 800, margin: '0 auto' }}>
-                    {snps.length
-                        ? <form onSubmit={this.onSubmitForm}>
-                            <h1>You have selected these SNPs to order from HUNT</h1>
-                            {snps.map(snp => <div key={snp}>{snp}</div>)}
-                            <p>There is an amount of work related to this, so we only allow ntnu.no addresses at this time.</p>
-                            <TextField
-                                id="email"
-                                floatingLabelText="Email"
-                                type="email"
-                                onChange={this.onChangeEmail}
-                                onBlur={this.onBlurEmail}
-                                errorText={this.state.emailValid ? '' : 'Email is not valid, is it an @ntnu.no address?'}
-                            />
-                            <p>Really, at this time we don't send requests at all, as this functionality is under development.</p>
-                            <RaisedButton
-                                primary
-                                label="Send"
-                                type="submit"
-                            />
-                            <RaisedButton
-                                label="Cancel"
-                                type="reset"
-                                onClick={this.onClickCancel}
-                            />
-                        </form>
+                    {this.props.site.order
+                        ? <div>
+                            <h1>Thank you for your order</h1>
+                            <p>Your order was sent {moment(this.props.site.order.createdAt).format('lll')}, and contains the following SNPs:</p>
+                            <ul>
+                                {this.props.site.order.snps.map(snp => <li key={snp}>{snp}</li>)}
+                            </ul>
+                            <p>We will send you an email to {this.props.site.order.email} when results are ready.</p>
+                            <p>Please contact us if there is something wrong with your order</p>
+                        </div>
                         : <div>
-                            <h1>You have selected no SNPs yet</h1>
-                            <p>Please go back and select some SNPs, if you want to order variables from HUNT</p>
-                            <RaisedButton
-                                label="Back"
-                                onClick={this.onClickBack}
-                            />
+                            {snps.length
+                                ? <form onSubmit={this.onSubmitOrder}>
+                                    <h1>You have selected these SNPs to order from HUNT</h1>
+                                    {snps.map(snp => <div key={snp}>{snp}</div>)}
+                                    <p>There is an amount of work related to this, so we only allow ntnu.no addresses at this time.</p>
+                                    <TextField
+                                        id="email"
+                                        floatingLabelText="Email"
+                                        type="email"
+                                        onChange={this.onChangeEmail}
+                                        onBlur={this.onBlurEmail}
+                                        errorText={this.state.emailValid ? '' : 'Email is not valid, is it an @ntnu.no address?'}
+                                    />
+                                    <p>Really, at this time we don't send requests at all, as this functionality is under development.</p>
+                                    <RaisedButton
+                                        primary
+                                        label="Send"
+                                        type="submit"
+                                    />
+                                    <RaisedButton
+                                        label="Cancel"
+                                        type="reset"
+                                        onClick={this.onClickCancel}
+                                    />
+                                </form>
+                                : <div>
+                                    <h1>You have selected no SNPs yet</h1>
+                                    <p>Please go back and select some SNPs, if you want to order variables from HUNT</p>
+                                    <RaisedButton
+                                        label="Back"
+                                        onClick={this.onClickBack}
+                                    />
+                                </div>
+                            }
                         </div>
                     }
                 </div>
@@ -109,12 +145,20 @@ class Order extends React.Component {
 
 export default Relay.createContainer(Order, {
     fragments: {
+        site: () => Relay.QL`
+        fragment on Site {
+            id
+            order {
+                id
+                email
+                snps
+                createdAt
+            }
+            ${OrderVariablesMutation.getFragment('site')}
+        }`,
         viewer: () => Relay.QL`
         fragment on User {
-            traits {
-                id,
-                uri
-            }
+            id
         }`,
     },
 });

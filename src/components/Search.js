@@ -251,6 +251,7 @@ class Search extends React.Component {
                     selecting={this.state.selecting}
                     toggleSelection={this.toggleSelection}
                     cancelSelection={this.cancelSelection}
+                    site={this.props.site}
                 />
                 {this.props.location.query.q ?
                     <div>
@@ -337,6 +338,10 @@ export default Relay.createContainer(Search, {
                 local
             }
             ${TraitList.getFragment('viewer')}
+        }`,
+        site: () => Relay.QL`
+        fragment on Site {
+            id
         }`,
     },
 });
