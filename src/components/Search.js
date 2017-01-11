@@ -138,13 +138,15 @@ class Search extends React.Component {
     }
 
     toggleRSID = (rsid) => {
-        if (this.state.selected.has(rsid)) {
-            this.setState({ selected: this.state.selected.delete(rsid) });
+        const selected = this.state.selected;
+        if (selected.has(rsid)) {
+            selected.delete(rsid);
         }
         else {
-            this.setState({ selected: this.state.selected.add(rsid) });
+            selected.add(rsid);
         }
-        sessionStorage.setItem('orderSelected', JSON.stringify(this.state.selected));
+        this.setState({ selected });
+        sessionStorage.setItem('orderSelected', JSON.stringify(selected));
     }
 
     isSelected = (rsid) => {
