@@ -79,51 +79,51 @@ class Search extends React.Component {
         }
     }
 
-onSearch = (event) => {
-    event.preventDefault();
-    this.context.router.push({ query: { q: this.state.term } });
-}
+    onSearch = (event) => {
+        event.preventDefault();
+        this.context.router.push({ query: { q: this.state.term } });
+    }
 
-onClear = (event) => {
-    event.preventDefault();
-    this.context.router.push({ query: { q: '' } });
-}
+    onClear = (event) => {
+        event.preventDefault();
+        this.context.router.push({ query: { q: '' } });
+    }
 
-onChange = (event, term) => {
-    this.setState({ term });
-}
+    onChange = (event, term) => {
+        this.setState({ term });
+    }
 
-onUniqueChange = () => {
-    const unique = !this.props.relay.variables.unique;
-    const query = this.props.location.query;
-    query.unique = unique;
-    this.setState({ loading: true });
-    this.context.router.push({ query });
-    this.props.relay.setVariables({ unique }, () => { this.setState({ loading: false }); });
-}
+    onUniqueChange = () => {
+        const unique = !this.props.relay.variables.unique;
+        const query = this.props.location.query;
+        query.unique = unique;
+        this.setState({ loading: true });
+        this.context.router.push({ query });
+        this.props.relay.setVariables({ unique }, () => { this.setState({ loading: false }); });
+    }
 
-onHuntChange = () => {
-    const hunt = !this.props.relay.variables.hunt;
-    const query = this.props.location.query;
-    query.hunt = hunt;
-    this.context.router.push({ query });
-    this.props.relay.setVariables({ hunt });
-}
+    onHuntChange = () => {
+        const hunt = !this.props.relay.variables.hunt;
+        const query = this.props.location.query;
+        query.hunt = hunt;
+        this.context.router.push({ query });
+        this.props.relay.setVariables({ hunt });
+    }
 
-onTromsoChange = () => {
-    const tromso = !this.props.relay.variables.tromso;
-    const query = this.props.location.query;
-    query.tromso = tromso;
-    this.context.router.push({ query });
-    this.props.relay.setVariables({ tromso });
-}
+    onTromsoChange = () => {
+        const tromso = !this.props.relay.variables.tromso;
+        const query = this.props.location.query;
+        query.tromso = tromso;
+        this.context.router.push({ query });
+        this.props.relay.setVariables({ tromso });
+    }
 
-loadMore = () => {
-    const results = this.props.viewer.results;
-    this.props.relay.setVariables({
-        pageSize: results.edges.length + pageSize,
-    });
-}
+    loadMore = () => {
+        const results = this.props.viewer.results;
+        this.props.relay.setVariables({
+            pageSize: results.edges.length + pageSize,
+        });
+    }
 
     toggleOrdering = () => {
         this.setState({ ordering: !this.state.ordering });
