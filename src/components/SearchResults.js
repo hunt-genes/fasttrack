@@ -28,7 +28,7 @@ export default class SearchResults extends React.Component {
                 </thead>
                 <tbody>
                     {this.props.results.edges.map(edge => (
-                        <Result key={edge.node.id} ordering={this.props.ordering} toggleRSID={this.props.toggleRSID} isSelected={this.props.isSelected} {...edge.node} />
+                        <Result key={edge.node.id} selecting={this.props.selecting} toggleRSID={this.props.toggleRSID} isSelected={this.props.isSelected} {...edge.node} />
                         ))
                     }
                 </tbody>
