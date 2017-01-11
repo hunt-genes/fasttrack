@@ -42,10 +42,10 @@ class Result extends React.Component {
             <tr className={this.rowclass(result.p_value)}>
                 <td>
                     <div>
-                        {this.props.selecting ? <Checkbox onCheck={this.toggleRSID} checked={this.isSelected()} /> : null}
                         <Link to={`/search/?q=${result.snp_id_current}`}>
                             {result.snps}
                         </Link>
+                        {this.props.selecting ? <Checkbox onCheck={this.toggleRSID} checked={this.isSelected()} /> : null}
                     </div>
                 </td>
                 <td>
