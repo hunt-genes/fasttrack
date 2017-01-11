@@ -36,7 +36,7 @@ class Search extends React.Component {
     state = {
         term: this.props.location.query.q || '',
         loading: false,
-        ordering: false,
+        selecting: false,
         selected: new Set(),
     }
 
@@ -55,7 +55,7 @@ class Search extends React.Component {
         if (selected) {
             this.setState({ selected: new Set(JSON.parse(selected)) });
             if (JSON.parse(selected).length) {
-                this.setState({ ordering: true });
+                this.setState({ selecting: true });
             }
         }
     }
@@ -125,8 +125,16 @@ class Search extends React.Component {
         });
     }
 
-    toggleOrdering = () => {
-        this.setState({ ordering: !this.state.ordering });
+    toggleSelection = () => {
+        this.setState({ selecting: !this.state.selecting });
+    }
+
+    cancelSelection = () => {
+        this.setState({
+            selected: new Set(),
+            selecting: false,
+        });
+        sessionStorage.setItem('orderSelected', JSON.stringify([]));
     }
 
     toggleRSID = (rsid) => {
@@ -238,12 +246,13 @@ class Search extends React.Component {
                     hunt={this.props.relay.variables.hunt}
                     tromso={this.props.relay.variables.tromso}
                     loading={this.state.loading}
-                    ordering={this.state.ordering}
-                    toggleOrdering={this.toggleOrdering}
+                    selecting={this.state.selecting}
+                    toggleSelection={this.toggleSelection}
+                    cancelSelection={this.cancelSelection}
                 />
                 {this.props.location.query.q ?
                     <div>
-                        <SearchResults results={this.props.viewer.results} ordering={this.state.ordering} toggleRSID={this.toggleRSID} isSelected={this.isSelected} />
+                        <SearchResults results={this.props.viewer.results} selecting={this.state.selecting} toggleRSID={this.toggleRSID} isSelected={this.isSelected} />
                         {this.props.viewer.results.pageInfo.hasNextPage ?
                             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                                 <RaisedButton onClick={this.loadMore} label="Load more" />

@@ -18,12 +18,17 @@ export default class Summary extends React.Component {
         hunt: React.PropTypes.bool,
         style: React.PropTypes.object,
         loading: React.PropTypes.bool,
-        ordering: React.PropTypes.bool,
-        toggleOrdering: React.PropTypes.func,
+        selecting: React.PropTypes.bool,
+        toggleSelection: React.PropTypes.func,
+        cancelSelection: React.PropTypes.func,
     }
 
-    toggleOrdering = () => {
-        this.props.toggleOrdering();
+    toggleSelection = () => {
+        this.props.toggleSelection();
+    }
+
+    cancelSelection = () => {
+        this.props.cancelSelection();
     }
 
     render() {
@@ -81,12 +86,12 @@ export default class Summary extends React.Component {
                     </ToolbarGroup>
                     <ToolbarGroup lastChild>
                         <div style={{ padding: 12 }}>
-                            {this.props.ordering
+                            {this.props.selecting
                                 ? <Link to="/order" ><RaisedButton label="Make order" primary /></Link>
                                 : null
                             }
-                            {this.props.ordering
-                                ? <RaisedButton label="Cancel" onClick={this.toggleOrdering} />
+                            {this.props.selecting
+                                ? <RaisedButton label="Cancel" onClick={this.cancelSelection} />
                                 : null
                             }
                         </div>
@@ -95,16 +100,14 @@ export default class Summary extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}
                         >
-                            {this.props.ordering
+                            {this.props.selecting
                                 ? null
-                                : <MenuItem primaryText="Order variables" onTouchTap={this.toggleOrdering} />
+                                : <MenuItem primaryText="Order variables" onTouchTap={this.toggleSelection} />
                             }
-                            <Link
-                                href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`}
-                                download
-                            >
-                                <MenuItem primaryText="Export .tsv" />
-                            </Link>
+                            <MenuItem
+                                containerElement={<Link href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`} download />}
+                                primaryText="Export .tsv"
+                            />
                         </IconMenu>
                     </ToolbarGroup>
                 </Toolbar>

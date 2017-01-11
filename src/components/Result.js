@@ -42,7 +42,7 @@ class Result extends React.Component {
             <tr className={this.rowclass(result.p_value)}>
                 <td>
                     <div>
-                        {this.props.ordering ? <Checkbox onCheck={this.toggleRSID} checked={this.isSelected()} /> : null}
+                        {this.props.selecting ? <Checkbox onCheck={this.toggleRSID} checked={this.isSelected()} /> : null}
                         <Link to={`/search/?q=${result.snp_id_current}`}>
                             {result.snps}
                         </Link>
@@ -130,7 +130,7 @@ class Result extends React.Component {
 
 Result.propTypes = {
     data: React.PropTypes.object,
-    ordering: React.PropTypes.bool,
+    selecting: React.PropTypes.bool,
     toggleRSID: React.PropTypes.func,
     isSelected: React.PropTypes.func,
 };
