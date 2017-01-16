@@ -1,6 +1,7 @@
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
@@ -201,6 +202,27 @@ class Search extends React.Component {
         );
     return (
         <section>
+            <div style={{float: 'right'}}>
+                <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
+                    <ToolbarGroup lastChild>
+                        <div style={{ padding: 12 }}>
+                            {this.state.selecting
+                                ? null
+                                : <RaisedButton label="Order SNPs" onTouchTap={this.toggleSelection} />
+                            }
+                            {this.state.selecting
+                                ? null
+                                : <a href={`/search/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
+                                    <RaisedButton
+                                        label="Export .tsv"
+                                    />
+                                </a>
+                            }
+                        </div>
+                    </ToolbarGroup>
+                </Toolbar>
+            </div>
+
             <div style={{ maxWidth: 800, margin: '0 auto' }}>
                 <form onSubmit={this.onSearch} onReset={this.onClear}>
                     <div style={{ display: 'flex' }}>
