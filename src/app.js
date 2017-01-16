@@ -144,12 +144,12 @@ app.post('/variables/:trait', (req, res, next) => {
 });
 
 if (app.settings.env === 'production') {
-    app.use(favicon(__dirname + '/../dist/favicon.ico'));
+    app.use(favicon(__dirname + '/assets/favicon.ico'));
 }
 else {
-    app.use(favicon(__dirname + '/../src/assets/favicon.ico'));
+    app.use(favicon(__dirname + '/assets/favicon.ico'));
 }
-app.use(express.static(path.join(__dirname, '..', 'dist')));
+app.use(express.static(path.join(__dirname, '/assets')));
 
 app.use('/graphql', graphqlHTTP(req => {
     const contextValue = { site: req.site };

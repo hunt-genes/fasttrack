@@ -7,7 +7,7 @@
     "test": "NODE_ENV=test mocha --require test/setup",
     "build": "npm run build:schema && npm run build:dist && npm run build:client",
     "build:dist": "babel src -d dist && cp -r config dist/ && cp package.json dist/",
-    "build:client": "rm -rf dist/static && webpack --progress --colors --config webpack.production.config.js",
+    "build:client": "rm -rf dist/assets && webpack --progress --colors --config webpack.production.config.js",
     "build:schema": "babel-node ./src/build-schema.js",
     "deploy": "ansible-playbook -i setup/inventory --ask-become-pass setup/deploy.yml",
     "dev": "babel-node ./node_modules/.bin/webpack-dev-server --progress --port 3001 --inline --hot",
