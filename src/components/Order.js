@@ -26,6 +26,7 @@ class Order extends React.Component {
         selected: new Set(),
         email: '',
         emailValid: true,
+        ordered: false,
     }
 
     getChildContext() {
@@ -46,7 +47,13 @@ class Order extends React.Component {
                 email: this.state.email,
                 snps: Array.from(this.state.selected),
                 site: this.props.site,
-            }));
+            }), {
+                onSuccess: () => {
+                    this.setState({
+                        ordered: true,
+                    });
+                }
+            });
         }
     }
 
@@ -84,13 +91,23 @@ class Order extends React.Component {
         this.context.router.goBack()
     }
 
+    onClickDone = () => {
+        this.setState({
+            selected: new Set(),
+            // ordered: false,
+        });
+        sessionStorage.setItem('orderSelected', JSON.stringify([]));
+        const query = this.props.location.query;
+        this.context.router.push({ query });
+    }
+
     render() {
         const snps = Array.from(this.state.selected);
         snps.sort();
         return (
             <section>
                 <div style={{ maxWidth: 800, margin: '0 auto' }}>
-                    {this.props.site.order
+                    {this.state.ordered && this.props.site.order
                         ? <div>
                             <h1>Thank you for your order</h1>
                             <p>Your order was sent {moment(this.props.site.order.createdAt).format('lll')}, and contains the following SNPs:</p>
@@ -99,6 +116,7 @@ class Order extends React.Component {
                             </ul>
                             <p>We will send you an email to {this.props.site.order.email} when results are ready.</p>
                             <p>Please contact us if there is something wrong with your order</p>
+                            <RaisedButton label="Back" onClick={this.onClickDone}/>
                         </div>
                         : <div>
                             {snps.length
