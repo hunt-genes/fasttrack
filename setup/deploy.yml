@@ -29,6 +29,9 @@
       - name: Rebuild npm dependencies for this setup
         command: npm rebuild chdir={{ deploy_helper.new_release_path }}
 
+      - name: Copy production config
+        template: src=config.production.js.j2 dest={{ deploy_helper.new_release_path }}/config/production.js
+
       - name: Copy systemd config
         become: yes
         template: src={{ project_name }}.service.j2 dest=/etc/systemd/system/{{ project_name }}.service owner=root mode=644
