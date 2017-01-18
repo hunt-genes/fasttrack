@@ -37,7 +37,7 @@ class Order extends React.Component {
     componentDidMount() {
         const selected = sessionStorage.getItem('orderSelected');
         if (selected) {
-            this.setState({ selected: new Set(JSON.parse(selected)) });
+            this.setState({ selected: new Set(JSON.parse(selected).map(v => parseInt(v, 10)))});
         }
     }
 
@@ -104,7 +104,7 @@ class Order extends React.Component {
             color: theme.palette.accent1Color,
         };
         const snps = Array.from(this.state.selected);
-        snps.sort();
+        snps.sort((a, b) => b < a);
         return (
             <section>
                 <div style={{ maxWidth: 800, margin: '0 auto' }}>

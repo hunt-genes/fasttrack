@@ -54,7 +54,7 @@ class Search extends React.Component {
         });
         const selected = sessionStorage.getItem('orderSelected');
         if (selected) {
-            this.setState({ selected: new Set(JSON.parse(selected)) });
+            this.setState({ selected: new Set(JSON.parse(selected).map(v => parseInt(v, 10)))});
             if (JSON.parse(selected).length) {
                 this.setState({ selecting: true });
             }
