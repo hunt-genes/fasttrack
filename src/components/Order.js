@@ -24,6 +24,8 @@ class Order extends React.Component {
 
     state = {
         selected: new Set(),
+        project: '',
+        comment: '',
         email: '',
         emailValid: true,
         emailWritten: false,
@@ -43,9 +45,11 @@ class Order extends React.Component {
 
     onSubmitOrder = (event) => {
         event.preventDefault();
-        if (this.validateEmail(this.state.email)) {
+        if (this.validateEmail(this.state.email) && this.state.project) {
             this.context.relay.commitUpdate(new OrderVariablesMutation({
                 email: this.state.email,
+                project: this.state.project,
+                comment: this.state.comment,
                 snps: Array.from(this.state.selected),
                 site: this.props.site,
             }), {
@@ -56,6 +60,14 @@ class Order extends React.Component {
                 }
             });
         }
+    }
+
+    onChangeProject = (event, project) => {
+        this.setState({ project });
+    }
+
+    onChangeComment = (event, comment) => {
+        this.setState({ comment });
     }
 
     onChangeEmail = (event, email) => {
@@ -73,12 +85,6 @@ class Order extends React.Component {
 
     validateEmail = (email) => email.match(/ntnu\.no$/)
 
-    onClickCancel = () => {
-        this.setState({ email: '' });
-        sessionStorage.setItem('orderSelected', JSON.stringify([]));
-        this.context.router.goBack()
-    }
-
     onClickBack = () => {
         this.context.router.goBack()
     }
@@ -86,6 +92,7 @@ class Order extends React.Component {
     onClickDone = () => {
         this.setState({
             selected: new Set(),
+            comment: '',
             // ordered: false,
         });
         sessionStorage.setItem('orderSelected', JSON.stringify([]));
@@ -117,7 +124,7 @@ class Order extends React.Component {
                             </ul>
                             <p>You will receive an email with a confirmation on submitted SNP-order to {this.props.site.order.email} shortly.</p>
                             <p>Please contact us if there is something wrong with your order</p>
-                            <RaisedButton label="Back" onClick={this.onClickDone}/>
+                            <RaisedButton label="Done" onClick={this.onClickDone} />
                         </div>
                         : <div>
                             {snps.length
@@ -129,6 +136,8 @@ class Order extends React.Component {
                                             id="project"
                                             floatingLabelText="Project / case number"
                                             type="number"
+                                            onChange={this.onChangeProject}
+                                            value={this.state.project}
                                         />
                                     </div>
                                     <div>
@@ -141,6 +150,16 @@ class Order extends React.Component {
                                             errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid, is it an @ntnu.no address?'}
                                             errorStyle={this.state.emailValid ? warningStyle : errorStyle}
                                             fullWidth
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextField
+                                            id="comment"
+                                            floatingLabelText="Comment"
+                                            fullWidth
+                                            multiLine
+                                            onChange={this.onChangeComment}
+                                            value={this.state.comment}
                                         />
                                     </div>
                                     <p>Please verify your SNP-order before submitting.</p>

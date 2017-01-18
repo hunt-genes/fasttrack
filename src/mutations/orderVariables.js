@@ -20,7 +20,9 @@ export default class OrderVariablesMutation extends Relay.Mutation {
     getVariables() {
         return {
             snps: this.props.snps,
+            project: this.props.project,
             email: this.props.email,
+            comment: this.props.comment,
         };
     }
 

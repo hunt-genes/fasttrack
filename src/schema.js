@@ -77,7 +77,9 @@ const orderType = new GraphQLObjectType({
     name: 'Order',
     fields: {
         id: globalIdField('Order'),
+        project: { type: GraphQLInt },
         email: { type: GraphQLString },
+        comment: { type: GraphQLString },
         snps: { type: new GraphQLList(GraphQLString) },
         createdAt: { type: GraphQLDate },
     },
@@ -260,7 +262,9 @@ const mutationOrderVariables = mutationWithClientMutationId({
     name: 'OrderVariables',
     inputFields: {
         snps: { type: new GraphQLList(GraphQLString) },
+        project: { type: GraphQLInt },
         email: { type: GraphQLString },
+        comment: { type: GraphQLString },
     },
     outputFields: {
         site: {
@@ -268,10 +272,11 @@ const mutationOrderVariables = mutationWithClientMutationId({
             resolve: payload => payload,
         },
     },
-    mutateAndGetPayload: ({ snps, email }, { site }) => {
+    mutateAndGetPayload: ({ snps, project, email, comment }, { site }) => {
         // TODO: Check email
         return Site.findById(site.id).exec().then(site => {
-            return Order.create({ snps, email }).then(order => {
+            return Order.create({ snps, project, email, comment })
+            .then(order => {
                 site.order = order;
                 return site;
             });

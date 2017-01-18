@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
+    project: { type: Number },
     email: { type: String },
+    comment: { type: String },
     snps: [{ type: String }],
 }, { timestamps: true });
 
