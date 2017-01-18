@@ -56,7 +56,7 @@ class Search extends React.Component {
         if (selected) {
             this.setState({
                 selected: new Set(JSON.parse(selected).map(v => parseInt(v, 10))),
-                selecting: JSON.parse(selected).length,
+                selecting: !!JSON.parse(selected).length,
             });
         }
     }
