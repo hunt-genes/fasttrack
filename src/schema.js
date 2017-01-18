@@ -87,7 +87,15 @@ resultType = new GraphQLObjectType({
     name: 'Result',
     fields: {
         id: globalIdField('Result'),
-        snp_id_current: { type: GraphQLString },
+        snp_id_current: {
+            type: GraphQLInt,
+            resolve: ({ snp_id_current }) => {
+                if (snp_id_current) {
+                    return parseInt(snp_id_current, 10);
+                }
+                return null;
+            }
+        },
         snps: { type: GraphQLString },
         pubmedid: { type: GraphQLString },
         mapped_trait: { type: GraphQLString },
