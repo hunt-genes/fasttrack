@@ -153,9 +153,8 @@ class Order extends React.Component {
                                         type="submit"
                                     />
                                     <RaisedButton
-                                        label="Cancel"
-                                        type="reset"
-                                        onClick={this.onClickCancel}
+                                        label="Back"
+                                        onClick={this.onClickBack}
                                     />
                                 </form>
                                 : <div>
