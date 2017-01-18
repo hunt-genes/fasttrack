@@ -1,7 +1,7 @@
 import {
     blueGrey500, blueGrey700,
     grey100, grey300, grey400, grey500,
-    orangeA200,
+    orangeA200, redA200,
     white, darkBlack, fullBlack,
 } from 'material-ui/styles/colors';
 import { fade } from 'material-ui/utils/colorManipulator';
@@ -41,5 +41,6 @@ export default {
         clockCircleColor: fade(darkBlack, 0.07),
         shadowColor: fullBlack,
         linkColor: colors.ntnu,
+        errorColor: redA200,
     },
 };

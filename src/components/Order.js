@@ -26,6 +26,7 @@ class Order extends React.Component {
         selected: new Set(),
         email: '',
         emailValid: true,
+        emailWritten: false,
         ordered: false,
     }
 
@@ -42,7 +43,7 @@ class Order extends React.Component {
 
     onSubmitOrder = (event) => {
         event.preventDefault();
-        if (this.validateEmail()) {
+        if (this.validateEmail(this.state.email)) {
             this.context.relay.commitUpdate(new OrderVariablesMutation({
                 email: this.state.email,
                 snps: Array.from(this.state.selected),
@@ -58,28 +59,19 @@ class Order extends React.Component {
     }
 
     onChangeEmail = (event, email) => {
-        this.setState({ email });
-        if (!this.state.emailValid) {
-            this.validateEmail();
+        if (this.state.emailWritten) {
+            this.setState({ email, emailValid: this.validateEmail(email) })
+        }
+        else {
+            this.setState({ email });
         }
     }
 
     onBlurEmail = () => {
-        this.validateEmail();
+        this.setState({ emailWritten: true, emailValid: this.validateEmail(this.state.email) });
     }
 
-    validateEmail = () => {
-        const { email } = this.state;
-        let emailValid = false;
-        if (email && email.match(/ntnu.no$/)) {
-            emailValid = true;
-        }
-        else {
-            emailValid = false;
-        }
-        this.setState({ emailValid });
-        return emailValid;
-    }
+    validateEmail = (email) => email.match(/ntnu\.no$/)
 
     onClickCancel = () => {
         this.setState({ email: '' });
@@ -102,6 +94,15 @@ class Order extends React.Component {
     }
 
     render() {
+        const normalStyle = {
+            color: theme.palette.primary1Color,
+        }
+        const errorStyle = {
+            color: theme.palette.errorColor,
+        };
+        const warningStyle = {
+            color: theme.palette.accent1Color,
+        };
         const snps = Array.from(this.state.selected);
         snps.sort();
         return (
@@ -114,25 +115,38 @@ class Order extends React.Component {
                             <ul>
                                 {this.props.site.order.snps.map(snp => <li key={snp}>{snp}</li>)}
                             </ul>
-                            <p>We will send you an email to {this.props.site.order.email} when results are ready.</p>
+                            <p>You will receive an email with a confirmation on submitted SNP-order to {this.props.site.order.email} shortly.</p>
                             <p>Please contact us if there is something wrong with your order</p>
                             <RaisedButton label="Back" onClick={this.onClickDone}/>
                         </div>
                         : <div>
                             {snps.length
                                 ? <form onSubmit={this.onSubmitOrder}>
-                                    <h1>You have selected these SNPs to order from HUNT</h1>
-                                    {snps.map(snp => <div key={snp}>{snp}</div>)}
-                                    <p>There is an amount of work related to this, so we only allow ntnu.no addresses at this time.</p>
-                                    <TextField
-                                        id="email"
-                                        floatingLabelText="Email"
-                                        type="email"
-                                        onChange={this.onChangeEmail}
-                                        onBlur={this.onBlurEmail}
-                                        errorText={this.state.emailValid ? '' : 'Email is not valid, is it an @ntnu.no address?'}
-                                    />
-                                    <p>Really, at this time we don't send requests at all, as this functionality is under development.</p>
+                                    <h1>You have selected {snps.length} SNPs to order from HUNT</h1>
+                                    <p>Please use your HUNT case number (saksnummer) as identification. To order SNP-data from HUNT, you need a submitted and/or approved HUNT-application. Please refer to the HUNT website for details for application procedures, <a href="https://www.ntnu.no/hunt">www.ntnu.no/hunt</a>.</p>
+                                    <div>
+                                        <TextField
+                                            id="project"
+                                            floatingLabelText="Project / case number"
+                                            type="number"
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextField
+                                            id="email"
+                                            type="email"
+                                            floatingLabelText="Email"
+                                            onChange={this.onChangeEmail}
+                                            onBlur={this.onBlurEmail}
+                                            errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid, is it an @ntnu.no address?'}
+                                            errorStyle={this.state.emailValid ? warningStyle : errorStyle}
+                                            fullWidth
+                                        />
+                                    </div>
+                                    <p>Please verify your SNP-order before submitting.</p>
+                                    <ul>
+                                        {snps.map(snp => <li key={snp}>{snp}</li>)}
+                                    </ul>
                                     <RaisedButton
                                         primary
                                         label="Send"
