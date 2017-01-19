@@ -1,4 +1,5 @@
 import Checkbox from 'material-ui/Checkbox';
+import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
@@ -39,6 +40,11 @@ class Search extends React.Component {
         loading: false,
         selecting: false,
         selected: new Map(),
+        orderDialogOpen: false,
+        project: '',
+        email: '',
+        emailValid: true,
+        comment: '',
     }
 
     getChildContext() {
@@ -53,12 +59,26 @@ class Search extends React.Component {
             tromso: this.props.location.query.tromso === 'true',
         });
         const selected = sessionStorage.getItem('orderSelected');
+        const email = sessionStorage.getItem('email');
+        const project = sessionStorage.getItem('project');
+        const comment = sessionStorage.getItem('comment');
+        const newState = {};
         if (selected) {
-            this.setState({
-                selected: new Map(JSON.parse(selected)),
-                selecting: !!JSON.parse(selected).length,
-            });
+            newState.selected = new Map(JSON.parse(selected));
         }
+        if (email) {
+            newState.email = email;
+        }
+        if (project) {
+            newState.project = parseInt(project, 10);
+        }
+        if (comment) {
+            newState.comment = comment;
+        }
+        if (email && project && newState.selected.size) {
+            newState.selecting = true
+        }
+        this.setState(newState);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -127,15 +147,24 @@ class Search extends React.Component {
     }
 
     toggleSelection = () => {
-        this.setState({ selecting: !this.state.selecting });
+        this.setState({
+            selecting: !!this.state.email && !!this.state.project && !this.state.selecting,
+            orderDialogOpen: !this.state.email && !this.state.project,
+        });
     }
 
     cancelSelection = () => {
         this.setState({
             selected: new Map(),
             selecting: false,
+            email: '',
+            project: '',
+            comment: '',
         });
-        sessionStorage.setItem('orderSelected', JSON.stringify(new Map()));
+        sessionStorage.removeItem('orderSelected');
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('project');
+        sessionStorage.removeItem('comment');
     }
 
     toggleSelected = (result) => {
@@ -152,6 +181,46 @@ class Search extends React.Component {
 
     isSelected = (snp_id_current) => {
         return this.state.selected.has(snp_id_current);
+    }
+
+    onOrderDialogClose = () => {
+        this.setState({ orderDialogOpen: false });
+    }
+
+    onChangeProject = (event, project) => {
+        this.setState({ project });
+    }
+
+    onChangeComment = (event, comment) => {
+        this.setState({ comment });
+    }
+
+    onChangeEmail = (event, email) => {
+        if (this.state.emailWritten) {
+            this.setState({ email, emailValid: this.validateEmail(email) })
+        }
+        else {
+            this.setState({ email });
+        }
+    }
+
+    onBlurEmail = () => {
+        this.setState({ emailWritten: true, emailValid: this.validateEmail(this.state.email) });
+    }
+
+    validateEmail = (email) => email && email.match(/ntnu\.no$/)
+
+    onClickOrderSave = (event) => {
+        event.preventDefault();
+        if (this.validateEmail(this.state.email) && this.state.project) {
+            this.setState({
+                selecting: true,
+                orderDialogOpen: false,
+            });
+            sessionStorage.setItem('project', this.state.project);
+            sessionStorage.setItem('email', this.state.email);
+            sessionStorage.setItem('comment', this.state.comment);
+        }
     }
 
     render() {
@@ -200,8 +269,104 @@ class Search extends React.Component {
                 </div>
             </div>
         );
+
+        const orderActions = (
+            <div>
+                <RaisedButton
+                    label="Save"
+                    primary
+                    onTouchTap={this.onClickOrderSave}
+                    disabled={!this.validateEmail(this.state.email) || !this.state.project}
+                />
+                <RaisedButton
+                    label="Cancel"
+                    onTouchTap={this.onOrderDialogClose}
+                />
+            </div>
+        );
+
+        const biobanks = [
+            {
+                name: 'HUNT',
+                selected: this.props.relay.variables.hunt,
+            },
+            /*
+            {
+                name: 'Tromsø',
+                selected: this.props.relay.variables.tromso,
+            },
+            */
+        ].map(biobank => biobank.selected ? biobank.name : null)
+        .filter(biobank => biobank)
+        .join(", ");
+
+        const orderTitle = `Order SNP data ${biobanks.length ? 'from' : '' } ${biobanks}`;
+
+        const normalStyle = {
+            color: theme.palette.primary1Color,
+        }
+        const errorStyle = {
+            color: theme.palette.errorColor,
+        };
+        const warningStyle = {
+            color: theme.palette.accent1Color,
+        };
+
     return (
         <section>
+            <Dialog
+                title={orderTitle}
+                actions={orderActions}
+                open={this.state.orderDialogOpen}
+                onRequestClose={this.onOrderDialogClose}
+                actionsContainerStyle={{ textAlign: 'inherit' }}
+            >
+                <div>
+                    <Checkbox
+                        label="Hunt"
+                        checked={this.props.relay.variables.hunt}
+                        onCheck={this.onHuntChange}
+                        iconStyle={{ margin: 0 }}
+                        labelStyle={{ marginRight: 16 }}
+                    />
+                </div>
+                {this.props.relay.variables.hunt
+                    ? <p>Please use your HUNT case number (saksnummer) as identification. To order SNP-data from HUNT, you need a submitted and/or approved HUNT-application. Please refer to the HUNT website for details for application procedures, <a href="https://www.ntnu.no/hunt">www.ntnu.no/hunt</a>.</p>
+                    : null
+                }
+                <div>
+                    <TextField
+                        id="project"
+                        floatingLabelText="Project / case number"
+                        type="number"
+                        onChange={this.onChangeProject}
+                        value={this.state.project}
+                    />
+                </div>
+                <div>
+                    <TextField
+                        id="email"
+                        type="email"
+                        floatingLabelText="Email"
+                        onChange={this.onChangeEmail}
+                        onBlur={this.onBlurEmail}
+                        errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid, is it an @ntnu.no address?'}
+                        errorStyle={this.state.emailValid ? warningStyle : errorStyle}
+                        fullWidth
+                    />
+                </div>
+                <div>
+                    <TextField
+                        id="comment"
+                        floatingLabelText="Comment"
+                        fullWidth
+                        multiLine
+                        onChange={this.onChangeComment}
+                        value={this.state.comment}
+                    />
+                </div>
+                <p>You will be able to change the comment before submitting your order</p>
+            </Dialog>
             <div style={{float: 'right'}}>
                 <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
                     <ToolbarGroup lastChild>

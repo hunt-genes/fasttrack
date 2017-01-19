@@ -39,9 +39,24 @@ class Order extends React.Component {
 
     componentDidMount() {
         const selected = sessionStorage.getItem('orderSelected');
+        const email = sessionStorage.getItem('email');
+        const project = sessionStorage.getItem('project');
+        const comment = sessionStorage.getItem('comment');
+        const newState = {};
         if (selected) {
-            this.setState({ selected: new Map(JSON.parse(selected))});
+            newState.selected = new Map(JSON.parse(selected));
         }
+        if (email) {
+            newState.email = email;
+            newState.emailWritten = true;
+        }
+        if (project) {
+            newState.project = parseInt(project, 10);
+        }
+        if (comment) {
+            newState.comment = comment;
+        }
+        this.setState(newState);
     }
 
     onSubmitOrder = (event) => {
@@ -96,7 +111,10 @@ class Order extends React.Component {
             comment: '',
             // ordered: false,
         });
-        sessionStorage.setItem('orderSelected', JSON.stringify(new Map()));
+        sessionStorage.removeItem('orderSelected');
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('project');
+        sessionStorage.removeItem('comment');
         const query = this.props.location.query;
         this.context.router.push({ query });
     }
@@ -149,6 +167,7 @@ class Order extends React.Component {
                                             errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid, is it an @ntnu.no address?'}
                                             errorStyle={this.state.emailValid ? warningStyle : errorStyle}
                                             fullWidth
+                                            value={this.state.email}
                                         />
                                     </div>
                                     <div>
