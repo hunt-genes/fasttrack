@@ -5,7 +5,7 @@ export default class SearchResults extends React.Component {
     static propTypes = {
         results: React.PropTypes.object,
         ordering: React.PropTypes.bool,
-        toggleRSID: React.PropTypes.func,
+        toggleSelected: React.PropTypes.func,
         isSelected: React.PropTypes.func.isRequired,
     }
 
@@ -28,7 +28,7 @@ export default class SearchResults extends React.Component {
                 </thead>
                 <tbody>
                     {this.props.results.edges.map(edge => (
-                        <Result key={edge.node.id} selecting={this.props.selecting} toggleRSID={this.props.toggleRSID} isSelected={this.props.isSelected} {...edge.node} />
+                        <Result key={edge.node.id} selecting={this.props.selecting} toggleSelected={this.props.toggleSelected} isSelected={this.props.isSelected} {...edge.node} />
                         ))
                     }
                 </tbody>

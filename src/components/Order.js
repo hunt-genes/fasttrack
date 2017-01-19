@@ -6,6 +6,7 @@ import React from 'react';
 import Relay from 'react-relay';
 import theme from '../theme';
 import OrderVariablesMutation from '../mutations/orderVariables';
+import OrderSnpTable from './OrderSnpTable';
 
 class Order extends React.Component {
     static contextTypes = {
@@ -23,7 +24,7 @@ class Order extends React.Component {
     }
 
     state = {
-        selected: new Set(),
+        selected: new Map(),
         project: '',
         comment: '',
         email: '',
@@ -39,7 +40,7 @@ class Order extends React.Component {
     componentDidMount() {
         const selected = sessionStorage.getItem('orderSelected');
         if (selected) {
-            this.setState({ selected: new Set(JSON.parse(selected).map(v => parseInt(v, 10)))});
+            this.setState({ selected: new Map(JSON.parse(selected))});
         }
     }
 
@@ -50,7 +51,7 @@ class Order extends React.Component {
                 email: this.state.email,
                 project: this.state.project,
                 comment: this.state.comment,
-                snps: Array.from(this.state.selected),
+                snps: Array.from(this.state.selected.keys()),
                 site: this.props.site,
             }), {
                 onSuccess: () => {
@@ -91,11 +92,11 @@ class Order extends React.Component {
 
     onClickDone = () => {
         this.setState({
-            selected: new Set(),
+            selected: new Map(),
             comment: '',
             // ordered: false,
         });
-        sessionStorage.setItem('orderSelected', JSON.stringify([]));
+        sessionStorage.setItem('orderSelected', JSON.stringify(new Map()));
         const query = this.props.location.query;
         this.context.router.push({ query });
     }
@@ -110,7 +111,7 @@ class Order extends React.Component {
         const warningStyle = {
             color: theme.palette.accent1Color,
         };
-        const snps = Array.from(this.state.selected);
+        const snps = Array.from(this.state.selected.keys());
         snps.sort((a, b) => b < a);
         return (
             <section>
@@ -119,15 +120,13 @@ class Order extends React.Component {
                         ? <div>
                             <h1>Thank you for your order</h1>
                             <p>Your order was sent {moment(this.props.site.order.createdAt).format('lll')}, and contains the following SNPs:</p>
-                            <ul>
-                                {this.props.site.order.snps.map(snp => <li key={snp}>{snp}</li>)}
-                            </ul>
+                            <OrderSnpTable snps={snps} results={this.state.selected} />
                             <p>You will receive an email with a confirmation on submitted SNP-order to {this.props.site.order.email} shortly.</p>
                             <p>Please contact us if there is something wrong with your order</p>
                             <RaisedButton label="Done" onClick={this.onClickDone} />
                         </div>
                         : <div>
-                            {snps.length
+                            {this.state.selected.size
                                 ? <form onSubmit={this.onSubmitOrder}>
                                     <h1>You have selected {snps.length} SNPs to order from HUNT</h1>
                                     <p>Please use your HUNT case number (saksnummer) as identification. To order SNP-data from HUNT, you need a submitted and/or approved HUNT-application. Please refer to the HUNT website for details for application procedures, <a href="https://www.ntnu.no/hunt">www.ntnu.no/hunt</a>.</p>
@@ -162,19 +161,19 @@ class Order extends React.Component {
                                             value={this.state.comment}
                                         />
                                     </div>
-                                    <p>Please verify your SNP-order before submitting.</p>
-                                    <ul>
-                                        {snps.map(snp => <li key={snp}>{snp}</li>)}
-                                    </ul>
-                                    <RaisedButton
-                                        primary
-                                        label="Send"
-                                        type="submit"
-                                    />
-                                    <RaisedButton
-                                        label="Back"
-                                        onClick={this.onClickBack}
-                                    />
+                                    <h2>Please verify your SNP-order before submitting</h2>
+                                    <OrderSnpTable snps={snps} results={this.state.selected} />
+                                    <div style={{ marginTop: '2rem' }}>
+                                        <RaisedButton
+                                            primary
+                                            label="Send"
+                                            type="submit"
+                                        />
+                                        <RaisedButton
+                                            label="Back"
+                                            onClick={this.onClickBack}
+                                        />
+                                    </div>
                                 </form>
                                 : <div>
                                     <h1>You have selected no SNPs yet</h1>

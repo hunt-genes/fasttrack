@@ -38,7 +38,7 @@ class Search extends React.Component {
         term: this.props.location.query.q || '',
         loading: false,
         selecting: false,
-        selected: new Set(),
+        selected: new Map(),
     }
 
     getChildContext() {
@@ -55,7 +55,7 @@ class Search extends React.Component {
         const selected = sessionStorage.getItem('orderSelected');
         if (selected) {
             this.setState({
-                selected: new Set(JSON.parse(selected).map(v => parseInt(v, 10))),
+                selected: new Map(JSON.parse(selected)),
                 selecting: !!JSON.parse(selected).length,
             });
         }
@@ -132,26 +132,26 @@ class Search extends React.Component {
 
     cancelSelection = () => {
         this.setState({
-            selected: new Set(),
+            selected: new Map(),
             selecting: false,
         });
-        sessionStorage.setItem('orderSelected', JSON.stringify([]));
+        sessionStorage.setItem('orderSelected', JSON.stringify(new Map()));
     }
 
-    toggleRSID = (rsid) => {
+    toggleSelected = (result) => {
         const selected = this.state.selected;
-        if (selected.has(rsid)) {
-            selected.delete(rsid);
+        if (selected.has(result.snp_id_current)) {
+            selected.delete(result.snp_id_current);
         }
         else {
-            selected.add(rsid);
+            selected.set(result.snp_id_current, {traits: result.traits, genes: result.genes});
         }
         this.setState({ selected });
         sessionStorage.setItem('orderSelected', JSON.stringify(selected));
     }
 
-    isSelected = (rsid) => {
-        return this.state.selected.has(rsid);
+    isSelected = (snp_id_current) => {
+        return this.state.selected.has(snp_id_current);
     }
 
     render() {
@@ -277,7 +277,7 @@ class Search extends React.Component {
                 />
                 {this.props.location.query.q ?
                     <div>
-                        <SearchResults results={this.props.viewer.results} selecting={this.state.selecting} toggleRSID={this.toggleRSID} isSelected={this.isSelected} />
+                        <SearchResults results={this.props.viewer.results} selecting={this.state.selecting} toggleSelected={this.toggleSelected} isSelected={this.isSelected} />
                         {this.props.viewer.results.pageInfo.hasNextPage ?
                             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                                 <RaisedButton onClick={this.loadMore} label="Load more" />

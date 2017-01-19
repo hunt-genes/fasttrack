@@ -26,8 +26,8 @@ class Result extends React.Component {
         return datestring;
     }
 
-    toggleRSID = () => {
-        this.props.toggleRSID(this.props.snp_id_current);
+    toggleSelected = () => {
+        this.props.toggleSelected(this.props);
     }
 
     isSelected = () => {
@@ -45,7 +45,7 @@ class Result extends React.Component {
                         <Link to={`/search/?q=${result.snp_id_current}`}>
                             {result.snps}
                         </Link>
-                        {this.props.selecting ? <Checkbox onCheck={this.toggleRSID} checked={this.isSelected()} /> : null}
+                        {this.props.selecting ? <Checkbox onCheck={this.toggleSelected} checked={this.isSelected()} /> : null}
                     </div>
                 </td>
                 <td>
@@ -131,7 +131,7 @@ class Result extends React.Component {
 Result.propTypes = {
     data: React.PropTypes.object,
     selecting: React.PropTypes.bool,
-    toggleRSID: React.PropTypes.func,
+    toggleSelected: React.PropTypes.func,
     isSelected: React.PropTypes.func,
 };
 
