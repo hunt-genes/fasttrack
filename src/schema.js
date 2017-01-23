@@ -20,6 +20,8 @@ import {
 
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import GraphQLDate from 'graphql-custom-datetype';
+import nodemailer from 'nodemailer';
+import sendmailTransport from 'nodemailer-sendmail-transport';
 
 import ip from 'ip';
 
@@ -29,6 +31,8 @@ import Request from './models/Request';
 import Order from './models/Order';
 import Site from './models/Site';
 import prepareQuery from './models/prepareQuery';
+
+const transporter = nodemailer.createTransport(sendmailTransport());
 
 class ResultDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
 class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
@@ -276,6 +280,46 @@ const mutationOrderVariables = mutationWithClientMutationId({
         // TODO: Check email
         return Site.findById(site.id).exec().then(site => {
             return Order.create({ snps, project, email, comment })
+            .then(order => {
+                // FIXME: cheating in scrabble, and assuming hunt
+                if (config.email && config.email.hunt) {
+                    // mailing HUNT:
+                    const message = `${order.email} in project ${order.project} orders the SNPs in the attachment. Optional comment may be seen here:`;
+                    const attachment = {
+                        content: snps.join('\r\n'),
+                        contentType: 'text/csv',
+                    };
+                    const data = {
+                        from: order.email,
+                        to: config.email.hunt.to,
+                        subject: 'New SNP order',
+                        text: message,
+                        attachments: [attachment],
+                    };
+                    transporter.sendMail(data, (err, info) => {
+                        console.info("ORDER", err, info);
+                        if (!err) {
+                            // sending confirmation
+                            const message = `This is an automatic message from HUNT\r\n\r\n${order.project}\r\n${order.comment}\r\n\r\nYour order has been received and your SNP-data order will be added to your HUNT application. Any questions regarding the application or case proceedings, please send to hunt@medisin.ntnu.no`;
+                            const attachment = {
+                                content: snps.join('\r\n'),
+                                filename: 'snps.txt',
+                            };
+                            const data = {
+                                from: config.email.hunt.from,
+                                to: order.email,
+                                subject: 'Order confirmation from HUNT',
+                                text: message,
+                                attachments: [attachment],
+                            };
+                            transporter.sendMail(data, (err, info) => {
+                                console.info("CONFIRMATION", err, info);
+                            });
+                        }
+                    });
+                }
+                return order; // assume sending went well
+            })
             .then(order => {
                 site.order = order;
                 return site;

@@ -1,0 +1,5 @@
+---
+email:
+    hunt:
+        from: "{{ vault.email.hunt.from }}"
+        to: "{{ vault.email.hunt.to }}"
