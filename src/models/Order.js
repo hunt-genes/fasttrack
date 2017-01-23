@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
-    project: { type: Number },
+    project: { type: String },
     email: { type: String },
     comment: { type: String },
     snps: [{ type: String }],

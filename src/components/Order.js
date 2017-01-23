@@ -152,7 +152,6 @@ class Order extends React.Component {
                                         <TextField
                                             id="project"
                                             floatingLabelText="Project / case number"
-                                            type="number"
                                             onChange={this.onChangeProject}
                                             value={this.state.project}
                                         />

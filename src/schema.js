@@ -82,7 +82,7 @@ const orderType = new GraphQLObjectType({
     name: 'Order',
     fields: {
         id: globalIdField('Order'),
-        project: { type: GraphQLInt },
+        project: { type: GraphQLString },
         email: { type: GraphQLString },
         comment: { type: GraphQLString },
         snps: { type: new GraphQLList(GraphQLString) },
@@ -271,7 +271,7 @@ const mutationOrderVariables = mutationWithClientMutationId({
     name: 'OrderVariables',
     inputFields: {
         snps: { type: new GraphQLList(GraphQLString) },
-        project: { type: GraphQLInt },
+        project: { type: GraphQLString },
         email: { type: GraphQLString },
         comment: { type: GraphQLString },
     },
