@@ -70,7 +70,7 @@ class Search extends React.Component {
             newState.email = email;
         }
         if (project) {
-            newState.project = parseInt(project, 10);
+            newState.project = project;
         }
         if (comment) {
             newState.comment = comment;

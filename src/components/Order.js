@@ -51,7 +51,7 @@ class Order extends React.Component {
             newState.emailWritten = true;
         }
         if (project) {
-            newState.project = parseInt(project, 10);
+            newState.project = project;
         }
         if (comment) {
             newState.comment = comment;
