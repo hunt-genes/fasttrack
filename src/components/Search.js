@@ -43,7 +43,6 @@ class Search extends React.Component {
         orderDialogOpen: false,
         project: '',
         email: '',
-        emailValid: true,
         comment: '',
     }
 
@@ -196,23 +195,12 @@ class Search extends React.Component {
     }
 
     onChangeEmail = (event, email) => {
-        if (this.state.emailWritten) {
-            this.setState({ email, emailValid: this.validateEmail(email) })
-        }
-        else {
-            this.setState({ email });
-        }
+        this.setState({ email });
     }
-
-    onBlurEmail = () => {
-        this.setState({ emailWritten: true, emailValid: this.validateEmail(this.state.email) });
-    }
-
-    validateEmail = (email) => email && email.match(/ntnu\.no$/)
 
     onClickOrderSave = (event) => {
         event.preventDefault();
-        if (this.validateEmail(this.state.email) && this.state.project) {
+        if (this.state.email && this.state.project) {
             this.setState({
                 selecting: true,
                 orderDialogOpen: false,
@@ -276,7 +264,7 @@ class Search extends React.Component {
                     label="Save"
                     primary
                     onTouchTap={this.onClickOrderSave}
-                    disabled={!this.validateEmail(this.state.email) || !this.state.project}
+                    disabled={!this.state.email || !this.state.project}
                 />
                 <RaisedButton
                     label="Cancel"
@@ -302,12 +290,6 @@ class Search extends React.Component {
 
         const orderTitle = `Order SNP data ${biobanks.length ? 'from' : '' } ${biobanks}`;
 
-        const normalStyle = {
-            color: theme.palette.primary1Color,
-        }
-        const errorStyle = {
-            color: theme.palette.errorColor,
-        };
         const warningStyle = {
             color: theme.palette.accent1Color,
         };
@@ -348,9 +330,8 @@ class Search extends React.Component {
                         type="email"
                         floatingLabelText="Email"
                         onChange={this.onChangeEmail}
-                        onBlur={this.onBlurEmail}
-                        errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid, is it an @ntnu.no address?'}
-                        errorStyle={this.state.emailValid ? warningStyle : errorStyle}
+                        errorText={'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.'}
+                        errorStyle={warningStyle}
                         fullWidth
                     />
                 </div>
