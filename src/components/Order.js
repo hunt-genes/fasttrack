@@ -140,7 +140,7 @@ class Order extends React.Component {
                             <p>Your order was sent {moment(this.props.site.order.createdAt).format('lll')}, and contains the following SNPs:</p>
                             <OrderSnpTable snps={snps} results={this.state.selected} />
                             <p>You will receive an email with a confirmation on submitted SNP-order to {this.props.site.order.email} shortly.</p>
-                            <p>Please contact us if there is something wrong with your order</p>
+                            <p>Please contact us {this.props.site.email ? `at ${this.props.site.email} ` : '' }if there is something wrong with your order.</p>
                             <RaisedButton label="Done" onClick={this.onClickDone} />
                         </div>
                         : <div>
@@ -216,6 +216,7 @@ export default Relay.createContainer(Order, {
         site: () => Relay.QL`
         fragment on Site {
             id
+            email
             order {
                 id
                 email

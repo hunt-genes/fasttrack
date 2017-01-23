@@ -18,6 +18,7 @@ import {
   mutationWithClientMutationId,
 } from 'graphql-relay';
 
+import config from 'config';
 import connectionFromMongooseQuery from 'relay-mongoose-connection';
 import GraphQLDate from 'graphql-custom-datetype';
 import nodemailer from 'nodemailer';
@@ -244,6 +245,10 @@ siteType = new GraphQLObjectType({
     fields: () => ({
         id: globalIdField('Site'),
         order: { type: orderType },
+        email: {
+            type: GraphQLString,
+            resolve: () => config.email && config.email.hunt && config.email.hunt.from,
+        },
     }),
 });
 
