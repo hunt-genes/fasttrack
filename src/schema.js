@@ -285,7 +285,7 @@ const mutationOrderVariables = mutationWithClientMutationId({
                 // FIXME: cheating in scrabble, and assuming hunt
                 if (config.email && config.email.hunt) {
                     // mailing HUNT:
-                    const message = `${order.email} in project ${order.project} orders the SNPs in the attachment. Optional comment may be seen here:`;
+                    const message = `${order.email} in project ${order.project} orders the SNPs in the attachment. Optional comment:\r\n\r\n${order.comment}`;
                     const attachment = {
                         content: snps.join('\r\n'),
                         contentType: 'text/csv',
