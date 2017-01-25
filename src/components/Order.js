@@ -62,6 +62,7 @@ class Order extends React.Component {
 
     onSubmitOrder = (event) => {
         event.preventDefault();
+        this.setState({ ordered: true });
         if (validateEmail(this.state.email) && this.state.project) {
             this.context.relay.commitUpdate(new OrderVariablesMutation({
                 email: this.state.email,
@@ -69,13 +70,7 @@ class Order extends React.Component {
                 comment: this.state.comment,
                 snps: Array.from(this.state.selected.keys()),
                 site: this.props.site,
-            }), {
-                onSuccess: () => {
-                    this.setState({
-                        ordered: true,
-                    });
-                }
-            });
+            }));
         }
     }
 

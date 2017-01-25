@@ -1,4 +1,5 @@
 import Relay from 'react-relay';
+import moment from 'moment';
 
 export default class OrderVariablesMutation extends Relay.Mutation {
     static fragments = {
@@ -31,6 +32,19 @@ export default class OrderVariablesMutation extends Relay.Mutation {
         fragment on OrderVariablesPayload {
             site { order }
         }`;
+    }
+
+    getOptimisticResponse() {
+        return {
+            site: {
+                order: {
+                    snps: this.props.snps, // not using this yet. from server, we actually get strings now.
+                    project: this.props.project,
+                    email: this.props.email,
+                    createdAt: moment().toISOString(),
+                }
+            }
+        }
     }
 
     getConfigs() {
