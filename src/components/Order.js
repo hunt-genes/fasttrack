@@ -7,6 +7,7 @@ import Relay from 'react-relay';
 import theme from '../theme';
 import OrderVariablesMutation from '../mutations/orderVariables';
 import OrderSnpTable from './OrderSnpTable';
+import { validateEmail } from '../lib/validations';
 
 class Order extends React.Component {
     static contextTypes = {
@@ -29,6 +30,8 @@ class Order extends React.Component {
         comment: '',
         email: '',
         ordered: false,
+        emailValid: true,
+        emailWritten: false,
     }
 
     getChildContext() {
@@ -46,6 +49,7 @@ class Order extends React.Component {
         }
         if (email) {
             newState.email = email;
+            newState.emailWritten = true;
         }
         if (project) {
             newState.project = project;
@@ -58,7 +62,7 @@ class Order extends React.Component {
 
     onSubmitOrder = (event) => {
         event.preventDefault();
-        if (this.state.email && this.state.project) {
+        if (validateEmail(this.state.email) && this.state.project) {
             this.context.relay.commitUpdate(new OrderVariablesMutation({
                 email: this.state.email,
                 project: this.state.project,
@@ -84,7 +88,16 @@ class Order extends React.Component {
     }
 
     onChangeEmail = (event, email) => {
-        this.setState({ email })
+        if (this.state.emailWritten) {
+            this.setState({ email, emailValid: validateEmail(email) })
+        }
+        else {
+            this.setState({ email });
+        }
+    }
+
+    onBlurEmail = () => {
+        this.setState({ emailWritten: true, emailValid: validateEmail(this.state.email) });
     }
 
     onClickBack = () => {
@@ -106,6 +119,9 @@ class Order extends React.Component {
     }
 
     render() {
+        const errorStyle = {
+            color: theme.palette.errorColor,
+        };
         const warningStyle = {
             color: theme.palette.accent1Color,
         };
@@ -142,8 +158,11 @@ class Order extends React.Component {
                                             type="email"
                                             floatingLabelText="Email"
                                             onChange={this.onChangeEmail}
+                                            onBlur={this.onBlurEmail}
+                                            errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid, is it an @ntnu.no address?'}
+                                            errorStyle={this.state.emailValid ? warningStyle : errorStyle}
+
                                             errorText={'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.'}
-                                            errorStyle={warningStyle}
                                             fullWidth
                                             value={this.state.email}
                                         />

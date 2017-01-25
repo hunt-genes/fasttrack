@@ -12,6 +12,7 @@ import Footer from './Footer';
 import SearchResults from './SearchResults';
 import TraitList from './TraitList';
 import Summary from './Summary';
+import { validateEmail } from '../lib/validations';
 
 const pageSize = 50;
 
@@ -44,6 +45,8 @@ class Search extends React.Component {
         project: '',
         email: '',
         comment: '',
+        emailValid: true,
+        emailWritten: false,
     }
 
     getChildContext() {
@@ -67,6 +70,7 @@ class Search extends React.Component {
         }
         if (email) {
             newState.email = email;
+            newState.emailWritten = true;
         }
         if (project) {
             newState.project = project;
@@ -74,7 +78,7 @@ class Search extends React.Component {
         if (comment) {
             newState.comment = comment;
         }
-        if (email && project && newState.selected.size) {
+        if (email && project && newState.selected && newState.selected.size) {
             newState.selecting = true
         }
         this.setState(newState);
@@ -195,12 +199,21 @@ class Search extends React.Component {
     }
 
     onChangeEmail = (event, email) => {
-        this.setState({ email });
+        if (this.state.emailWritten) {
+            this.setState({ email, emailValid: validateEmail(email) })
+        }
+        else {
+            this.setState({ email });
+        }
+    }
+
+    onBlurEmail = () => {
+        this.setState({ emailWritten: true, emailValid: validateEmail(this.state.email) });
     }
 
     onClickOrderSave = (event) => {
         event.preventDefault();
-        if (this.state.email && this.state.project) {
+        if (validateEmail(this.state.email) && this.state.project && this.props.relay.variables.hunt) {
             this.setState({
                 selecting: true,
                 orderDialogOpen: false,
@@ -264,7 +277,7 @@ class Search extends React.Component {
                     label="Save"
                     primary
                     onTouchTap={this.onClickOrderSave}
-                    disabled={!this.state.email || !this.state.project}
+                    disabled={!validateEmail(this.state.email) || !this.state.project || !this.props.relay.variables.hunt}
                 />
                 <RaisedButton
                     label="Cancel"
@@ -290,6 +303,10 @@ class Search extends React.Component {
 
         const orderTitle = `Order SNP data ${biobanks.length ? 'from' : '' } ${biobanks}`;
 
+        const errorStyle = {
+            color: theme.palette.errorColor,
+        };
+
         const warningStyle = {
             color: theme.palette.accent1Color,
         };
@@ -303,6 +320,7 @@ class Search extends React.Component {
                 onRequestClose={this.onOrderDialogClose}
                 actionsContainerStyle={{ textAlign: 'inherit' }}
             >
+                <p><strong>Warning! This system is not finished. We are in a testing phase, and orders will not be sent.</strong></p>
                 <div>
                     <Checkbox
                         label="Hunt"
@@ -330,8 +348,9 @@ class Search extends React.Component {
                         type="email"
                         floatingLabelText="Email"
                         onChange={this.onChangeEmail}
-                        errorText={'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.'}
-                        errorStyle={warningStyle}
+                        onBlur={this.onBlurEmail}
+                        errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid'}
+                        errorStyle={this.state.emailValid ? warningStyle : errorStyle}
                         fullWidth
                     />
                 </div>
