@@ -5,22 +5,16 @@ const OrderSchema = new mongoose.Schema({
     email: { type: String },
     comment: { type: String },
     snps: [{ type: String }],
-}, { timestamps: true });
-
-OrderSchema.set('toJSON', {
-    versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
 });
 
-OrderSchema.set('toObject', {
+const options = {
     versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
+    virtuals: true,
+};
+
+OrderSchema.set('toJSON', options);
+OrderSchema.set('toObject', options);
+OrderSchema.set('timestamps', true);
+OrderSchema.virtual('_type').get(() => 'Order');
 
 export default mongoose.model('Order', OrderSchema);

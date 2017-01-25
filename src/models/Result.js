@@ -56,24 +56,13 @@ const ResultSchema = new mongoose.Schema({
     }],
 });
 
-ResultSchema.set('toJSON', {
-    virtuals: true,
+const options = {
     versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
-
-ResultSchema.set('toObject', {
     virtuals: true,
-    versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
+}
 
-const Result = mongoose.model('Result', ResultSchema, 'gwas');
+ResultSchema.set('toJSON', options);
+ResultSchema.set('toObject', options);
+ResultSchema.virtual('_type').get(() => 'Result');
 
-export default Result;
+export default mongoose.model('Result', ResultSchema, 'gwas');

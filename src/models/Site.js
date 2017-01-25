@@ -4,20 +4,13 @@ const SiteSchema = new mongoose.Schema({
     _id: { type: String, unique: true, required: true },
 });
 
-SiteSchema.set('toJSON', {
+const options = {
     versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
+    virtuals: true,
+};
 
-SiteSchema.set('toObject', {
-    versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
+SiteSchema.set('toJSON', options);
+SiteSchema.set('toObject', options);
+SiteSchema.virtual('_type', (() => 'Site'));
 
 export default mongoose.model('Site', SiteSchema);

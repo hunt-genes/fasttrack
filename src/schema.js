@@ -35,10 +35,6 @@ import prepareQuery from './models/prepareQuery';
 
 const transporter = nodemailer.createTransport(sendmailTransport());
 
-class ResultDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class UserDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-class SiteDTO { constructor(obj) { for (const k of Object.keys(obj)) { this[k] = obj[k]; } } }
-
 let resultType;
 let userType;
 let siteType;
@@ -47,23 +43,23 @@ const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
         const { type, id } = fromGlobalId(globalId);
         if (type === 'Result') {
-            return Result.findById(id).exec().then((result) => new ResultDTO(result.toObject()));
+            return Result.findById(id).exec();
         }
         if (type === 'User') {
-            return new UserDTO({});
+            return {_type: 'User'};
         }
         if (type === 'Site') {
-            return new SiteDTO({});
+            return {_type: 'Site'};
         }
     },
     (obj) => {
-        if (obj instanceof ResultDTO) {
+        if (obj._type === 'Result') {
             return resultType;
         }
-        if (obj instanceof UserDTO) {
+        if (obj._type === 'User') {
             return userType;
         }
-        if (obj instanceof SiteDTO) {
+        if (obj._type === 'Site') {
             return siteType;
         }
         return null;
