@@ -127,8 +127,16 @@ class Order extends React.Component {
                 <div style={{ maxWidth: 800, margin: '0 auto' }}>
                     {this.state.ordered && this.props.site.order
                         ? <div>
-                            <h1>Thank you for your order</h1>
-                            <p>Your order was sent {moment(this.props.site.order.createdAt).format('lll')}, and contains the following SNPs:</p>
+                            {this.props.relay.hasOptimisticUpdate(this.props.site)
+                                ? <div>
+                                    <h1>Please wait</h1>
+                                    <p>Order is not confirmed yet</p>
+                                </div>
+                                    : <div>
+                                        <h1>Thank you for your order</h1>
+                                        <p>Your order was sent {moment(this.props.site.order.createdAt).format('lll')}, and contains the following SNPs:</p>
+                                    </div>
+                            }
                             <OrderSnpTable snps={snps} results={this.state.selected} />
                             <p>You will receive an email with a confirmation on submitted SNP-order to {this.props.site.order.email} shortly.</p>
                             <p>Please contact us {this.props.site.email ? `at ${this.props.site.email} ` : '' }if there is something wrong with your order.</p>
