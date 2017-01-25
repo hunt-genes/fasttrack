@@ -124,23 +124,33 @@ app.get('/search/export', (req, res, next) => {
     });
 });
 
-app.post('/variables/:trait', (req, res, next) => {
-    let rsids;
-    if (Array.isArray(req.body.rsids)) {
-        rsids = req.body.rsids;
-    }
-    else if (req.body.rsids) {
-        rsids = [req.body.rsids];
-    }
-    else {
-        rsids = [];
-    }
-    const data = rsids.join('\r\n') + '\r\n';
-    res.set('Content-Type', 'text/csv');
-    res.set('Content-Disposition',
-            `attachment; filename=trait-${req.params.trait.replace(/[^a-zA-Z0-9]+/g, '-')}.csv`);
-    res.write(data);
-    res.end();
+app.post('/snps', (req, res, next) => {
+    const mappedSnps = req.body.snps.split(',').map(snp => {
+        return Result.find({snp_id_current: snp.trim()}, 'genes traits').exec().then(results => {
+            let traits = [];
+            let genes = [];
+            results.forEach(result => {
+                traits = traits.concat(result.traits);
+                genes = genes.concat(result.genes);
+            });
+            return {
+                snp,
+                traits: new Set(traits),
+                genes: new Set(genes),
+            };
+        });
+    });
+    Promise.all(mappedSnps).then(mappedSnps => {
+        const data = mappedSnps.map(mapped => {
+            return `${mapped.snp},${Array.from(mapped.genes).join(';')},${Array.from(mapped.traits).join(';')}`;
+        }).join('\r\n') + '\r\n';
+        res.set('Content-Type', 'text/csv');
+        res.set('Content-Disposition', 'attachment; filename=snps.csv');
+        res.write(data);
+        res.end();
+    }).catch(error => {
+        console.error('Error: ', error);
+    });
 });
 
 if (app.settings.env === 'production') {
