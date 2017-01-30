@@ -218,9 +218,6 @@ class Order extends React.Component {
                                                 value={this.state.comment}
                                             />
                                         </div>
-                                        <h2>Please verify your SNP-order before submitting</h2>
-                                        <RaisedButton onClick={this.openDownloadSnps} label="Download" />
-                                        <OrderSnpTable snps={snps} results={this.state.selected} />
                                         <div style={{ marginTop: '2rem' }}>
                                             <RaisedButton
                                                 primary
@@ -232,6 +229,9 @@ class Order extends React.Component {
                                                 onClick={this.onClickBack}
                                             />
                                         </div>
+                                        <RaisedButton style={{ float: 'right', marginTop: '1rem' }} onClick={this.openDownloadSnps} label="Download" />
+                                        <h2>Please verify your SNP-order before submitting</h2>
+                                        <OrderSnpTable snps={snps} results={this.state.selected} />
                                     </form>
                                     {downloadDialog}
                                 </div>
