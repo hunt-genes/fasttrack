@@ -62,10 +62,10 @@ class Search extends React.Component {
             hunt: this.props.location.query.hunt === 'true',
             tromso: this.props.location.query.tromso === 'true',
         });
-        const selected = sessionStorage.getItem('orderSelected');
-        const email = sessionStorage.getItem('email');
-        const project = sessionStorage.getItem('project');
-        const comment = sessionStorage.getItem('comment');
+        const selected = localStorage.getItem('orderSelected');
+        const email = localStorage.getItem('email');
+        const project = localStorage.getItem('project');
+        const comment = localStorage.getItem('comment');
         const newState = {};
         if (selected) {
             newState.selected = new Map(JSON.parse(selected));
@@ -166,10 +166,10 @@ class Search extends React.Component {
             project: '',
             comment: '',
         });
-        sessionStorage.removeItem('orderSelected');
-        sessionStorage.removeItem('email');
-        sessionStorage.removeItem('project');
-        sessionStorage.removeItem('comment');
+        localStorage.removeItem('orderSelected');
+        localStorage.removeItem('email');
+        localStorage.removeItem('project');
+        localStorage.removeItem('comment');
     }
 
     toggleSelected = (result) => {
@@ -181,7 +181,7 @@ class Search extends React.Component {
             selected.set(result.snp_id_current, {traits: result.traits, genes: result.genes});
         }
         this.setState({ selected });
-        sessionStorage.setItem('orderSelected', JSON.stringify(selected));
+        localStorage.setItem('orderSelected', JSON.stringify(selected));
     }
 
     isSelected = (snp_id_current) => {
@@ -229,9 +229,9 @@ class Search extends React.Component {
                 selecting: true,
                 orderDialogOpen: false,
             });
-            sessionStorage.setItem('project', this.state.project);
-            sessionStorage.setItem('email', this.state.email);
-            sessionStorage.setItem('comment', this.state.comment);
+            localStorage.setItem('project', this.state.project);
+            localStorage.setItem('email', this.state.email);
+            localStorage.setItem('comment', this.state.comment);
         }
     }
 

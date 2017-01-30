@@ -43,10 +43,10 @@ class Order extends React.Component {
     }
 
     componentDidMount() {
-        const selected = sessionStorage.getItem('orderSelected');
-        const email = sessionStorage.getItem('email');
-        const project = sessionStorage.getItem('project');
-        const comment = sessionStorage.getItem('comment');
+        const selected = localStorage.getItem('orderSelected');
+        const email = localStorage.getItem('email');
+        const project = localStorage.getItem('project');
+        const comment = localStorage.getItem('comment');
         const newState = {};
         if (selected) {
             newState.selected = new Map(JSON.parse(selected));
@@ -118,10 +118,10 @@ class Order extends React.Component {
             comment: '',
             // ordered: false,
         });
-        sessionStorage.removeItem('orderSelected');
-        sessionStorage.removeItem('email');
-        sessionStorage.removeItem('project');
-        sessionStorage.removeItem('comment');
+        localStorage.removeItem('orderSelected');
+        localStorage.removeItem('email');
+        localStorage.removeItem('project');
+        localStorage.removeItem('comment');
         const query = this.props.location.query;
         this.context.router.push({ query });
     }
