@@ -155,6 +155,7 @@ class Order extends React.Component {
             >
                 <p>This will download the list of SNPs as a csv file.</p>
                 <p>Fields are separated by commas, individual traits and genes, by semicolons.</p>
+                <p>Downloading a SNP-list-file will not be registered as an order. You must click the «Send»-button in order to effectuate your order.</p>
             </Dialog>
         );
         return (
