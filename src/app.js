@@ -142,7 +142,7 @@ app.post('/snps', (req, res, next) => {
     });
     Promise.all(mappedSnps).then(mappedSnps => {
         const data = mappedSnps.map(mapped => {
-            return `${mapped.snp},${Array.from(mapped.genes).join(';')},${Array.from(mapped.traits).join(';')}`;
+            return `${mapped.snp};${Array.from(mapped.genes).join(',')};${Array.from(mapped.traits).join(',')}`;
         }).join('\r\n') + '\r\n';
         res.set('Content-Type', 'text/csv');
         res.set('Content-Disposition', 'attachment; filename=snps.csv');
