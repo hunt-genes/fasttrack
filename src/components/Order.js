@@ -8,7 +8,7 @@ import Relay from 'react-relay';
 import theme from '../theme';
 import OrderVariablesMutation from '../mutations/orderVariables';
 import OrderSnpTable from './OrderSnpTable';
-import { validateEmail } from '../lib/validations';
+import { validateEmail, validateProject } from '../lib/validations';
 
 class Order extends React.Component {
     static contextTypes = {
@@ -33,6 +33,8 @@ class Order extends React.Component {
         ordered: false,
         emailValid: true,
         emailWritten: false,
+        projectValid: true,
+        projectWritten: false,
         downloadSnpsOpen: false,
     }
 
@@ -77,7 +79,12 @@ class Order extends React.Component {
     }
 
     onChangeProject = (event, project) => {
-        this.setState({ project });
+        if (this.state.projectWritten) {
+            this.setState({ project, projectValid: validateProject(project) });
+        }
+        else {
+            this.setState({ project });
+        }
     }
 
     onChangeComment = (event, comment) => {
@@ -95,6 +102,10 @@ class Order extends React.Component {
 
     onBlurEmail = () => {
         this.setState({ emailWritten: true, emailValid: validateEmail(this.state.email) });
+    }
+
+    onBlurProject = () => {
+        this.setState({ projectWritten: true, projectValid: validateProject(this.state.project) });
     }
 
     onClickBack = () => {
@@ -192,6 +203,9 @@ class Order extends React.Component {
                                                 floatingLabelText="Project / case number"
                                                 onChange={this.onChangeProject}
                                                 value={this.state.project}
+                                                onBlur={this.onBlurProject}
+                                                errorStyle={this.state.projectValid ? warningStyle : errorStyle}
+                                                errorText={this.state.projectValid ? 'Format: 2017/123' : 'Invalid project number, it should be like 2017/123'}
                                             />
                                         </div>
                                         <div>
@@ -224,6 +238,7 @@ class Order extends React.Component {
                                                 primary
                                                 label="Send"
                                                 type="submit"
+                                                disabled={!this.state.emailValid || !this.state.projectValid}
                                             />
                                             <RaisedButton
                                                 label="Back"

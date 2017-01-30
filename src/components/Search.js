@@ -12,7 +12,7 @@ import Footer from './Footer';
 import SearchResults from './SearchResults';
 import TraitList from './TraitList';
 import Summary from './Summary';
-import { validateEmail } from '../lib/validations';
+import { validateEmail, validateProject } from '../lib/validations';
 
 const pageSize = 50;
 
@@ -47,6 +47,8 @@ class Search extends React.Component {
         comment: '',
         emailValid: true,
         emailWritten: false,
+        projectValid: true,
+        projectWritten: false,
     }
 
     getChildContext() {
@@ -191,7 +193,12 @@ class Search extends React.Component {
     }
 
     onChangeProject = (event, project) => {
-        this.setState({ project });
+        if (this.state.projectWritten) {
+            this.setState({ project, projectValid: validateProject(project) });
+        }
+        else {
+            this.setState({ project });
+        }
     }
 
     onChangeComment = (event, comment) => {
@@ -209,6 +216,10 @@ class Search extends React.Component {
 
     onBlurEmail = () => {
         this.setState({ emailWritten: true, emailValid: validateEmail(this.state.email) });
+    }
+
+    onBlurProject = () => {
+        this.setState({ projectWritten: true, projectValid: validateProject(this.state.project) });
     }
 
     onClickOrderSave = (event) => {
@@ -277,7 +288,7 @@ class Search extends React.Component {
                     label="Save"
                     primary
                     onTouchTap={this.onClickOrderSave}
-                    disabled={!validateEmail(this.state.email) || !this.state.project || !this.props.relay.variables.hunt}
+                    disabled={!this.state.emailValid || !this.state.projectValid || !this.props.relay.variables.hunt}
                 />
                 <RaisedButton
                     label="Cancel"
@@ -340,6 +351,9 @@ class Search extends React.Component {
                         floatingLabelText="Project / case number"
                         onChange={this.onChangeProject}
                         value={this.state.project}
+                        onBlur={this.onBlurProject}
+                        errorStyle={this.state.projectValid ? warningStyle : errorStyle}
+                        errorText={this.state.projectValid ? 'Format: 2017/123' : 'Invalid project number, it should be like 2017/123'}
                     />
                 </div>
                 <div>
