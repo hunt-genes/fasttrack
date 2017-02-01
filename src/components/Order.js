@@ -163,6 +163,7 @@ class Order extends React.Component {
                 onRequestClose={this.onDownloadDialogClose}
                 actions={downloadActions}
                 actionContainerStyle={{ textAlign: 'inherit' }}
+                autoScrollBodyContent
             >
                 <p>This will download the list of SNPs as a csv file.</p>
                 <p>Fields are separated by commas, individual traits and genes, by semicolons.</p>

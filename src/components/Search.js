@@ -330,6 +330,7 @@ class Search extends React.Component {
                 open={this.state.orderDialogOpen}
                 onRequestClose={this.onOrderDialogClose}
                 actionsContainerStyle={{ textAlign: 'inherit' }}
+                autoScrollBodyContent
             >
                 <p><strong>Warning! This system is not finished. We are in a testing phase, and orders will not be sent.</strong></p>
                 <div>
