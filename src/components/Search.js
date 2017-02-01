@@ -351,7 +351,6 @@ class Search extends React.Component {
                 actionsContainerStyle={{ textAlign: 'inherit' }}
                 autoScrollBodyContent
             >
-                <p><strong>Warning! This system is not finished. We are in a testing phase, and orders will not be sent.</strong></p>
                 <div>
                     <Checkbox
                         label="Hunt"
