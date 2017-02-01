@@ -324,6 +324,25 @@ class Search extends React.Component {
 
     return (
         <section>
+            <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
+                <ToolbarGroup />
+                <ToolbarGroup lastChild>
+                    <div>
+                        {this.state.selecting
+                            ? null
+                            : <RaisedButton label="Order SNPs" onTouchTap={this.toggleSelection} />
+                        }
+                        {this.state.selecting
+                            ? null
+                            : <a href={`/search/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
+                                <RaisedButton
+                                    label="Export .tsv"
+                                />
+                            </a>
+                        }
+                    </div>
+                </ToolbarGroup>
+            </Toolbar>
             <Dialog
                 title={orderTitle}
                 actions={orderActions}
@@ -381,26 +400,6 @@ class Search extends React.Component {
                 </div>
                 <p>You will be able to change the comment before submitting your order</p>
             </Dialog>
-            <div style={{float: 'right'}}>
-                <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
-                    <ToolbarGroup lastChild>
-                        <div style={{ padding: 12 }}>
-                            {this.state.selecting
-                                ? null
-                                : <RaisedButton label="Order SNPs" onTouchTap={this.toggleSelection} />
-                            }
-                            {this.state.selecting
-                                ? null
-                                : <a href={`/search/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
-                                    <RaisedButton
-                                        label="Export .tsv"
-                                    />
-                                </a>
-                            }
-                        </div>
-                    </ToolbarGroup>
-                </Toolbar>
-            </div>
 
             <div style={{ maxWidth: 800, margin: '0 auto' }}>
                 <form onSubmit={this.onSearch} onReset={this.onClear}>
@@ -408,11 +407,11 @@ class Search extends React.Component {
                         <div style={{ margin: '0 10px' }} id="logo">
                             <img
                                 src="/logo.jpg"
-                                style={{ marginTop: 28, width: 50 }}
+                                style={{ width: 50 }}
                             />
                         </div>
                         <div style={{ flexGrow: 1, margin: '0 10px' }}>
-                            <h1>HUNT fast-track GWAS catalog search</h1>
+                            <h1 style={{ marginTop: 0 }}>HUNT fast-track GWAS catalog search</h1>
                             <div style={{ display: 'flex' }}>
                                 <div style={{ flexGrow: '1' }}>
                                     <TextField
