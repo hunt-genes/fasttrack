@@ -15,10 +15,14 @@ class Footer extends React.Component {
                         Available at: <a href="https://www.ebi.ac.uk/gwas">www.ebi.ac.uk/gwas</a>. Accessed 2016-10-12, version v1.0.1.
                     </div>
                     <h3>Tromsøundersøkelsen</h3>
-                    <p>Imputation data from <ExternalLink href="https://uit.no/forskning/forskningsgrupper/gruppe?p_document_id=367276">Tromsøundersøkelsen</ExternalLink> and the <ExternalLink href="https://www.ntnu.edu/huntgenes">K.G. Jebsen Center for Genetic Epidemiology</ExternalLink> (Huntgenes) group at <ExternalLink href="https://www.ntnu.edu/">NTNU</ExternalLink>.</p>
+                    <p>Information about imputed <ExternalLink href="https://uit.no/forskning/forskningsgrupper/gruppe?p_document_id=367276">Tromsøundersøkelsen</ExternalLink> data.</p>
+                    <h3>HUNT and HUNT-Genes</h3>
+                    <p>Information about imputed HUNT data from <ExternalLink href="https://www.ntnu.edu/huntgenes">K.G. Jebsen Center for Genetic Epidemiology</ExternalLink> (Huntgenes) group at <ExternalLink href="https://www.ntnu.edu/">NTNU</ExternalLink></p>
                     <h2>Warnings and warranty</h2>
                     <p>The usual warnings about providing the service AS-IS applies.</p>
                     <p>You should depend on the <ExternalLink href="https://www.ebi.ac.uk/gwas">original GWAS service from NHGRI-EBI</ExternalLink> for research.</p>
+                    <h2>Source code and license</h2>
+                    <p>This software is licensed under AGPL-3.0 and you can find the source code on <a href="https://github.com/hunt-genes/fasttrack">github.com/hunt-genes/fasttrack</a>.</p>
                 </div>
             </main>
         );
