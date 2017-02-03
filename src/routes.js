@@ -20,10 +20,10 @@ export const queries = {
 };
 
 export default createRoutes(
-    <Route path="/">
-        <IndexRoute component={Search} queries={queries} />
+    <Route>
+        <Route path="search" component={Search} queries={queries} />
         <Route path="about" component={About} />
         <Route path="order" component={Order} queries={queries} />
-        <Redirect from="search" to=".." />
+        <Redirect from="/" to="search" />
     </Route>
 );
