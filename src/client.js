@@ -13,11 +13,12 @@ import './scss/stylesheet.scss';
 injectTapEventPlugin();
 
 const environment = new Relay.Environment();
-environment.injectNetworkLayer(new Relay.DefaultNetworkLayer('/graphql', {
+environment.injectNetworkLayer(new Relay.DefaultNetworkLayer('graphql', {
     credentials: 'same-origin',
 }));
 IsomorphicRelay.injectPreparedData(environment, window.__INITIAL_STATE__);
 
+// Even if this site is written in english, we are mostly used to norwegian formats
 moment.locale('nb');
 
 match({ routes, history: browserHistory }, (error, redirectLocation, renderProps) => {

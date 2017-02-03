@@ -15,7 +15,7 @@ class TraitList extends React.Component {
     }
 
     render() {
-        const linkPrefix = this.props.linkPrefix || '/search/?q=';
+        const linkPrefix = this.props.linkPrefix || '?q=';
         return (
             <div style={{ padding: '0 15px' }}>
                 {this.props.introduction ?

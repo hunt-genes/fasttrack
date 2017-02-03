@@ -124,7 +124,7 @@ app.get('/search/export', (req, res, next) => {
     });
 });
 
-app.post('/snps', (req, res, next) => {
+app.post('/order/snps', (req, res, next) => {
     const mappedSnps = req.body.snps.split(',').map(snp => {
         return Result.find({snp_id_current: snp.trim()}, 'genes traits').exec().then(results => {
             let traits = [];
@@ -178,7 +178,7 @@ function renderFullPage(renderedContent, initialState, head = {
 }) {
     let style = '';
     if (config.get('html.style')) {
-        style = '<link rel="stylesheet" href="/stylesheet.css">';
+        style = '<link rel="stylesheet" href="stylesheet.css">';
     }
     return `
     <!doctype html>
@@ -194,7 +194,7 @@ function renderFullPage(renderedContent, initialState, head = {
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/javascript.js"></script>
+        <script src="javascript.js"></script>
     </body>
     </html>
     `;

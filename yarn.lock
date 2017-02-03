@@ -223,6 +223,17 @@ autoprefixer@^6.3.1:
     postcss "^5.2.11"
     postcss-value-parser "^3.2.3"
 
+autoprefixer@^6.7.2:
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-6.7.2.tgz#172ab07b998ae9b957530928a59a40be54a45023"
+  dependencies:
+    browserslist "^1.7.1"
+    caniuse-db "^1.0.30000618"
+    normalize-range "^0.1.2"
+    num2fraction "^1.2.2"
+    postcss "^5.2.11"
+    postcss-value-parser "^3.2.3"
+
 aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
@@ -1093,6 +1104,13 @@ browserslist@^1.0.1, browserslist@^1.5.2, browserslist@~1.6.0:
     caniuse-db "^1.0.30000613"
     electron-to-chromium "^1.2.0"
 
+browserslist@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-1.7.1.tgz#cc9bd193979a2a4b09fdb3df6003fefe48ccefe1"
+  dependencies:
+    caniuse-db "^1.0.30000617"
+    electron-to-chromium "^1.2.1"
+
 bson@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/bson/-/bson-1.0.4.tgz#93c10d39eaa5b58415cbc4052f3e53e562b0b72c"
@@ -1179,6 +1197,10 @@ caniuse-api@^1.5.2:
 caniuse-db@^1.0.30000346, caniuse-db@^1.0.30000613:
   version "1.0.30000613"
   resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000613.tgz#639133b7a5380c1416f9701d23d54d093dd68299"
+
+caniuse-db@^1.0.30000617, caniuse-db@^1.0.30000618:
+  version "1.0.30000618"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000618.tgz#821258ff484f662864f28ffbcf849a6247acf1fa"
 
 caseless@~0.11.0:
   version "0.11.0"
@@ -1739,6 +1761,10 @@ ee-first@1.1.1:
 electron-to-chromium@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.2.0.tgz#3bd7761f85bd4163602259ae6c7ed338050b17e7"
+
+electron-to-chromium@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.2.1.tgz#63ac7579a1c5bedb296c8607621f2efc9a54b968"
 
 emojis-list@^2.0.0:
   version "2.1.0"

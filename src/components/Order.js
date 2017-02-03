@@ -150,7 +150,7 @@ class Order extends React.Component {
         snps.sort((a, b) => b < a);
 
         const downloadActions = (
-            <form action="/snps" method="POST">
+            <form action="order/snps" method="POST">
                 <input type="hidden" name="snps" value={snps} />
                 <RaisedButton label="Download" type="submit" onClick={this.onDownloadClick} primary />
                 <RaisedButton label="Cancel" onTouchTap={this.onDownloadDialogClose} />

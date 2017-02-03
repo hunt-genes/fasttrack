@@ -238,11 +238,11 @@ class Search extends React.Component {
     render() {
         const examples = (
             <p>
-                Examples: <Link to="/search/?q=diabetes">diabetes</Link>
-                , <Link to="/search/?q=rs3820706">rs3820706</Link>
-                , <Link to="/search/?q=Chung S">Chung S</Link>
-                , <Link to="/search/?q=2q23.3">2q23.3</Link>
-                , <Link to="/search/?q=CACNB4">CACNB4</Link>
+                Examples: <Link to="?q=diabetes">diabetes</Link>
+                , <Link to="?q=rs3820706">rs3820706</Link>
+                , <Link to="?q=Chung S">Chung S</Link>
+                , <Link to="?q=2q23.3">2q23.3</Link>
+                , <Link to="?q=CACNB4">CACNB4</Link>
             </p>
         );
         const help = (
@@ -334,7 +334,7 @@ class Search extends React.Component {
                         }
                         {this.state.selecting
                             ? null
-                            : <a href={`/search/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
+                            : <a href={`search/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
                                 <RaisedButton
                                     label="Export .tsv"
                                 />

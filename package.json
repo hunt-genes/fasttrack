@@ -27,6 +27,7 @@
     }
   },
   "dependencies": {
+    "autoprefixer": "^6.7.2",
     "babel-core": "^6.21.0",
     "babel-register": "^6.3.13",
     "bluebird": "^3.4.7",
