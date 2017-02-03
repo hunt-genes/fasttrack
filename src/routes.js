@@ -1,6 +1,6 @@
 import React from 'react';
 import Relay from 'react-relay';
-import { Route, IndexRoute, createRoutes } from 'react-router';
+import { Route, IndexRoute, Redirect, createRoutes } from 'react-router';
 import Search from './components/Search';
 import About from './components/About';
 import Order from './components/Order';
@@ -24,5 +24,6 @@ export default createRoutes(
         <IndexRoute component={Search} queries={queries} />
         <Route path="about" component={About} />
         <Route path="order" component={Order} queries={queries} />
+        <Redirect from="search" to=".." />
     </Route>
 );
