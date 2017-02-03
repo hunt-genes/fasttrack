@@ -107,6 +107,7 @@ class Search extends React.Component {
 
     onSearch = (event) => {
         event.preventDefault();
+        console.log(this.props.location.query, "a", this.state.term);
         this.context.router.push({ query: { q: this.state.term } });
     }
 

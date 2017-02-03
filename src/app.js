@@ -23,6 +23,7 @@ import prepareQuery from './models/prepareQuery';
 const app = express();
 app.db = db;
 
+/*
 function getIP(req) {
     const ips = req.headers['x-forwarded-for'] || // from proxy
         req.connection.remoteAddress || // different versions of node
@@ -30,10 +31,12 @@ function getIP(req) {
         req.connection.socket.remoteAddress;
     return ips.split(',').pop();
 }
+*/
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // request logging middleware, logs timestamp, ip and query if defined
+/*
 app.use((req, res, next) => {
     const q = req.query.q;
 
@@ -50,6 +53,7 @@ app.use((req, res, next) => {
     // do not wait for request logger
     next();
 });
+*/
 app.use((req, res, next) => {
     Site.findById('fasttrack').exec().then(site => {
         if (site) {
@@ -178,7 +182,7 @@ function renderFullPage(renderedContent, initialState, head = {
 }) {
     let style = '';
     if (config.get('html.style')) {
-        style = '<link rel="stylesheet" href="stylesheet.css">';
+        style = `<link rel="stylesheet" href="${config.prefix}/stylesheet.css">`;
     }
     return `
     <!doctype html>
@@ -194,7 +198,7 @@ function renderFullPage(renderedContent, initialState, head = {
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="javascript.js"></script>
+        <script src="${config.prefix}/javascript.js"></script>
     </body>
     </html>
     `;
