@@ -1,9 +1,9 @@
 import Checkbox from 'material-ui/Checkbox';
 import React from 'react';
-import { Link } from 'react-router';
 
 import ImputationResults from './ImputationResults';
 import ExternalLink from './ExternalLink';
+import Link from './Link';
 
 class Result extends React.Component {
     rowclass(p) {
@@ -42,7 +42,7 @@ class Result extends React.Component {
             <tr className={this.rowclass(result.p_value)}>
                 <td>
                     <div>
-                        <Link to={`/search/?q=${result.snp_id_current}`}>
+                        <Link to={`?q=${result.snp_id_current}`}>
                             {result.snps}
                         </Link>
                         {this.props.selecting ? <Checkbox onCheck={this.toggleSelected} checked={this.isSelected()} /> : null}
@@ -68,12 +68,12 @@ class Result extends React.Component {
                 </td>
                 <td>
                     <div>
-                        <Link to={`/search/?q=${result.region}`}>
+                        <Link to={`?q=${result.region}`}>
                             {result.region}
                         </Link>
                     </div>
                     <div>
-                        <Link to={result.chr_id ? `/search/?q=chr${result.chr_id}:${result.chr_pos}` : ''}>
+                        <Link to={result.chr_id ? `?q=chr${result.chr_id}:${result.chr_pos}` : ''}>
                             {result.chr_id ? `chr${result.chr_id}:${result.chr_pos}` : ''}
                         </Link>
                     </div>
@@ -85,7 +85,7 @@ class Result extends React.Component {
                     <ul style={{ margin: 0, paddingLeft: 20 }}>
                         {result.genes.map(gene =>
                             <li key={gene}>
-                                <Link to={`/search/?q=${gene}`}>
+                                <Link to={`?q=${gene}`}>
                                     {gene}
                                 </Link> <ExternalLink href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene}`} />
                             </li>
@@ -96,7 +96,7 @@ class Result extends React.Component {
                     <ul style={{ margin: 0, paddingLeft: 20 }}>
                         {result.traits.map(trait =>
                         <li key={trait}>
-                            <Link to={`/search/?q=${trait}`}>
+                            <Link to={`?q=${trait}`}>
                                 {trait}
                             </Link>
                         </li>
@@ -113,12 +113,12 @@ class Result extends React.Component {
                     <div className="uninteresting">{result.date_added_to_catalog}</div>
                 </td>
                 <td>
-                    <Link to={`/search/?q=${result.first_author}`}>
+                    <Link to={`?q=${result.first_author}`}>
                         {result.first_author}
                     </Link>
                 </td>
                 <td>
-                    <Link to={`/search/?q=${result.pubmedid}`}>
+                    <Link to={`?q=${result.pubmedid}`}>
                         {result.pubmedid}
                     </Link> <ExternalLink href={`http://www.ncbi.nlm.nih.gov/pubmed/${result.pubmedid}`} />
                     <div>{result.journal}</div>

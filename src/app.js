@@ -14,11 +14,14 @@ import { match } from 'react-router';
 import graphqlHTTP from 'express-graphql';
 
 import config from 'config';
+import prefix from './prefix';
 import schema from './schema';
 
 import Result from './models/Result';
 import Site from './models/Site';
 import prepareQuery from './models/prepareQuery';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 const app = express();
 app.db = db;
@@ -67,7 +70,7 @@ app.use((req, res, next) => {
 });
 
 // Export data as CSV
-app.get('/search/export', (req, res, next) => {
+app.get(`${prefix}/export`, (req, res, next) => {
     // query term
     const term = req.query.q || '';
 
@@ -124,7 +127,7 @@ app.get('/search/export', (req, res, next) => {
     });
 });
 
-app.post('/order/snps', (req, res, next) => {
+app.post(`${prefix}/snps`, (req, res, next) => {
     const mappedSnps = req.body.snps.split(',').map(snp => {
         return Result.find({snp_id_current: snp.trim()}, 'genes traits').exec().then(results => {
             let traits = [];
@@ -161,7 +164,7 @@ else {
 }
 app.use(express.static(path.join(__dirname, '/assets')));
 
-app.use('/graphql', graphqlHTTP(req => {
+app.use(`${prefix}/graphql`, graphqlHTTP(req => {
     const contextValue = { site: req.site };
     return {
         schema,
@@ -178,7 +181,7 @@ function renderFullPage(renderedContent, initialState, head = {
 }) {
     let style = '';
     if (config.get('html.style')) {
-        style = '<link rel="stylesheet" href="stylesheet.css">';
+        style = `<link rel="stylesheet" href="${prefix}/static/stylesheet.css">`;
     }
     return `
     <!doctype html>
@@ -194,14 +197,14 @@ function renderFullPage(renderedContent, initialState, head = {
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="javascript.js"></script>
+        <script src="${prefix}/static/javascript.js"></script>
     </body>
     </html>
     `;
 }
 
 /** Universal app endpoint **/
-app.get('*', (req, res, next) => {
+app.get(`${prefix}*`, (req, res, next) => {
     match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
         if (err) {
             return next(err);

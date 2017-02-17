@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ExternalLink from './ExternalLink';
+import Link from './Link';
 
 export default class Footer extends React.Component {
     static propTypes = {

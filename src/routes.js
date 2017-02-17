@@ -4,6 +4,7 @@ import { Route, IndexRoute, createRoutes } from 'react-router';
 import Search from './components/Search';
 import About from './components/About';
 import Order from './components/Order';
+import prefix from './prefix';
 
 export const queries = {
     viewer: (Component, vars) => {
@@ -20,7 +21,7 @@ export const queries = {
 };
 
 export default createRoutes(
-    <Route path="/">
+    <Route path={prefix}>
         <IndexRoute component={Search} queries={queries} />
         <Route path="about" component={About} />
         <Route path="order" component={Order} queries={queries} />

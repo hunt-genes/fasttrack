@@ -6,9 +6,10 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
-import { Link } from 'react-router';
+import prefix from '../prefix';
 import theme from '../theme';
 import Footer from './Footer';
+import Link from './Link';
 import SearchResults from './SearchResults';
 import TraitList from './TraitList';
 import Summary from './Summary';
@@ -107,12 +108,18 @@ class Search extends React.Component {
 
     onSearch = (event) => {
         event.preventDefault();
-        this.context.router.push({ query: { q: this.state.term } });
+        this.context.router.push({
+            pathname: prefix,
+            query: { q: this.state.term },
+        });
     }
 
     onClear = (event) => {
         event.preventDefault();
-        this.context.router.push({ query: { q: '' } });
+        this.context.router.push({
+            pathname: prefix,
+            query: { q: '' },
+        });
     }
 
     onChange = (event, term) => {
@@ -124,7 +131,10 @@ class Search extends React.Component {
         const query = this.props.location.query;
         query.unique = unique;
         this.setState({ loading: true });
-        this.context.router.push({ query });
+        this.context.router.push({
+            pathname: prefix,
+            query,
+        });
         this.props.relay.setVariables({ unique }, () => { this.setState({ loading: false }); });
     }
 
@@ -132,7 +142,10 @@ class Search extends React.Component {
         const hunt = !this.props.relay.variables.hunt;
         const query = this.props.location.query;
         query.hunt = hunt;
-        this.context.router.push({ query });
+        this.context.router.push({
+            pathname: prefix,
+            query,
+        });
         this.props.relay.setVariables({ hunt });
     }
 
@@ -140,7 +153,10 @@ class Search extends React.Component {
         const tromso = !this.props.relay.variables.tromso;
         const query = this.props.location.query;
         query.tromso = tromso;
-        this.context.router.push({ query });
+        this.context.router.push({
+            pathname: prefix,
+            query,
+        });
         this.props.relay.setVariables({ tromso });
     }
 
@@ -334,7 +350,7 @@ class Search extends React.Component {
                         }
                         {this.state.selecting
                             ? null
-                            : <a href={`search/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
+                            : <a href={`${prefix}/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
                                 <RaisedButton
                                     label="Export .tsv"
                                 />

@@ -5,6 +5,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import moment from 'moment';
 import React from 'react';
 import Relay from 'react-relay';
+import prefix from '../prefix';
 import theme from '../theme';
 import OrderVariablesMutation from '../mutations/orderVariables';
 import OrderSnpTable from './OrderSnpTable';
@@ -116,14 +117,17 @@ class Order extends React.Component {
         this.setState({
             selected: new Map(),
             comment: '',
-            // ordered: false,
+            ordered: false,
         });
         localStorage.removeItem('orderSelected');
         localStorage.removeItem('email');
         localStorage.removeItem('project');
         localStorage.removeItem('comment');
         const query = this.props.location.query;
-        this.context.router.push({ query });
+        this.context.router.push({
+            pathname: prefix,
+            query,
+        });
     }
 
     onDownloadDialogClose = () => {
@@ -150,7 +154,7 @@ class Order extends React.Component {
         snps.sort((a, b) => b < a);
 
         const downloadActions = (
-            <form action="order/snps" method="POST">
+            <form action={`${prefix}/snps`} method="POST">
                 <input type="hidden" name="snps" value={snps} />
                 <RaisedButton label="Download" type="submit" onClick={this.onDownloadClick} primary />
                 <RaisedButton label="Cancel" onTouchTap={this.onDownloadDialogClose} />

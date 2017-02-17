@@ -45,16 +45,13 @@ module.exports = {
         ],
     },
     output: {
-        path: path.join(__dirname, 'dist'),
-        publicPath: '/',
+        path: path.join(__dirname, 'dist', 'static'),
+        publicPath: '/huntgenes/fasttrack/static',
         filename: 'javascript.js',
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin(),
-        new CopyWebpackPlugin([{
-            from: path.join(__dirname, 'src', 'assets'),
-        }]),
         new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en)$/),
         new CopyWebpackPlugin([{
             from: __dirname + '/src/assets',
