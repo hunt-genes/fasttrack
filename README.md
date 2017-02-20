@@ -69,6 +69,10 @@ To add a set of columns for build 37 (Norwegian biobanks are normally on build
 python import-scripts/convertPositions.py 37 /home/sigurdga/lift/b147_SNPChrPosOnRef_105.bcp.gz
 ```
 
+Where the `b147_SNPChrPosOnRef_105.bcp.gz` comes from
+[ftp.ncbi.nlm.nih.gov](ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606/database/organism_data/),
+and you should use the latest version in that ftp folder.
+
 Assuming you have imputation info in the folder `tmp/IMPUTATION_INFO`, import all
 the files. The normal way today is to have one file per chromosome, made for
 build 37 so we loop and import all of these in the following command:
