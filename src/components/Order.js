@@ -169,7 +169,12 @@ class Order extends React.Component {
         const downloadActions = (
             <form action={`${prefix}/snps`} method="POST">
                 <input type="hidden" name="snps" value={snps} />
-                <RaisedButton label="Download" type="submit" onClick={this.onDownloadClick} primary />
+                <RaisedButton
+                    label="Download"
+                    type="submit"
+                    onClick={this.onDownloadClick}
+                    primary
+                />
                 <RaisedButton label="Cancel" onTouchTap={this.onDownloadDialogClose} />
             </form>
         );
@@ -184,10 +189,12 @@ class Order extends React.Component {
             >
                 <p>This will download the list of SNPs as a csv file.</p>
                 <p>Fields are separated by commas, individual traits and genes, by semicolons.</p>
-                <p>Downloading a SNP-list-file will not be registered as an order. You must click the «Send»-button in order to effectuate your order.</p>
+                <p>Downloading a SNP-list-file will not be registered as an order. You must click
+                the «Send»-button in order to effectuate your order.</p>
             </Dialog>
         );
         const { emailValid, projectValid } = this.state;
+        const { email } = this.props.site;
         return (
             <section>
                 <div style={{ maxWidth: 800, margin: '0 auto' }}>
@@ -200,21 +207,27 @@ class Order extends React.Component {
                                 </div>
                                     : <div>
                                         <h1>Thank you for your order</h1>
-                                        <p>Your order was sent {moment(this.props.site.order.createdAt).format('lll')}, and contains the following SNPs:</p>
+                                        <p>Your order was sent
+                                        {moment(this.props.site.order.createdAt).format('lll')}, and
+                                        contains the following SNPs:</p>
                                     </div>
                             }
                             <OrderSnpTable snps={snps} results={this.state.selected} />
                             {downloadDialog}
                             <RaisedButton onClick={this.openDownloadSnps} label="Download" />
-                            <p>You will receive an email with a confirmation on submitted SNP-order to {this.props.site.order.email} shortly.</p>
-                            <p>Please contact us {this.props.site.email ? `at ${this.props.site.email} ` : '' }if there is something wrong with your order.</p>
+                            <p>You will receive an email with a confirmation on submitted SNP-order
+                            to {this.props.site.order.email} shortly.</p>
+                            <p>Please contact us {email ? `at ${email} ` : '' } if there is
+                            something wrong with your order.</p>
                             <RaisedButton label="Done" onClick={this.onClickDone} />
                         </div>
                         : <div>
                             {this.state.selected.size
                                 ? <div>
                                     <form onSubmit={this.onSubmitOrder}>
-                                        <h1>You have selected {snps.length} SNPs to order from HUNT</h1>
+                                        <h1>
+                                            You have selected {snps.length} SNPs to order from HUNT
+                                        </h1>
                                         <p>Please use your HUNT case number (saksnummer) as identification. To order SNP-data from HUNT, you need a submitted and/or approved HUNT-application. Please refer to the HUNT website for details for application procedures, <a href="https://www.ntnu.no/hunt">www.ntnu.no/hunt</a>.</p>
                                         <div>
                                             <TextField
@@ -271,7 +284,10 @@ class Order extends React.Component {
                                                 onClick={this.onClickBack}
                                             />
                                         </div>
-                                        <RaisedButton style={{ float: 'right', marginTop: '1rem' }} onClick={this.openDownloadSnps} label="Download" />
+                                        <RaisedButton
+                                            style={{ float: 'right', marginTop: '1rem' }}
+                                            onClick={this.openDownloadSnps} label="Download"
+                                        />
                                         <h2>Please verify your SNP-order before submitting</h2>
                                         <OrderSnpTable snps={snps} results={this.state.selected} />
                                     </form>
@@ -279,7 +295,10 @@ class Order extends React.Component {
                                 </div>
                                 : <div>
                                     <h1 id="download">You have selected no SNPs yet</h1>
-                                    <p>Please go back and select some SNPs, if you want to order variables from HUNT</p>
+                                    <p>
+                                        Please go back and select some SNPs, if you want to order
+                                        variables from HUNT
+                                    </p>
                                     <RaisedButton
                                         label="Back"
                                         onClick={this.onClickBack}
