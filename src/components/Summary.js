@@ -1,6 +1,5 @@
 import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
 import theme from '../theme';
 import Link from './Link';
@@ -10,9 +9,6 @@ export default class Summary extends React.Component {
         term: React.PropTypes.string,
         stats: React.PropTypes.object,
         unique: React.PropTypes.bool,
-        tromso: React.PropTypes.bool,
-        hunt: React.PropTypes.bool,
-        style: React.PropTypes.object,
         loading: React.PropTypes.bool,
         selecting: React.PropTypes.bool,
         toggleSelection: React.PropTypes.func,
@@ -31,7 +27,7 @@ export default class Summary extends React.Component {
         if (this.props.loading) {
             return (
                 <div className="loader">
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                    <div /><div /><div /><div /><div /><div />
                 </div>
             );
         }
@@ -55,16 +51,12 @@ export default class Summary extends React.Component {
             );
         }
 
-        const term = this.props.term || '';
-        const unique = this.props.unique;
-        const hunt = this.props.hunt;
-        const tromso = this.props.tromso;
         const small = (
             <small
                 style={{ fontSize: '1.2rem' }}
             > for <span style={{ fontStyle: 'italic' }}>P</span> &lt; 5x10-8</small>
         );
-
+        const { total, unique } = this.props.stats;
         return (
             <div style={{ maxWidth: 800, margin: '0 auto' }}>
                 <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
@@ -77,7 +69,7 @@ export default class Summary extends React.Component {
                                 fontSize: '1.2rem',
                             }}
                         >
-                            {this.props.stats.unique} unique SNPs in {this.props.stats.total} studies {small}
+                            {unique} unique SNPs in {total} studies {small}
                         </div>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild>

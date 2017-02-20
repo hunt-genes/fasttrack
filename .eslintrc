@@ -2,20 +2,33 @@
     "parser": "babel-eslint",
     "extends": "airbnb",
     "rules": {
-        "indent": [ 2, 4 ],
-        "react/jsx-indent-props": [2, 4],
-        "brace-style": [ 2, "stroustrup", { "allowSingleLine": true } ],
-        "quotes": [ 1, "single"],
-        "no-unused-vars": 1,
-        "no-shadow": 1,
-        "no-param-reassign": 1,
-        "new-cap": [1, { "capIsNewExceptions": ["ImmutableStore", "List", "Map"] }],
-        "comma-dangle": 1,
-        "no-unused-expressions": 1,
-        "no-unused-vars": [ 1, { "vars": "all", "args": "after-used", "argsIgnorePattern": "req|res|next" }],
-        "react/sort-comp": 1,
-        "prefer-const": 1,
+        "arrow-body-style": [ 2, "always"],
+        "brace-style": [ 2, "stroustrup", {
+            "allowSingleLine": true
+        }],
+        "indent": [ 2, 4, {"SwitchCase": 1} ],
         "max-len": 1,
-        "quote-props": 1,
+        "no-underscore-dangle": [ 2, {
+            "allow": [
+                "_id",
+                "_type",
+                "_json",
+                "__INITIAL_STATE__"
+            ]
+        }],
+        "no-unused-vars": [ 1, {
+            "vars": "all",
+            "args": "after-used",
+            "argsIgnorePattern": "req|res|next"
+        }],
+        "quotes": [ 2, "single"],
+        "react/forbid-prop-types": 0,
+        "react/jsx-filename-extension": [2, {
+            "extensions": [".js", ".jsx"]
+        }],
+        "react/jsx-indent": [2, 4],
+        "react/jsx-indent-props": [2, 4],
+        "react/prefer-stateless-function": 0,
+        "react/require-default-props": 0,
     },
 }

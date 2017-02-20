@@ -1,3 +1,4 @@
+/* eslint "class-methods-use-this": 0 */
 import Checkbox from 'material-ui/Checkbox';
 import React from 'react';
 
@@ -6,11 +7,20 @@ import ExternalLink from './ExternalLink';
 import Link from './Link';
 
 class Result extends React.Component {
-    rowclass(p) {
-        if (p > 0.00000005) {
-            return 'uninteresting';
-        }
+    static propTypes = {
+        isSelected: React.PropTypes.func,
+        selecting: React.PropTypes.bool,
+        snp_id_current: React.PropTypes.string,
+        toggleSelected: React.PropTypes.func,
     }
+
+    getYear(datestring) {
+        if (datestring) {
+            return datestring.split('-').shift();
+        }
+        return datestring;
+    }
+
     exp(number) {
         if (number && typeof number === 'string') {
             return number;
@@ -18,12 +28,14 @@ class Result extends React.Component {
         if (number && !isNaN(number)) {
             return number.toExponential();
         }
+        return '';
     }
-    getYear(datestring) {
-        if (datestring) {
-            return datestring.split('-').shift();
+
+    rowclass(p) {
+        if (p > 0.00000005) {
+            return 'uninteresting';
         }
-        return datestring;
+        return '';
     }
 
     toggleSelected = () => {
@@ -45,18 +57,31 @@ class Result extends React.Component {
                         <Link to={`?q=${result.snp_id_current}`}>
                             {result.snps}
                         </Link>
-                        {this.props.selecting ? <Checkbox onCheck={this.toggleSelected} checked={this.isSelected()} /> : null}
+                        {this.props.selecting
+                            ? <Checkbox onCheck={this.toggleSelected} checked={this.isSelected()} />
+                            : null
+                        }
                     </div>
                 </td>
                 <td>
-                    {hunt && hunt.map(
-                        data => <ImputationResults key={`${result.snp_id_current}-hunt-${data.ref}-${data.alt}`} imputation_data={data} biobank="hunt" />
-                        )
-                    }
-                    {tromso && tromso.map(
-                        data => <ImputationResults key={`${result.snp_id_current}-tromso-${data.ref}-${data.alt}`} imputation_data={data} biobank="tromso" />
-                        )
-                    }
+                    {hunt && hunt.map((data) => {
+                        return (
+                            <ImputationResults
+                                key={`${result.snp_id_current}-hunt-${data.ref}-${data.alt}`}
+                                imputation_data={data}
+                                biobank="hunt"
+                            />
+                        );
+                    })}
+                    {tromso && tromso.map((data) => {
+                        return (
+                            <ImputationResults
+                                key={`${result.snp_id_current}-tromso-${data.ref}-${data.alt}`}
+                                imputation_data={data}
+                                biobank="tromso"
+                            />
+                        );
+                    })}
                 </td>
                 <td>
                     <div>
@@ -83,24 +108,28 @@ class Result extends React.Component {
                 </td>
                 <td>
                     <ul style={{ margin: 0, paddingLeft: 20 }}>
-                        {result.genes.map(gene =>
-                            <li key={gene}>
-                                <Link to={`?q=${gene}`}>
-                                    {gene}
-                                </Link> <ExternalLink href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene}`} />
-                            </li>
-                        )}
+                        {result.genes.map((gene) => {
+                            return (
+                                <li key={gene}>
+                                    <Link to={`?q=${gene}`}>
+                                        {gene}
+                                    </Link> <ExternalLink href={`http://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene}`} />
+                                </li>
+                            );
+                        })}
                     </ul>
                 </td>
                 <td>
                     <ul style={{ margin: 0, paddingLeft: 20 }}>
-                        {result.traits.map(trait =>
-                        <li key={trait}>
-                            <Link to={`?q=${trait}`}>
-                                {trait}
-                            </Link>
-                        </li>
-                        )}
+                        {result.traits.map((trait) => {
+                            return (
+                                <li key={trait}>
+                                    <Link to={`?q=${trait}`}>
+                                        {trait}
+                                    </Link>
+                                </li>
+                            );
+                        })}
                     </ul>
                     {result.disease_trait}
                 </td>
@@ -127,12 +156,5 @@ class Result extends React.Component {
         );
     }
 }
-
-Result.propTypes = {
-    data: React.PropTypes.object,
-    selecting: React.PropTypes.bool,
-    toggleSelected: React.PropTypes.func,
-    isSelected: React.PropTypes.func,
-};
 
 export default Result;

@@ -1,3 +1,7 @@
+/* eslint "camelcase": 0 */
+/* eslint "no-console": 0 */
+/* eslint "no-param-reassign": 0 */
+
 import {
     GraphQLBoolean,
     GraphQLList,
@@ -46,11 +50,12 @@ const { nodeInterface, nodeField } = nodeDefinitions(
             return Result.findById(id).exec();
         }
         if (type === 'User') {
-            return {_type: 'User'};
+            return { _type: 'User' };
         }
         if (type === 'Site') {
-            return {_type: 'Site'};
+            return { _type: 'Site' };
         }
+        return undefined;
     },
     (obj) => {
         if (obj._type === 'Result') {
@@ -63,7 +68,7 @@ const { nodeInterface, nodeField } = nodeDefinitions(
             return siteType;
         }
         return null;
-    }
+    },
 );
 
 const traitType = new GraphQLObjectType({
@@ -97,7 +102,7 @@ resultType = new GraphQLObjectType({
                     return parseInt(snp_id_current, 10);
                 }
                 return null;
-            }
+            },
         },
         snps: { type: GraphQLString },
         pubmedid: { type: GraphQLString },
@@ -189,23 +194,27 @@ userType = new GraphQLObjectType({
                 tromso: { type: GraphQLBoolean },
                 hunt: { type: GraphQLBoolean },
             },
-            resolve: (_, args) => Result.aggregate(
-                { $match: prepareQuery(args.term, null, args.tromso, args.hunt) },
-                { $group: { _id: '$snp_id_current', count: { $sum: 1 } } },
-            ).exec().then(count => {
-                const total = count.reduce((previous, current) => {
-                    return previous + current.count;
-                }, 0);
-                const unique = count.length;
-                return {
-                    unique,
-                    total,
-                };
-            }),
+            resolve: (_, args) => {
+                return Result.aggregate(
+                    { $match: prepareQuery(args.term, null, args.tromso, args.hunt) },
+                    { $group: { _id: '$snp_id_current', count: { $sum: 1 } } },
+                ).exec().then((count) => {
+                    const total = count.reduce((previous, current) => {
+                        return previous + current.count;
+                    }, 0);
+                    const unique = count.length;
+                    return {
+                        unique,
+                        total,
+                    };
+                });
+            },
         },
         traits: {
             type: new GraphQLList(traitType),
-            resolve: () => Trait.find().sort('_id').exec(),
+            resolve: () => {
+                return Trait.find().sort('_id').exec();
+            },
         },
         requests: {
             type: new GraphQLObjectType({
@@ -215,8 +224,8 @@ userType = new GraphQLObjectType({
                     total: { type: GraphQLInt },
                 },
             }),
-            resolve: () => Request.count().exec().then(
-                total => {
+            resolve: () => {
+                return Request.count().exec().then((total) => {
                     const localStart = ip.toBuffer('129.241.0.0');
                     const localEnd = ip.toBuffer('129.241.255.255');
                     return Request.count({
@@ -224,13 +233,14 @@ userType = new GraphQLObjectType({
                             { remote_address: { $gte: localStart } },
                             { remote_address: { $lte: localEnd } },
                         ],
-                    }).exec().then(local => {
+                    }).exec().then((local) => {
                         return {
                             total,
                             local,
                         };
                     });
-                }),
+                });
+            },
         },
     },
     interfaces: [nodeInterface],
@@ -238,14 +248,18 @@ userType = new GraphQLObjectType({
 
 siteType = new GraphQLObjectType({
     name: 'Site',
-    fields: () => ({
-        id: globalIdField('Site'),
-        order: { type: orderType },
-        email: {
-            type: GraphQLString,
-            resolve: () => config.email && config.email.hunt && config.email.hunt.from,
-        },
-    }),
+    fields: () => {
+        return {
+            id: globalIdField('Site'),
+            order: { type: orderType },
+            email: {
+                type: GraphQLString,
+                resolve: () => {
+                    return config.email && config.email.hunt && config.email.hunt.from;
+                },
+            },
+        };
+    },
 });
 
 const queryType = new GraphQLObjectType({
@@ -254,12 +268,16 @@ const queryType = new GraphQLObjectType({
         node: nodeField,
         viewer: {
             type: userType,
-            resolve: (_) => _,
+            resolve: (_) => {
+                return _;
+            },
         },
         site: {
             type: siteType,
-            resolve: ({ site }) => site,
-        }
+            resolve: ({ site }) => {
+                return site;
+            },
+        },
     },
 });
 
@@ -274,14 +292,16 @@ const mutationOrderVariables = mutationWithClientMutationId({
     outputFields: {
         site: {
             type: siteType,
-            resolve: payload => payload,
+            resolve: (payload) => {
+                return payload;
+            },
         },
     },
     mutateAndGetPayload: ({ snps, project, email, comment }, { site }) => {
         // TODO: Check email
-        return Site.findById(site.id).exec().then(site => {
+        return Site.findById(site.id).exec().then((_site) => {
             return Order.create({ snps, project, email, comment })
-            .then(order => {
+            .then((order) => {
                 // FIXME: cheating in scrabble, and assuming hunt
                 if (config.email && config.email.hunt) {
                     // mailing HUNT:
@@ -298,32 +318,32 @@ const mutationOrderVariables = mutationWithClientMutationId({
                         attachments: [attachment],
                     };
                     transporter.sendMail(data, (err, info) => {
-                        console.info("ORDER", err, info);
+                        console.info('ORDER', err, info);
                         if (!err) {
                             // sending confirmation
-                            const message = `This is an automatic message from HUNT\r\n\r\n${order.project}\r\n${order.comment}\r\n\r\nYour order has been received and your SNP-data order will be added to your HUNT application. Any questions regarding the application or case proceedings, please send to hunt@medisin.ntnu.no`;
-                            const attachment = {
+                            const confirmMessage = `This is an automatic message from HUNT\r\n\r\n${order.project}\r\n${order.comment}\r\n\r\nYour order has been received and your SNP-data order will be added to your HUNT application. Any questions regarding the application or case proceedings, please send to hunt@medisin.ntnu.no`;
+                            const confirmAttachment = {
                                 content: snps.join('\r\n'),
                                 filename: 'snps.txt',
                             };
-                            const data = {
+                            const confirmData = {
                                 from: config.email.hunt.from,
                                 to: order.email,
                                 subject: 'Order confirmation from HUNT',
-                                text: message,
-                                attachments: [attachment],
+                                text: confirmMessage,
+                                attachments: [confirmAttachment],
                             };
-                            transporter.sendMail(data, (err, info) => {
-                                console.info("CONFIRMATION", err, info);
+                            transporter.sendMail(confirmData, (_err, _info) => {
+                                console.info('CONFIRMATION', _err, _info);
                             });
                         }
                     });
                 }
                 return order; // assume sending went well
             })
-            .then(order => {
-                site.order = order;
-                return site;
+            .then((order) => {
+                _site.order = order;
+                return _site;
             });
         });
     },
@@ -331,9 +351,11 @@ const mutationOrderVariables = mutationWithClientMutationId({
 
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
-    fields: () => ({
-        orderVariables: mutationOrderVariables,
-    }),
+    fields: () => {
+        return {
+            orderVariables: mutationOrderVariables,
+        };
+    },
 });
 
 const schema = new GraphQLSchema({

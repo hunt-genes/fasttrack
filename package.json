@@ -12,7 +12,7 @@
     "deploy": "ansible-playbook -i setup/inventory --ask-become-pass --ask-vault-pass setup/deploy.yml",
     "dev": "babel-node ./node_modules/.bin/webpack-dev-server --progress --port 3001 --inline --hot",
     "dist": "rm -rf node_modules && rm -rf dist && mkdir dist && yarn install --production && cp -r node_modules dist/ && yarn install && npm run build",
-    "lint": "eslint --ignore-pattern \"src/server/lib/middleware.js\" --ignore-pattern \"src/server/lib/util.js\" --ignore-pattern \"src/server/routes/*\" --ignore-pattern \"src/client/**/*.js\" src/client \"src/**/*.js\" || :",
+    "lint": "eslint \"src/**/*.js\" || :",
     "start": "nodemon"
   },
   "author": "Sigurd Gartmann",
@@ -80,6 +80,8 @@
     "css-loader": "^0.26.1",
     "eslint": "^3.13.0",
     "eslint-config-airbnb": "^14.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",

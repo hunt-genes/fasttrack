@@ -3,13 +3,10 @@ import Promise from 'bluebird';
 
 mongoose.Promise = Promise;
 
-
-let db;
+let dbName = 'fasttrack';
 if (process.env.NODE_ENV === 'test') {
-    db = mongoose.connect('mongodb://localhost/mocha_test');
+    dbName = 'test';
 }
-else {
-    db = mongoose.connect('mongodb://localhost/fasttrack');
-}
+const db = mongoose.connect(`mongodb://localhost/${dbName}`);
 
 export default db;

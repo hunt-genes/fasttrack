@@ -20,10 +20,8 @@ export const queries = {
     },
 };
 
-export default createRoutes(
-    <Route path={prefix}>
-        <IndexRoute component={Search} queries={queries} />
-        <Route path="about" component={About} />
-        <Route path="order" component={Order} queries={queries} />
-    </Route>
-);
+export default createRoutes(<Route path={prefix}>
+    <IndexRoute component={Search} queries={queries} />
+    <Route path="about" component={About} />
+    <Route path="order" component={Order} queries={queries} />
+</Route>);

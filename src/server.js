@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
+/* eslint "no-console": 0 */
+/* eslint "import/no-extraneous-dependencies": 0 */
+
 import http from 'http';
-import app from "./app";
 import 'babel-polyfill';
+import app from './app';
 
 const httpServer = http.createServer(app);
 

@@ -5,6 +5,7 @@ import prefix from '../prefix';
 export default class Link extends React.Component {
     static propTypes = {
         children: React.PropTypes.node,
+        to: React.PropTypes.string,
     }
 
     render() {

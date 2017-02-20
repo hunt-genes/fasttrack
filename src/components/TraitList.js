@@ -23,11 +23,13 @@ class TraitList extends React.Component {
                     : null
                 }
                 <ul style={{ WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: 'none', paddingLeft: 0 }}>
-                    {this.props.viewer.traits.map(trait => (
-                        <li key={trait.id}>
-                            <Link to={`?q=${trait.id}`}>{trait.id}</Link> <ExternalLink href={trait.uri} />
-                        </li>))
-                    }
+                    {this.props.viewer.traits.map((trait) => {
+                        return (
+                            <li key={trait.id}>
+                                <Link to={`?q=${trait.id}`}>{trait.id}</Link> <ExternalLink href={trait.uri} />
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
         );
@@ -36,12 +38,14 @@ class TraitList extends React.Component {
 
 export default Relay.createContainer(TraitList, {
     fragments: {
-        viewer: () => Relay.QL`
-        fragment on User {
-            traits {
-                id,
-                uri
-            }
-        }`,
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                traits {
+                    id,
+                    uri
+                }
+            }`;
+        },
     },
 });

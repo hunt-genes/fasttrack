@@ -28,11 +28,11 @@ class ImputationResults extends React.Component {
             <div>
                 <span style={{ fontWeight: 'bold' }}>{biobankLetter}</span>
                 <span style={{ fontStyle: 'italic' }}>{analysisLetter}</span>
-                {" "}
+                {' '}
                 {data.maf.toPrecision(3)}
                 <br />
                 {data.ref}
-                {" "}
+                {' '}
                 {data.alt}
                 {rsq ? ` ${rsq.toPrecision(3)}` : ''}
             </div>

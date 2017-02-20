@@ -1,17 +1,21 @@
+/* eslint "class-methods-use-this": 0 */
+
 import Relay from 'react-relay';
 import moment from 'moment';
 
 export default class OrderVariablesMutation extends Relay.Mutation {
     static fragments = {
-        site: () => Relay.QL`
-        fragment on Site {
-            id
-            order {
+        site: () => {
+            return Relay.QL`
+            fragment on Site {
                 id
-                createdAt
+                order {
+                    id
+                    createdAt
+                }
             }
-        }
-        `,
+            `;
+        },
     }
 
     getMutation() {
@@ -38,13 +42,14 @@ export default class OrderVariablesMutation extends Relay.Mutation {
         return {
             site: {
                 order: {
-                    snps: this.props.snps, // not using this yet. from server, we actually get strings now.
+                    // not using snps yet. from server, we actually get strings now.
+                    snps: this.props.snps,
                     project: this.props.project,
                     email: this.props.email,
                     createdAt: moment().toISOString(),
-                }
-            }
-        }
+                },
+            },
+        };
     }
 
     getConfigs() {
@@ -52,7 +57,7 @@ export default class OrderVariablesMutation extends Relay.Mutation {
             type: 'FIELDS_CHANGE',
             fieldIDs: {
                 site: this.props.site.id,
-            }
+            },
         }];
     }
 }

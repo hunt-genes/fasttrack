@@ -1,26 +1,28 @@
-import path from 'path';
+/* eslint "no-console": 0 */
+/* eslint "no-param-reassign": 0 */
+
+import bodyParser from 'body-parser';
+import config from 'config';
 import express from 'express';
+import graphqlHTTP from 'express-graphql';
 import csv from 'fast-csv';
-import favicon from 'serve-favicon';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import Router from 'isomorphic-relay-router';
+import path from 'path';
 import ReactDOMServer from 'react-dom/server';
+// import Helmet from 'react-helmet';
+import { match } from 'react-router';
+import RelayLocalSchema from 'relay-local-schema';
+import favicon from 'serve-favicon';
+import prefix from './prefix';
+import schema from './schema';
 import Request from './models/Request';
 import db from './lib/db';
 import routes from './routes';
-import bodyParser from 'body-parser';
-import Router from 'isomorphic-relay-router';
-import RelayLocalSchema from 'relay-local-schema';
-// import Helmet from 'react-helmet';
-import { match } from 'react-router';
-import graphqlHTTP from 'express-graphql';
-
-import config from 'config';
-import prefix from './prefix';
-import schema from './schema';
-
+import prepareQuery from './models/prepareQuery';
 import Result from './models/Result';
 import Site from './models/Site';
-import prepareQuery from './models/prepareQuery';
-import injectTapEventPlugin from 'react-tap-event-plugin';
+
 injectTapEventPlugin();
 
 const app = express();
@@ -46,7 +48,10 @@ app.use((req, res, next) => {
         request.ip = ip;
         request.query = q;
         request.save((err) => {
-            if (err) { return next(err); }
+            if (err) {
+                return next(err);
+            }
+            return undefined;
         });
     }
 
@@ -54,14 +59,14 @@ app.use((req, res, next) => {
     next();
 });
 app.use((req, res, next) => {
-    Site.findById('fasttrack').exec().then(site => {
+    Site.findById('fasttrack').exec().then((site) => {
         if (site) {
             req.site = site;
             next();
         }
         else {
-            Site.create({_id: 'fasttrack'}).then(site => {
-                req.site = site;
+            Site.create({ _id: 'fasttrack' }).then((_site) => {
+                req.site = _site;
                 next();
             });
         }
@@ -94,8 +99,8 @@ app.get(`${prefix}/export`, (req, res, next) => {
     }
 
     const query = prepareQuery(term, unique, tromso, hunt);
-    Result.find(query).exec().then(_results => {
-        const results = _results.map(_result => {
+    Result.find(query).exec().then((_results) => {
+        const results = _results.map((_result) => {
             const result = _result.toObject();
             result.mapped_genes = result.genes;
             delete result.genes;
@@ -132,7 +137,7 @@ app.get(`${prefix}/export`, (req, res, next) => {
 
             res.set(
                 'Content-Disposition',
-                `attachment; filename=export-${term.replace(/[^a-zA-Z0-9]+/g, '-')}.${format}`
+                `attachment; filename=export-${term.replace(/[^a-zA-Z0-9]+/g, '-')}.${format}`,
             );
             res.write(data);
             res.end();
@@ -141,11 +146,11 @@ app.get(`${prefix}/export`, (req, res, next) => {
 });
 
 app.post(`${prefix}/snps`, (req, res, next) => {
-    const mappedSnps = req.body.snps.split(',').map(snp => {
-        return Result.find({snp_id_current: snp.trim()}, 'genes traits').exec().then(results => {
+    const mappedSnps = req.body.snps.split(',').map((snp) => {
+        return Result.find({ snp_id_current: snp.trim() }, 'genes traits').exec().then((results) => {
             let traits = [];
             let genes = [];
-            results.forEach(result => {
+            results.forEach((result) => {
                 traits = traits.concat(result.traits);
                 genes = genes.concat(result.genes);
             });
@@ -156,28 +161,31 @@ app.post(`${prefix}/snps`, (req, res, next) => {
             };
         });
     });
-    Promise.all(mappedSnps).then(mappedSnps => {
-        const data = mappedSnps.map(mapped => {
-            return `${mapped.snp};${Array.from(mapped.genes).join(',')};${Array.from(mapped.traits).join(',')}`;
-        }).join('\r\n') + '\r\n';
+    Promise.all(mappedSnps).then((results) => {
+        const joinedResults = results.map((mapped) => {
+            const joinedGenes = Array.from(mapped.genes).join(',');
+            const joinedTraits = Array.from(mapped.traits).join(',');
+            return `${mapped.snp};${joinedGenes};${joinedTraits}`;
+        }).join('\r\n');
+        const data = `${joinedResults}\r\n`;
         res.set('Content-Type', 'text/csv');
         res.set('Content-Disposition', 'attachment; filename=snps.csv');
         res.write(data);
         res.end();
-    }).catch(error => {
+    }).catch((error) => {
         console.error('Error: ', error);
     });
 });
 
 if (app.settings.env === 'production') {
-    app.use(favicon(__dirname + '/assets/favicon.ico'));
+    app.use(favicon(`${__dirname}/assets/favicon.ico`));
 }
 else {
-    app.use(favicon(__dirname + '/assets/favicon.ico'));
+    app.use(favicon(`${__dirname}/assets/favicon.ico`));
 }
 app.use(express.static(path.join(__dirname, '/assets')));
 
-app.use(`${prefix}/graphql`, graphqlHTTP(req => {
+app.use(`${prefix}/graphql`, graphqlHTTP((req) => {
     const contextValue = { site: req.site };
     return {
         schema,
@@ -185,7 +193,7 @@ app.use(`${prefix}/graphql`, graphqlHTTP(req => {
         rootValue: contextValue,
         pretty: process.env.NODE_ENV !== 'production',
         graphiql: process.env.NODE_ENV !== 'production',
-    }
+    };
 }));
 
 function renderFullPage(renderedContent, initialState, head = {
@@ -232,7 +240,9 @@ app.get(`${prefix}*`, (req, res, next) => {
                 schema,
                 contextValue,
                 rootValue: contextValue,
-                onError: (errors, request) => next(new Error(errors)),
+                onError: (errors, request) => {
+                    return next(new Error(errors));
+                },
             });
             return Router.prepareData(renderProps, networkLayer).then(({ data, props }) => {
                 try {
@@ -243,8 +253,8 @@ app.get(`${prefix}*`, (req, res, next) => {
                     const renderedPage = renderFullPage(renderedContent, data);
                     return res.send(renderedPage);
                 }
-                catch (err) {
-                    return next(err);
+                catch (_err) {
+                    return next(_err);
                 }
             }, next);
         }
@@ -253,7 +263,7 @@ app.get(`${prefix}*`, (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error("Error!", err, err.stack);
+    console.error('Error!', err, err.stack);
     res.format({
         html: () => {
             res.status(500).send(err.message);

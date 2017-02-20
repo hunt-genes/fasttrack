@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import ip from 'ip';
 
 const RequestSchema = new mongoose.Schema({
-    created_date: { type: Date, index: true, 'default': Date.now },
+    created_date: { type: Date, index: true, default: Date.now },
     remote_address: { type: Buffer, required: true, index: true },
     query: { type: String },
 });
@@ -14,7 +14,10 @@ const options = {
 
 RequestSchema.set('toObject', options);
 RequestSchema.set('toJSON', options);
-RequestSchema.virtual('_type').get(() => 'Request');
+RequestSchema.virtual('_type').get(() => {
+    return 'Request';
+});
+
 RequestSchema
 .virtual('ip')
 .get(function get() {

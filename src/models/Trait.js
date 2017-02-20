@@ -12,6 +12,8 @@ const options = {
 
 TraitSchema.set('toJSON', options);
 TraitSchema.set('toObject', options);
-TraitSchema.virtual('_type').get(() => 'Trait');
+TraitSchema.virtual('_type').get(() => {
+    return 'Trait';
+});
 
 export default mongoose.model('traits', TraitSchema);

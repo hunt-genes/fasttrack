@@ -11,6 +11,8 @@ const options = {
 
 SiteSchema.set('toJSON', options);
 SiteSchema.set('toObject', options);
-SiteSchema.virtual('_type', (() => 'Site'));
+SiteSchema.virtual('_type', () => {
+    return 'Site';
+});
 
 export default mongoose.model('Site', SiteSchema);

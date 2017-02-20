@@ -1,3 +1,6 @@
+/* global window document */
+/* eslint "import/no-extraneous-dependencies": 0 */
+
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -10,6 +13,7 @@ import moment from 'moment';
 import prefix from './prefix';
 import routes from './routes';
 import './scss/stylesheet.scss';
+
 injectTapEventPlugin();
 
 const environment = new Relay.Environment();
@@ -22,7 +26,7 @@ IsomorphicRelay.injectPreparedData(environment, window.__INITIAL_STATE__);
 moment.locale('nb');
 
 match({ routes, history: browserHistory }, (error, redirectLocation, renderProps) => {
-    IsomorphicRouter.prepareInitialRender(environment, renderProps).then(props => {
+    IsomorphicRouter.prepareInitialRender(environment, renderProps).then((props) => {
         ReactDOM.render(<Router {...props} />, document.getElementById('app'));
     });
 });

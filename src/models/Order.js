@@ -15,6 +15,8 @@ const options = {
 OrderSchema.set('toJSON', options);
 OrderSchema.set('toObject', options);
 OrderSchema.set('timestamps', true);
-OrderSchema.virtual('_type').get(() => 'Order');
+OrderSchema.virtual('_type').get(() => {
+    return 'Order';
+});
 
 export default mongoose.model('Order', OrderSchema);

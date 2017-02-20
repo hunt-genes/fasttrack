@@ -59,10 +59,12 @@ const ResultSchema = new mongoose.Schema({
 const options = {
     versionKey: false,
     virtuals: true,
-}
+};
 
 ResultSchema.set('toJSON', options);
 ResultSchema.set('toObject', options);
-ResultSchema.virtual('_type').get(() => 'Result');
+ResultSchema.virtual('_type').get(() => {
+    return 'Result';
+});
 
 export default mongoose.model('Result', ResultSchema, 'gwas');

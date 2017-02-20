@@ -1,6 +1,11 @@
 import React from 'react';
 
 export default class OrderSnpTable extends React.Component {
+    static propTypes = {
+        snps: React.PropTypes.array,
+        results: React.PropTypes.array,
+    }
+
     render() {
         const { snps, results } = this.props;
         return (
@@ -13,22 +18,27 @@ export default class OrderSnpTable extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {snps.map(snp => (
-                        <tr key={snp}>
-                            <td>{snp}</td>
-                            <td>
-                                <ul style={{ margin: 0, paddingLeft: 20 }}>
-                                    {results.get(snp).genes.map(gene => <li key={gene}>{gene}</li>)}
-                                </ul>
-                            </td>
-                            <td>
-                                <ul style={{ margin: 0, paddingLeft: 20 }}>
-                                    {results.get(snp).traits.map(trait => <li key={trait}>{trait}</li>)}
-                                </ul>
-                            </td>
-                        </tr>
-                        ))
-                    }
+                    {snps.map((snp) => {
+                        return (
+                            <tr key={snp}>
+                                <td>{snp}</td>
+                                <td>
+                                    <ul style={{ margin: 0, paddingLeft: 20 }}>
+                                        {results.get(snp).genes.map((gene) => {
+                                            return <li key={gene}>{gene}</li>;
+                                        })}
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul style={{ margin: 0, paddingLeft: 20 }}>
+                                        {results.get(snp).traits.map((trait) => {
+                                            return <li key={trait}>{trait}</li>;
+                                        })}
+                                    </ul>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         );

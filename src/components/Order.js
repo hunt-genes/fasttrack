@@ -1,3 +1,5 @@
+/* global window */
+
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -12,6 +14,12 @@ import OrderSnpTable from './OrderSnpTable';
 import { validateEmail, validateProject } from '../lib/validations';
 
 class Order extends React.Component {
+    static propTypes = {
+        location: React.PropTypes.object,
+        relay: React.PropTypes.object,
+        site: React.PropTypes.object,
+    }
+
     static contextTypes = {
         relay: Relay.PropTypes.Environment,
         router: React.PropTypes.object.isRequired,
@@ -44,10 +52,10 @@ class Order extends React.Component {
     }
 
     componentDidMount() {
-        const selected = localStorage.getItem('orderSelected');
-        const email = localStorage.getItem('email');
-        const project = localStorage.getItem('project');
-        const comment = localStorage.getItem('comment');
+        const selected = window.localStorage.getItem('orderSelected');
+        const email = window.localStorage.getItem('email');
+        const project = window.localStorage.getItem('project');
+        const comment = window.localStorage.getItem('comment');
         const newState = {};
         if (selected) {
             newState.selected = new Map(JSON.parse(selected));
@@ -94,7 +102,7 @@ class Order extends React.Component {
 
     onChangeEmail = (event, email) => {
         if (this.state.emailWritten) {
-            this.setState({ email, emailValid: validateEmail(email) })
+            this.setState({ email, emailValid: validateEmail(email) });
         }
         else {
             this.setState({ email });
@@ -110,7 +118,7 @@ class Order extends React.Component {
     }
 
     onClickBack = () => {
-        this.context.router.goBack()
+        this.context.router.goBack();
     }
 
     onClickDone = () => {
@@ -119,10 +127,10 @@ class Order extends React.Component {
             comment: '',
             ordered: false,
         });
-        localStorage.removeItem('orderSelected');
-        localStorage.removeItem('email');
-        localStorage.removeItem('project');
-        localStorage.removeItem('comment');
+        window.localStorage.removeItem('orderSelected');
+        window.localStorage.removeItem('email');
+        window.localStorage.removeItem('project');
+        window.localStorage.removeItem('comment');
         const query = this.props.location.query;
         this.context.router.push({
             pathname: prefix,
@@ -151,7 +159,9 @@ class Order extends React.Component {
             color: theme.palette.accent1Color,
         };
         const snps = Array.from(this.state.selected.keys());
-        snps.sort((a, b) => b < a);
+        snps.sort((a, b) => {
+            return b < a;
+        });
 
         const downloadActions = (
             <form action={`${prefix}/snps`} method="POST">
@@ -174,6 +184,7 @@ class Order extends React.Component {
                 <p>Downloading a SNP-list-file will not be registered as an order. You must click the «Send»-button in order to effectuate your order.</p>
             </Dialog>
         );
+        const { emailValid, projectValid } = this.state;
         return (
             <section>
                 <div style={{ maxWidth: 800, margin: '0 auto' }}>
@@ -209,8 +220,14 @@ class Order extends React.Component {
                                                 onChange={this.onChangeProject}
                                                 value={this.state.project}
                                                 onBlur={this.onBlurProject}
-                                                errorStyle={this.state.projectValid ? warningStyle : errorStyle}
-                                                errorText={this.state.projectValid ? 'Format: 2017/123' : 'Invalid project number, it should be like 2017/123'}
+                                                errorStyle={projectValid
+                                                    ? warningStyle
+                                                    : errorStyle
+                                                }
+                                                errorText={projectValid
+                                                    ? 'Format: 2017/123'
+                                                    : 'Invalid project number, it should be like 2017/123'
+                                                }
                                             />
                                         </div>
                                         <div>
@@ -220,10 +237,11 @@ class Order extends React.Component {
                                                 floatingLabelText="Email"
                                                 onChange={this.onChangeEmail}
                                                 onBlur={this.onBlurEmail}
-                                                errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid, is it an @ntnu.no address?'}
-                                                errorStyle={this.state.emailValid ? warningStyle : errorStyle}
-
-                                                errorText={'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.'}
+                                                errorText={emailValid
+                                                    ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.'
+                                                    : 'Email is not valid, is it an @ntnu.no address?'
+                                                }
+                                                errorStyle={emailValid ? warningStyle : errorStyle}
                                                 fullWidth
                                                 value={this.state.email}
                                             />
@@ -243,7 +261,7 @@ class Order extends React.Component {
                                                 primary
                                                 label="Send"
                                                 type="submit"
-                                                disabled={!this.state.emailValid || !this.state.projectValid}
+                                                disabled={!emailValid || !projectValid}
                                             />
                                             <RaisedButton
                                                 label="Back"
@@ -275,21 +293,25 @@ class Order extends React.Component {
 
 export default Relay.createContainer(Order, {
     fragments: {
-        site: () => Relay.QL`
-        fragment on Site {
-            id
-            email
-            order {
+        site: () => {
+            return Relay.QL`
+            fragment on Site {
                 id
                 email
-                snps
-                createdAt
-            }
-            ${OrderVariablesMutation.getFragment('site')}
-        }`,
-        viewer: () => Relay.QL`
-        fragment on User {
-            id
-        }`,
+                order {
+                    id
+                    email
+                    snps
+                    createdAt
+                }
+                ${OrderVariablesMutation.getFragment('site')}
+            }`;
+        },
+        viewer: () => {
+            return Relay.QL`
+            fragment on User {
+                id
+            }`;
+        },
     },
 });

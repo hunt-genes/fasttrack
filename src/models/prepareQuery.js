@@ -14,7 +14,7 @@ export default function prepareQuery(_query, _unique = false, _tromso = false, _
         const chrSearch = q.match(/^chr(\w+):(\d+)$/);
         if (!isNaN(q)) {
             fields.push({ pubmedid: q });
-            fields.push({ snps: 'rs' + q });
+            fields.push({ snps: `rs${q}` });
         }
         else if (chrSearch) {
             const chrid = chrSearch[1];
