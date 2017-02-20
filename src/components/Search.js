@@ -1,11 +1,15 @@
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import FlatButton from 'material-ui/FlatButton';
+import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
+import { Link as RouterLink } from 'react-router';
 import prefix from '../prefix';
 import theme from '../theme';
 import Footer from './Footer';
@@ -343,20 +347,18 @@ class Search extends React.Component {
             <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
                 <ToolbarGroup />
                 <ToolbarGroup lastChild>
-                    <div>
-                        {this.state.selecting
-                            ? null
-                            : <RaisedButton label="Order SNPs" onTouchTap={this.toggleSelection} />
-                        }
-                        {this.state.selecting
-                            ? null
-                            : <a href={`${prefix}/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
-                                <RaisedButton
-                                    label="Export .tsv"
-                                />
-                            </a>
-                        }
-                    </div>
+                    {this.state.selecting
+                        ? null
+                        : <FlatButton label="Order SNPs" onTouchTap={this.toggleSelection} />
+                    }
+                    {this.state.selecting
+                        ? null
+                        : <DropDownMenu value={1} style={{ marginTop: -6, marginRight: 0 }}>
+                            <MenuItem primaryText="Export" value={1} />
+                            <MenuItem primaryText=".csv" href={`${prefix}/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}&format=csv`} download />
+                            <MenuItem primaryText=".tsv" href={`${prefix}/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download />
+                        </DropDownMenu>
+                    }
                 </ToolbarGroup>
             </Toolbar>
             <Dialog

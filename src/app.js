@@ -74,6 +74,8 @@ app.get(`${prefix}/export`, (req, res, next) => {
     // query term
     const term = req.query.q || '';
 
+    const format = req.query.format || 'tsv';
+
     // If we restrict to tromso imputation data, default: false
     let tromso = false;
     if (req.query.tromso) {
@@ -99,27 +101,38 @@ app.get(`${prefix}/export`, (req, res, next) => {
             delete result.genes;
             return result;
         });
-        csv.writeToString(results, { headers: [
-            'snp_id_current',
-            'chr_id',
-            'chr_pos',
-            'strongest_snp_risk_allele',
-            'snps',
-            'p_value',
-            'or_or_beta',
-            'p95_ci_text',
-            'risk_allele_frequency',
-            'build37_chr_id',
-            'build37_pos',
-            'mapped_genes',
-            'initial_sample_size',
-            'replication_sample_size',
-            'date',
-        ], delimiter: '\t' }, (err, data) => {
-            res.set('Content-Type', 'text/csv');
+        const delimiter = format === 'csv' ? ';' : '\t';
+        csv.writeToString(results, {
+            headers: [
+                'snp_id_current',
+                'chr_id',
+                'chr_pos',
+                'strongest_snp_risk_allele',
+                'snps',
+                'p_value',
+                'or_or_beta',
+                'p95_ci_text',
+                'risk_allele_frequency',
+                'build37_chr_id',
+                'build37_pos',
+                'mapped_genes',
+                'initial_sample_size',
+                'replication_sample_size',
+                'date',
+            ],
+            delimiter,
+            quote: '"',
+        }, (err, data) => {
+            if (format === 'csv') {
+                res.set('Content-Type', 'text/csv');
+            }
+            else {
+                res.set('Content-Type', 'text/tab-separated-values');
+            }
+
             res.set(
                 'Content-Disposition',
-                `attachment; filename=export-${term.replace(/[^a-zA-Z0-9]+/g, '-')}.csv`
+                `attachment; filename=export-${term.replace(/[^a-zA-Z0-9]+/g, '-')}.${format}`
             );
             res.write(data);
             res.end();
