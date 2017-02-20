@@ -1,15 +1,19 @@
 import Checkbox from 'material-ui/Checkbox';
+import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import React from 'react';
 import Relay from 'react-relay';
-import { Link } from 'react-router';
+import prefix from '../prefix';
 import theme from '../theme';
 import Footer from './Footer';
+import Link from './Link';
 import SearchResults from './SearchResults';
 import TraitList from './TraitList';
 import Summary from './Summary';
+import { validateEmail, validateProject } from '../lib/validations';
 
 const pageSize = 50;
 
@@ -37,7 +41,15 @@ class Search extends React.Component {
         term: this.props.location.query.q || '',
         loading: false,
         selecting: false,
-        selected: new Set(),
+        selected: new Map(),
+        orderDialogOpen: false,
+        project: '',
+        email: '',
+        comment: '',
+        emailValid: true,
+        emailWritten: false,
+        projectValid: true,
+        projectWritten: false,
     }
 
     getChildContext() {
@@ -51,13 +63,28 @@ class Search extends React.Component {
             hunt: this.props.location.query.hunt === 'true',
             tromso: this.props.location.query.tromso === 'true',
         });
-        const selected = sessionStorage.getItem('orderSelected');
+        const selected = localStorage.getItem('orderSelected');
+        const email = localStorage.getItem('email');
+        const project = localStorage.getItem('project');
+        const comment = localStorage.getItem('comment');
+        const newState = {};
         if (selected) {
-            this.setState({ selected: new Set(JSON.parse(selected)) });
-            if (JSON.parse(selected).length) {
-                this.setState({ selecting: true });
-            }
+            newState.selected = new Map(JSON.parse(selected));
         }
+        if (email) {
+            newState.email = email;
+            newState.emailWritten = true;
+        }
+        if (project) {
+            newState.project = project;
+        }
+        if (comment) {
+            newState.comment = comment;
+        }
+        if (email && project && newState.selected && newState.selected.size) {
+            newState.selecting = true
+        }
+        this.setState(newState);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -81,12 +108,18 @@ class Search extends React.Component {
 
     onSearch = (event) => {
         event.preventDefault();
-        this.context.router.push({ query: { q: this.state.term } });
+        this.context.router.push({
+            pathname: prefix,
+            query: { q: this.state.term },
+        });
     }
 
     onClear = (event) => {
         event.preventDefault();
-        this.context.router.push({ query: { q: '' } });
+        this.context.router.push({
+            pathname: prefix,
+            query: { q: '' },
+        });
     }
 
     onChange = (event, term) => {
@@ -98,7 +131,10 @@ class Search extends React.Component {
         const query = this.props.location.query;
         query.unique = unique;
         this.setState({ loading: true });
-        this.context.router.push({ query });
+        this.context.router.push({
+            pathname: prefix,
+            query,
+        });
         this.props.relay.setVariables({ unique }, () => { this.setState({ loading: false }); });
     }
 
@@ -106,7 +142,10 @@ class Search extends React.Component {
         const hunt = !this.props.relay.variables.hunt;
         const query = this.props.location.query;
         query.hunt = hunt;
-        this.context.router.push({ query });
+        this.context.router.push({
+            pathname: prefix,
+            query,
+        });
         this.props.relay.setVariables({ hunt });
     }
 
@@ -114,7 +153,10 @@ class Search extends React.Component {
         const tromso = !this.props.relay.variables.tromso;
         const query = this.props.location.query;
         query.tromso = tromso;
-        this.context.router.push({ query });
+        this.context.router.push({
+            pathname: prefix,
+            query,
+        });
         this.props.relay.setVariables({ tromso });
     }
 
@@ -126,41 +168,97 @@ class Search extends React.Component {
     }
 
     toggleSelection = () => {
-        this.setState({ selecting: !this.state.selecting });
+        this.setState({
+            selecting: !!this.state.email && !!this.state.project && !this.state.selecting,
+            orderDialogOpen: !this.state.email && !this.state.project,
+        });
     }
 
     cancelSelection = () => {
         this.setState({
-            selected: new Set(),
+            selected: new Map(),
             selecting: false,
+            email: '',
+            project: '',
+            comment: '',
         });
-        sessionStorage.setItem('orderSelected', JSON.stringify([]));
+        localStorage.removeItem('orderSelected');
+        localStorage.removeItem('email');
+        localStorage.removeItem('project');
+        localStorage.removeItem('comment');
     }
 
-    toggleRSID = (rsid) => {
+    toggleSelected = (result) => {
         const selected = this.state.selected;
-        if (selected.has(rsid)) {
-            selected.delete(rsid);
+        if (selected.has(result.snp_id_current)) {
+            selected.delete(result.snp_id_current);
         }
         else {
-            selected.add(rsid);
+            selected.set(result.snp_id_current, {traits: result.traits, genes: result.genes});
         }
         this.setState({ selected });
-        sessionStorage.setItem('orderSelected', JSON.stringify(selected));
+        localStorage.setItem('orderSelected', JSON.stringify(selected));
     }
 
-    isSelected = (rsid) => {
-        return this.state.selected.has(rsid);
+    isSelected = (snp_id_current) => {
+        return this.state.selected.has(snp_id_current);
+    }
+
+    onOrderDialogClose = () => {
+        this.setState({ orderDialogOpen: false });
+    }
+
+    onChangeProject = (event, project) => {
+        if (this.state.projectWritten) {
+            this.setState({ project, projectValid: validateProject(project) });
+        }
+        else {
+            this.setState({ project });
+        }
+    }
+
+    onChangeComment = (event, comment) => {
+        this.setState({ comment });
+    }
+
+    onChangeEmail = (event, email) => {
+        if (this.state.emailWritten) {
+            this.setState({ email, emailValid: validateEmail(email) })
+        }
+        else {
+            this.setState({ email });
+        }
+    }
+
+    onBlurEmail = () => {
+        this.setState({ emailWritten: true, emailValid: validateEmail(this.state.email) });
+    }
+
+    onBlurProject = () => {
+        this.setState({ projectWritten: true, projectValid: validateProject(this.state.project) });
+    }
+
+    onClickOrderSave = (event) => {
+        event.preventDefault();
+        if (validateEmail(this.state.email) && this.state.project && this.props.relay.variables.hunt) {
+            this.setState({
+                selecting: true,
+                orderDialogOpen: false,
+            });
+            localStorage.setItem('project', this.state.project);
+            localStorage.setItem('email', this.state.email);
+            localStorage.setItem('comment', this.state.comment);
+        }
     }
 
     render() {
         const examples = (
             <p>
-                Examples: <Link to="/search/?q=diabetes">diabetes</Link>
-                , <Link to="/search/?q=rs3820706">rs3820706</Link>
-                , <Link to="/search/?q=Chung S">Chung S</Link>
-                , <Link to="/search/?q=2q23.3">2q23.3</Link>
-                , <Link to="/search/?q=CACNB4">CACNB4</Link>
+                Examples: <Link to="?q=diabetes">diabetes</Link>
+                , <Link to="?q=rs3820706">rs3820706</Link>
+                , <Link to="?q=Chung S">Chung S</Link>
+                , <Link to="?q=2q23.3">2q23.3</Link>
+                , <Link to="?q=CACNB4">CACNB4</Link>
             </p>
         );
         const help = (
@@ -199,19 +297,136 @@ class Search extends React.Component {
                 </div>
             </div>
         );
+
+        const orderActions = (
+            <div>
+                <RaisedButton
+                    label="Save"
+                    primary
+                    onTouchTap={this.onClickOrderSave}
+                    disabled={!this.state.emailValid || !this.state.projectValid || !this.props.relay.variables.hunt}
+                />
+                <RaisedButton
+                    label="Cancel"
+                    onTouchTap={this.onOrderDialogClose}
+                />
+            </div>
+        );
+
+        const biobanks = [
+            {
+                name: 'HUNT',
+                selected: this.props.relay.variables.hunt,
+            },
+            /*
+            {
+                name: 'Tromsø',
+                selected: this.props.relay.variables.tromso,
+            },
+            */
+        ].map(biobank => biobank.selected ? biobank.name : null)
+        .filter(biobank => biobank)
+        .join(", ");
+
+        const orderTitle = `Order SNP data ${biobanks.length ? 'from' : '' } ${biobanks}`;
+
+        const errorStyle = {
+            color: theme.palette.errorColor,
+        };
+
+        const warningStyle = {
+            color: theme.palette.accent1Color,
+        };
+
     return (
         <section>
+            <Toolbar style={{ backgroundColor: theme.palette.canvasColor }}>
+                <ToolbarGroup />
+                <ToolbarGroup lastChild>
+                    <div>
+                        {this.state.selecting
+                            ? null
+                            : <RaisedButton label="Order SNPs" onTouchTap={this.toggleSelection} />
+                        }
+                        {this.state.selecting
+                            ? null
+                            : <a href={`${prefix}/export?q=${this.props.relay.variables.term}&unique=${this.props.relay.variables.unique}&tromso=${this.props.relay.variables.tromso}&hunt=${this.props.relay.variables.hunt}`} download>
+                                <RaisedButton
+                                    label="Export .tsv"
+                                />
+                            </a>
+                        }
+                    </div>
+                </ToolbarGroup>
+            </Toolbar>
+            <Dialog
+                title={orderTitle}
+                actions={orderActions}
+                open={this.state.orderDialogOpen}
+                onRequestClose={this.onOrderDialogClose}
+                actionsContainerStyle={{ textAlign: 'inherit' }}
+                autoScrollBodyContent
+            >
+                <div>
+                    <Checkbox
+                        label="Hunt"
+                        checked={this.props.relay.variables.hunt}
+                        onCheck={this.onHuntChange}
+                        iconStyle={{ margin: 0 }}
+                        labelStyle={{ marginRight: 16 }}
+                    />
+                </div>
+                {this.props.relay.variables.hunt
+                    ? <p>Please use your HUNT case number (saksnummer) as identification. To order SNP-data from HUNT, you need a submitted and/or approved HUNT-application. Please refer to the HUNT website for details for application procedures, <a href="https://www.ntnu.no/hunt">www.ntnu.no/hunt</a>.</p>
+                    : null
+                }
+                <div>
+                    <TextField
+                        id="project"
+                        floatingLabelText="Project / case number"
+                        onChange={this.onChangeProject}
+                        value={this.state.project}
+                        onBlur={this.onBlurProject}
+                        errorStyle={this.state.projectValid ? warningStyle : errorStyle}
+                        errorText={this.state.projectValid ? 'Format: 2017/123' : 'Invalid project number, it should be like 2017/123'}
+                    />
+                </div>
+                <div>
+                    <TextField
+                        id="email"
+                        type="email"
+                        floatingLabelText="Email"
+                        onChange={this.onChangeEmail}
+                        onBlur={this.onBlurEmail}
+                        errorText={this.state.emailValid ? 'Your email, not to your PI or supervisor. We will use this for e-mail confirmation and later communications.' : 'Email is not valid'}
+                        errorStyle={this.state.emailValid ? warningStyle : errorStyle}
+                        fullWidth
+                    />
+                </div>
+                <div>
+                    <TextField
+                        id="comment"
+                        floatingLabelText="Comment"
+                        fullWidth
+                        multiLine
+                        onChange={this.onChangeComment}
+                        value={this.state.comment}
+                    />
+                </div>
+                <p>You will be able to change the comment before submitting your order</p>
+            </Dialog>
+
             <div style={{ maxWidth: 800, margin: '0 auto' }}>
                 <form onSubmit={this.onSearch} onReset={this.onClear}>
                     <div style={{ display: 'flex' }}>
                         <div style={{ margin: '0 10px' }} id="logo">
                             <img
                                 src="/logo.jpg"
-                                style={{ marginTop: 28, width: 50 }}
+                                style={{ width: 50 }}
                             />
                         </div>
                         <div style={{ flexGrow: 1, margin: '0 10px' }}>
-                            <h1>HUNT fast-track GWAS catalog search</h1>
+                            <h1 style={{ marginTop: 0 }}>HUNT fast-track GWAS catalog search</h1>
                             <div style={{ display: 'flex' }}>
                                 <div style={{ flexGrow: '1' }}>
                                     <TextField
@@ -251,10 +466,11 @@ class Search extends React.Component {
                     selecting={this.state.selecting}
                     toggleSelection={this.toggleSelection}
                     cancelSelection={this.cancelSelection}
+                    site={this.props.site}
                 />
                 {this.props.location.query.q ?
                     <div>
-                        <SearchResults results={this.props.viewer.results} selecting={this.state.selecting} toggleRSID={this.toggleRSID} isSelected={this.isSelected} />
+                        <SearchResults results={this.props.viewer.results} selecting={this.state.selecting} toggleSelected={this.toggleSelected} isSelected={this.isSelected} />
                         {this.props.viewer.results.pageInfo.hasNextPage ?
                             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                                 <RaisedButton onClick={this.loadMore} label="Load more" />
@@ -337,6 +553,10 @@ export default Relay.createContainer(Search, {
                 local
             }
             ${TraitList.getFragment('viewer')}
+        }`,
+        site: () => Relay.QL`
+        fragment on Site {
+            id
         }`,
     },
 });

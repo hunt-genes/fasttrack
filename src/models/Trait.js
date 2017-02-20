@@ -5,20 +5,13 @@ const TraitSchema = new mongoose.Schema({
     uri: { type: String },
 });
 
-TraitSchema.set('toJSON', {
+const options = {
     versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
+    virtuals: true,
+};
 
-TraitSchema.set('toObject', {
-    versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
+TraitSchema.set('toJSON', options);
+TraitSchema.set('toObject', options);
+TraitSchema.virtual('_type').get(() => 'Trait');
 
 export default mongoose.model('traits', TraitSchema);

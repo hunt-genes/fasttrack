@@ -1,13 +1,9 @@
-import FlatButton from 'material-ui/FlatButton';
-import IconMenu from 'material-ui/IconMenu';
-import IconButton from 'material-ui/IconButton/IconButton';
-import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import React from 'react';
-import { Link } from 'react-router';
 import theme from '../theme';
+import Link from './Link';
 
 export default class Summary extends React.Component {
     static propTypes = {
@@ -87,7 +83,7 @@ export default class Summary extends React.Component {
                     <ToolbarGroup lastChild>
                         <div style={{ padding: 12 }}>
                             {this.props.selecting
-                                ? <Link to="/order" ><RaisedButton label="Make order" primary /></Link>
+                                ? <Link to="order" ><RaisedButton label="Make order" primary /></Link>
                                 : null
                             }
                             {this.props.selecting
@@ -95,20 +91,6 @@ export default class Summary extends React.Component {
                                 : null
                             }
                         </div>
-                        <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                            targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                        >
-                            {this.props.selecting
-                                ? null
-                                : <MenuItem primaryText="Order variables" onTouchTap={this.toggleSelection} />
-                            }
-                            <MenuItem
-                                containerElement={<Link href={`/search/export?q=${term}&unique=${unique}&tromso=${tromso}&hunt=${hunt}`} download />}
-                                primaryText="Export .tsv"
-                            />
-                        </IconMenu>
                     </ToolbarGroup>
                 </Toolbar>
             </div>

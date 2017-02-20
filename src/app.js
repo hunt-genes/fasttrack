@@ -14,10 +14,14 @@ import { match } from 'react-router';
 import graphqlHTTP from 'express-graphql';
 
 import config from 'config';
+import prefix from './prefix';
 import schema from './schema';
 
 import Result from './models/Result';
+import Site from './models/Site';
 import prepareQuery from './models/prepareQuery';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 const app = express();
 app.db = db;
@@ -49,9 +53,24 @@ app.use((req, res, next) => {
     // do not wait for request logger
     next();
 });
+app.use((req, res, next) => {
+    Site.findById('fasttrack').exec().then(site => {
+        if (site) {
+            req.site = site;
+            next();
+        }
+        else {
+            Site.create({_id: 'fasttrack'}).then(site => {
+                req.site = site;
+                next();
+            });
+        }
+    });
+    // TODO: Handle errors
+});
 
 // Export data as CSV
-app.get('/search/export', (req, res, next) => {
+app.get(`${prefix}/export`, (req, res, next) => {
     // query term
     const term = req.query.q || '';
 
@@ -108,39 +127,53 @@ app.get('/search/export', (req, res, next) => {
     });
 });
 
-app.post('/variables/:trait', (req, res, next) => {
-    let rsids;
-    if (Array.isArray(req.body.rsids)) {
-        rsids = req.body.rsids;
-    }
-    else if (req.body.rsids) {
-        rsids = [req.body.rsids];
-    }
-    else {
-        rsids = [];
-    }
-    const data = rsids.join('\r\n') + '\r\n';
-    res.set('Content-Type', 'text/csv');
-    res.set('Content-Disposition',
-            `attachment; filename=trait-${req.params.trait.replace(/[^a-zA-Z0-9]+/g, '-')}.csv`);
-    res.write(data);
-    res.end();
+app.post(`${prefix}/snps`, (req, res, next) => {
+    const mappedSnps = req.body.snps.split(',').map(snp => {
+        return Result.find({snp_id_current: snp.trim()}, 'genes traits').exec().then(results => {
+            let traits = [];
+            let genes = [];
+            results.forEach(result => {
+                traits = traits.concat(result.traits);
+                genes = genes.concat(result.genes);
+            });
+            return {
+                snp,
+                traits: new Set(traits),
+                genes: new Set(genes),
+            };
+        });
+    });
+    Promise.all(mappedSnps).then(mappedSnps => {
+        const data = mappedSnps.map(mapped => {
+            return `${mapped.snp};${Array.from(mapped.genes).join(',')};${Array.from(mapped.traits).join(',')}`;
+        }).join('\r\n') + '\r\n';
+        res.set('Content-Type', 'text/csv');
+        res.set('Content-Disposition', 'attachment; filename=snps.csv');
+        res.write(data);
+        res.end();
+    }).catch(error => {
+        console.error('Error: ', error);
+    });
 });
 
 if (app.settings.env === 'production') {
-    app.use(favicon(__dirname + '/../dist/favicon.ico'));
+    app.use(favicon(__dirname + '/assets/favicon.ico'));
 }
 else {
-    app.use(favicon(__dirname + '/../src/assets/favicon.ico'));
+    app.use(favicon(__dirname + '/assets/favicon.ico'));
 }
-app.use(express.static(path.join(__dirname, '..', 'dist')));
+app.use(express.static(path.join(__dirname, '/assets')));
 
-app.use('/graphql', graphqlHTTP(req => ({
-    schema,
-    rootValue: { term: 'foot' },
-    pretty: process.env.NODE_ENV !== 'production',
-    graphiql: process.env.NODE_ENV !== 'production',
-})));
+app.use(`${prefix}/graphql`, graphqlHTTP(req => {
+    const contextValue = { site: req.site };
+    return {
+        schema,
+        context: contextValue,
+        rootValue: contextValue,
+        pretty: process.env.NODE_ENV !== 'production',
+        graphiql: process.env.NODE_ENV !== 'production',
+    }
+}));
 
 function renderFullPage(renderedContent, initialState, head = {
     title: '<title>Fast-track</title>',
@@ -148,7 +181,7 @@ function renderFullPage(renderedContent, initialState, head = {
 }) {
     let style = '';
     if (config.get('html.style')) {
-        style = '<link rel="stylesheet" href="/stylesheet.css">';
+        style = `<link rel="stylesheet" href="${prefix}/static/stylesheet.css">`;
     }
     return `
     <!doctype html>
@@ -164,14 +197,14 @@ function renderFullPage(renderedContent, initialState, head = {
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/javascript.js"></script>
+        <script src="${prefix}/static/javascript.js"></script>
     </body>
     </html>
     `;
 }
 
 /** Universal app endpoint **/
-app.get('*', (req, res, next) => {
+app.get(`${prefix}*`, (req, res, next) => {
     match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
         if (err) {
             return next(err);
@@ -181,15 +214,11 @@ app.get('*', (req, res, next) => {
             return res.redirect(302, redirectLocation.pathname + redirectLocation.search);
         }
         else if (renderProps) {
-            const rootValue = {};
-            if (req.query.q) {
-                rootValue.term = 'foot';
-            }
-            rootValue.term = 'foot';
-
+            const contextValue = { site: req.site };
             const networkLayer = new RelayLocalSchema.NetworkLayer({
                 schema,
-                rootValue,
+                contextValue,
+                rootValue: contextValue,
                 onError: (errors, request) => next(new Error(errors)),
             });
             return Router.prepareData(renderProps, networkLayer).then(({ data, props }) => {

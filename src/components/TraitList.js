@@ -1,12 +1,11 @@
 import React from 'react';
 import Relay from 'react-relay';
-import { Link } from 'react-router';
 import ExternalLink from './ExternalLink';
+import Link from './Link';
 
 class TraitList extends React.Component {
     static propTypes = {
         introduction: React.PropTypes.string,
-        linkPrefix: React.PropTypes.string,
         viewer: React.PropTypes.object,
     }
 
@@ -15,7 +14,6 @@ class TraitList extends React.Component {
     }
 
     render() {
-        const linkPrefix = this.props.linkPrefix || '/search/?q=';
         return (
             <div style={{ padding: '0 15px' }}>
                 {this.props.introduction ?
@@ -27,7 +25,7 @@ class TraitList extends React.Component {
                 <ul style={{ WebkitColumnCount: 3, MozColumnCount: 3, columnCount: 3, listStyle: 'none', paddingLeft: 0 }}>
                     {this.props.viewer.traits.map(trait => (
                         <li key={trait.id}>
-                            <Link to={`${linkPrefix}${trait.id}`}>{trait.id}</Link> <ExternalLink href={trait.uri} />
+                            <Link to={`?q=${trait.id}`}>{trait.id}</Link> <ExternalLink href={trait.uri} />
                         </li>))
                     }
                 </ul>

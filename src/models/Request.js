@@ -5,15 +5,16 @@ const RequestSchema = new mongoose.Schema({
     created_date: { type: Date, index: true, 'default': Date.now },
     remote_address: { type: Buffer, required: true, index: true },
     query: { type: String },
-}, {
-    toObject: {
-        virtuals: true,
-    },
-    toJSON: {
-        virtuals: true,
-    },
 });
 
+const options = {
+    versionKey: false,
+    virtuals: true,
+};
+
+RequestSchema.set('toObject', options);
+RequestSchema.set('toJSON', options);
+RequestSchema.virtual('_type').get(() => 'Request');
 RequestSchema
 .virtual('ip')
 .get(function get() {
@@ -23,22 +24,4 @@ RequestSchema
     this.set('remote_address', ip.toBuffer(value));
 });
 
-RequestSchema.set('toJSON', {
-    versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
-
-RequestSchema.set('toObject', {
-    versionKey: false,
-    transform: (document, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    },
-});
-
-const Request = mongoose.model('requests', RequestSchema);
-
-export default Request;
+export default mongoose.model('Request', RequestSchema);
