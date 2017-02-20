@@ -12,11 +12,17 @@ This is a Python and Javascript project that has a frontend server running
 Express (Javascript) and an import script in Python.
 
 ````sh
-npm install
-npm run build:schema
-npm run watch
-npm start
+yarn install
+yarn run build:schema
+yarn start
+yarn run dev
 ````
+
+You can now go to `localhost:3001/huntgenes/fasttrack`. We assume you
+run this project under a path prefix. See the `src/prefix.js` file if
+you need to change this.
+
+For running python scripts when doing imports:
 
 ````sh
 virtualenv3 venv
@@ -27,11 +33,7 @@ pip install -r requirements
 Deployment
 ----------
 
-````sh
-npm install
-npm run build:schema
-npm run build
-``
+For running python scripts when doing imports:
 
 ````sh
 virtualenv -p python3 venv
@@ -39,24 +41,16 @@ source venv/bin/activate
 pip install -r requirements
 ````
 
-Get your web server to point to server.js in your cloned directory.
+When updating server to latest version, run:
 
-Status
-------
+````sh
+npm deploy
+``
 
-The newest version is checked out to `/srv/fasttrack`. If updates are needed,
-do the npm parts above.
-
-Forever
--------
-
-Before systemd in Ubuntu, we started using `forever`. It should be converted,
-but for now, we just keep using it. There is a binary in the old checkout at
-`/srv/gwasc`. List running processes by running:
-`/srv/gwasc/gwasc/node_modules/.bin/forever list`. Forever also has a `restart`
-subcommand that takes an ID.
-
-Or just restart the server.
+The task to keep the server running is located in
+setup/fasttrack.service.j2, and will be added to systemd during the
+deploy command listed above. Per default, we use port number 13443, so
+you must set up a proxy command in your web server to that port.
 
 Data import
 -----------
