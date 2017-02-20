@@ -1,5 +1,8 @@
 /* global window */
 
+// Set state during browser rendring. This will cause a flicker, but we need it.
+/* eslint "react/no-did-mount-set-state": 0 */
+
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';

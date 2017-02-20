@@ -1,6 +1,9 @@
 /* global window */
 /* eslint "camelcase": 0 */
 
+// Set state during browser rendring. This will cause a flicker, but we need it.
+/* eslint "react/no-did-mount-set-state": 0 */
+
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
 import DropDownMenu from 'material-ui/DropDownMenu';
