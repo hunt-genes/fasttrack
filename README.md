@@ -74,12 +74,15 @@ the files. The normal way today is to have one file per chromosome, made for
 build 37 so we loop and import all of these in the following command:
 
 ```sh
-for f in `ls tmp/IMPUTATION_INFO/`; do echo $f; python import-scripts/import-imputation-data.py 37 hunt tmp/IMPUTATION_INFO/$f; done
+for f in `ls tmp/IMPUTATION_INFO/`; do echo $f; python import-scripts/import-imputation-data-from-hunt.py 37 hunt tmp/IMPUTATION_INFO/$f; done
 ```
 
 This import script will also adjust the chromosome position by one during
 matching, since biobank positions seems to be 0-indexed, while GWAS data is
 1-indexed.
+
+Please note that Hunt and Tromso have different import scripts, as one is
+has 0-indexed RSIDs and the other has 1-indexed.
 
 License
 -------

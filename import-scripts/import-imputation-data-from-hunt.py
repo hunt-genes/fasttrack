@@ -1,7 +1,6 @@
 """
 Importing imputation data into database. You need to specify the build number,
-or "current" (for the most current: 38). And a biobank_identifier because we
-support multiple biobanks. And of course the file to import from.
+or "current" (for the most current: 38). And of course the file to import from.
 
 If you import data is specified in multiple files, you need to run this
 multiple times.
@@ -42,7 +41,6 @@ def add_imputation_data(snps, position, ref, alt, alt_frq, maf, rsq, genotyped, 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("build_number", help="Build number to use when doing database lookups")
-parser.add_argument("biobank_identifier", help="Identifier to distinguish data in database")
 parser.add_argument("filename", help="Filename to gzip file")
 args = parser.parse_args()
 
@@ -131,7 +129,7 @@ for position, data in positions.items():
         chr_pos = str(int(chr_pos) - 1)
 
         result = db.gwas.update_many({chr_col: chr_id, pos_col: chr_pos},
-                {"$set": {args.biobank_identifier: data}})
+                {"$set": {"hunt": data}})
         matched += result.matched_count
         updated += result.modified_count
 
