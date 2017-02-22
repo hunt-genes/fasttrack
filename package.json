@@ -39,7 +39,7 @@
     "graphql": "^0.8.2",
     "graphql-custom-datetype": "^0.3.0",
     "graphql-relay": "^0.4.3",
-    "history": "^4.5.0",
+    "history": "^3.2.1",
     "immutable": "^3.7.5",
     "ip": "^1.1.0",
     "isomorphic-relay": "^0.7.1",
