@@ -45,8 +45,8 @@ module.exports = {
         ],
     },
     output: {
-        path: path.join(__dirname, 'dist', 'static'),
-        publicPath: '/huntgenes/fasttrack/static',
+        path: path.join(__dirname, 'dist'),
+        publicPath: '/huntgenes/fasttrack/static/',
         filename: 'javascript.js',
     },
     plugins: [

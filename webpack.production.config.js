@@ -6,7 +6,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
     entry: './src/client.js',
     output: {
-        path: path.join(__dirname, 'dist', 'static'),
+        path: path.join(__dirname, 'dist'),
         publicPath: '/huntgenes/fasttrack/static/',
         filename: 'javascript.js'
     },
