@@ -178,12 +178,13 @@ app.post(`${prefix}/snps`, (req, res, next) => {
 });
 
 if (app.settings.env === 'production') {
-    app.use(favicon(`${__dirname}/assets/favicon.ico`));
+    app.use(favicon(`${__dirname}/static/favicon.ico`));
+    app.use(express.static(path.join(__dirname, '/static')));
 }
 else {
     app.use(favicon(`${__dirname}/assets/favicon.ico`));
+    app.use(express.static(path.join(__dirname, '/assets')));
 }
-app.use(express.static(path.join(__dirname, '/assets')));
 
 app.use(`${prefix}/graphql`, graphqlHTTP((req) => {
     const contextValue = { site: req.site };
