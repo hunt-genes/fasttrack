@@ -1,11 +1,10 @@
-# The benefits of this makefile are not very big, but at least it gives a
-# pointer in the right direction
-
-schema:
-	npm run build:schema
-
+# use yarn
 install:
 	yarn install
+
+# generate graphql schema
+schema:
+	npm run build:schema
 
 run:
 	npm start
