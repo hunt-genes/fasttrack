@@ -437,7 +437,7 @@ class Search extends React.Component {
                         <div style={{ display: 'flex' }}>
                             <div style={{ margin: '0 10px' }} id="logo">
                                 <img
-                                    src="/logo.jpg"
+                                    src={`${prefix}/static/logo.jpg`}
                                     style={{ width: 50 }}
                                     alt=""
                                 />
