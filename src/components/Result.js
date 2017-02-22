@@ -10,7 +10,7 @@ class Result extends React.Component {
     static propTypes = {
         isSelected: React.PropTypes.func,
         selecting: React.PropTypes.bool,
-        snp_id_current: React.PropTypes.string,
+        snp_id_current: React.PropTypes.number,
         toggleSelected: React.PropTypes.func,
     }
 
