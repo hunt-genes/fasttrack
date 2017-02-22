@@ -13,7 +13,6 @@ import ReactDOMServer from 'react-dom/server';
 // import Helmet from 'react-helmet';
 import { match } from 'react-router';
 import RelayLocalSchema from 'relay-local-schema';
-import favicon from 'serve-favicon';
 import prefix from './prefix';
 import schema from './schema';
 import Request from './models/Request';
@@ -179,14 +178,7 @@ app.post(`${prefix}/snps`, (req, res, next) => {
     });
 });
 
-if (app.settings.env === 'production') {
-    app.use(favicon(`${__dirname}/static/favicon.ico`));
-    app.use(express.static(path.join(__dirname, '/static')));
-}
-else {
-    app.use(favicon(`${__dirname}/assets/favicon.ico`));
-    app.use(express.static(path.join(__dirname, '/assets')));
-}
+app.use(`${prefix}/static`, express.static(path.join(__dirname, '/static')));
 
 app.use(`${prefix}/graphql`, graphqlHTTP((req) => {
     const contextValue = { site: req.site };
