@@ -57,7 +57,7 @@ class Result extends React.Component {
                         <Link to={`?q=${result.snp_id_current}`}>
                             {result.snps}
                         </Link>
-                        {this.props.selecting
+                        {this.props.selecting && hunt.length // only allow to select on rows with hunt data
                             ? <Checkbox onCheck={this.toggleSelected} checked={this.isSelected()} />
                             : null
                         }
