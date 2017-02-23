@@ -37,7 +37,6 @@
         template: src={{ project_name }}.service.j2 dest=/etc/systemd/system/{{ project_name }}.service owner=root mode=644
         notify:
           - reload systemd daemon
-          - reload systemd service
 
       - name: Finalize the deploy, removing the unfinished file and switching the symlink
         deploy_helper: path={{ project_home }} release={{ deploy_helper.new_release }} state=finalize
