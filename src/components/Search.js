@@ -23,6 +23,7 @@ import SearchResults from './SearchResults';
 import TraitList from './TraitList';
 import Summary from './Summary';
 import { validateEmail, validateProject } from '../lib/validations';
+import ExternalLink from './ExternalLink';
 
 const pageSize = 50;
 
@@ -274,10 +275,17 @@ class Search extends React.Component {
                 , <Link to="?q=CACNB4">CACNB4</Link>
             </p>
         );
+        // PDF with manual from Maiken
+        const manual = (
+            <p>
+                Ordering SNPs: <ExternalLink href={`${prefix}/static/manual.pdf`}>User manual</ExternalLink>
+            </p>
+        );
         const help = (
             <div style={{ display: 'flex' }}>
                 <div style={{ flexGrow: '1' }}>
                     {examples}
+                    {manual}
                 </div>
                 <div id="checkboxes" style={{ display: 'flex' }}>
                     <div>
@@ -291,7 +299,7 @@ class Search extends React.Component {
                     </div>
                     <div>
                         <Checkbox
-                            label="Hunt"
+                            label="HUNT"
                             checked={this.props.relay.variables.hunt}
                             onCheck={this.onHuntChange}
                             iconStyle={{ margin: 0 }}
@@ -385,7 +393,7 @@ class Search extends React.Component {
                 >
                     <div>
                         <Checkbox
-                            label="Hunt"
+                            label="HUNT"
                             checked={this.props.relay.variables.hunt}
                             onCheck={this.onHuntChange}
                             iconStyle={{ margin: 0 }}

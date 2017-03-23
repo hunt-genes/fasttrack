@@ -1,0 +1,53 @@
+---
+  - name: Update Fasttrack on hamp
+    hosts: hamp
+    vars:
+      - project_home: /srv/fasttrack
+        project_name: fasttrack
+        project_user: "{{ project_name }}"
+        server_port: 13443
+
+    tasks:
+      - name: Check connection
+        shell: ls
+
+      - name: Initialize the deploy root and gather facts
+        deploy_helper: path={{ project_home }}
+
+      - name: Create release directory  # Not necessary if we checkout with git
+        file: path={{ deploy_helper.new_release_path }} state=directory mode=0755
+
+      - name: Add an unfinished file, to allow cleanup on successful finalize
+        file: path={{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }} state=touch
+
+      - name: Build
+        local_action: command npm run dist
+
+      - name: Synchronize dist
+        synchronize: src=../dist/ dest={{ deploy_helper.new_release_path }}
+
+      - name: Rebuild npm dependencies for this setup
+        command: npm rebuild chdir={{ deploy_helper.new_release_path }}
+
+      - name: Copy production config
+        template: src=config.production.js.j2 dest={{ deploy_helper.new_release_path }}/config/production.js
+
+      - name: Copy systemd config
+        become: yes
+        template: src={{ project_name }}.service.j2 dest=/etc/systemd/system/{{ project_name }}.service owner=root mode=644
+        notify:
+          - reload systemd daemon
+
+      - name: Finalize the deploy, removing the unfinished file and switching the symlink
+        deploy_helper: path={{ project_home }} release={{ deploy_helper.new_release }} state=finalize
+        notify:
+          - reload systemd service
+
+    handlers:
+      - name: reload systemd service
+        service: name={{ project_name }} state=restarted enabled=true
+        become: yes
+
+      - name: reload systemd daemon
+        become: yes
+        command: systemctl daemon-reload

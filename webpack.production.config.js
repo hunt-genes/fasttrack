@@ -43,7 +43,7 @@ module.exports = {
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin(),
         new CopyWebpackPlugin([{
-            from: __dirname + '/src/assets'
+            from: __dirname + '/src/assets',
         }], {
             ignore: [
                 '*.scss',
