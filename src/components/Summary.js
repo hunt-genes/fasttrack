@@ -54,7 +54,7 @@ export default class Summary extends React.Component {
         const small = (
             <small
                 style={{ fontSize: '1.2rem' }}
-            > for <span style={{ fontStyle: 'italic' }}>P</span> &lt; 5x10-8</small>
+            > for <span style={{ fontStyle: 'italic' }}>P</span> &lt; 5x10<sup>-8</sup></small>
         );
         const { total, unique } = this.props.stats;
         return (
